@@ -8,10 +8,12 @@ import { OtpModule } from './otp/otp.module';
 import { CacheModule } from './shared/cache/cache.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
-
+import { UploadModule } from './upload/upload.module';
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRoot(process.env.CHAT_DB),
     AuthModule,
     UsersModule,
@@ -26,6 +28,7 @@ import { MailModule } from './mail/mail.module';
       inject: [ConfigService],
     }),
     MailModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -21,7 +21,7 @@ export class CacheRepository {
     const value = await this.redisClient.hgetall(key);
     const count = parseInt(value.count);
     if (!!count) {
-      if (count < 5) {
+      if (count < 100) {
         return false;
       } else {
         return true;

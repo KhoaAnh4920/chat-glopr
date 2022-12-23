@@ -68,6 +68,7 @@ enum ERROR_CODE {
   VRSVOUCHER15K_IS_NOT_VALID = 'VVRSVOUCHER15K_IS_NOT_VALID',
   VRSVOUCHER25K_IS_NOT_VALID = 'VRSVOUCHER25K_IS_NOT_VALID',
   VRSVOUCHER35K_IS_NOT_VALID = 'VRSVOUCHER35K_IS_NOT_VALID',
+  EMAIL_INVALID = 'EMAIL_INVALID',
 }
 
 const ErrorList = {
@@ -315,6 +316,10 @@ const ErrorList = {
   [ERROR_CODE.VRSVOUCHER35K_IS_NOT_VALID]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Voucher is only applicable for orders over 200,000 VND',
+  },
+  [ERROR_CODE.EMAIL_INVALID]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Email address is not valid',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

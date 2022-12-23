@@ -14,6 +14,11 @@ export enum RandomTypes {
 }
 
 export class StringUtils {
+  public static validateEmail(email: string): boolean {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  }
+
   public static md5(input: string): string {
     return createHash('md5').update(input).digest('hex');
   }

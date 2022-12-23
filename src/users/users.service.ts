@@ -8,7 +8,7 @@ import { AppError, ERROR_CODE } from '../shared/error';
 import { OtpService } from '../otp/otp.service';
 import { OTP_EXPIRE_SECOND, OTP_LENGTH } from '../otp/otp.constant';
 import { MailService } from '../mail/mail.service';
-
+import { StringUtils } from '../shared/common/stringUtils';
 @Injectable()
 export class UsersService {
   constructor(
@@ -48,8 +48,11 @@ export class UsersService {
       format,
     );
     if (otpMethod === TypeSender.EMAIL) {
-      await this.mailService.sendUserOtp(userIdentity, otpCode);
+      const checkEmail = StringUtils.validateEmail(userIdentity);
+      if (!checkEmail) throw new AppError(ERROR_CODE.EMAIL_INVALID);
+      //await this.mailService.sendUserOtp(userIdentity, otpCode);
     }
+
     if (otpMethod === TypeSender.SMS) {
       console.log('Nothing');
     }

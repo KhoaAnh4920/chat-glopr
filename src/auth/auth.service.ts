@@ -11,13 +11,16 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UserDo } from 'src/_schemas/user.do';
 import { ConfigService } from '@nestjs/config';
-
+import { ValidateOTPViewReq } from '../otp/otp.type';
+import { ContentRequestOTP } from '../otp/otp.enum';
+import { OtpService } from '../otp/otp.service';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private configService: ConfigService,
+    private readonly otpService: OtpService,
   ) {}
 
   async validateUser(email, password): Promise<UserDo> {
@@ -39,6 +42,13 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    console.log('phoneOtp: ', registerUserDto.phoneOtp);
+    const payload = new ValidateOTPViewReq(
+      ContentRequestOTP.CREATE_USERS,
+      registerUserDto.phoneNumber,
+      registerUserDto.phoneOtp,
+    );
+    await this.otpService.validateOTP(payload);
     const hash = await this.hashData(registerUserDto.password);
     const newUser = await this.usersService.createOne({
       ...registerUserDto,
