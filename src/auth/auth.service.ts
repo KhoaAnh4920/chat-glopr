@@ -42,11 +42,11 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    console.log('phoneOtp: ', registerUserDto.phoneOtp);
+    console.log('otpCode: ', registerUserDto.otpCode);
     const payload = new ValidateOTPViewReq(
       ContentRequestOTP.CREATE_USERS,
       registerUserDto.phoneNumber,
-      registerUserDto.phoneOtp,
+      registerUserDto.otpCode,
     );
     await this.otpService.validateOTP(payload);
     const hash = await this.hashData(registerUserDto.password);

@@ -45,7 +45,7 @@ export class RegisterUserDto {
 
   @ApiProperty()
   @IsDefined()
-  phoneOtp!: string;
+  otpCode!: string;
 
   // @ApiProperty({ example: 1607335220000 })
   // @IsOptional()

@@ -50,10 +50,8 @@ export class UsersService {
     if (otpMethod === TypeSender.EMAIL) {
       const checkEmail = StringUtils.validateEmail(userIdentity);
       if (!checkEmail) throw new AppError(ERROR_CODE.EMAIL_INVALID);
-      //await this.mailService.sendUserOtp(userIdentity, otpCode);
-    }
-
-    if (otpMethod === TypeSender.SMS) {
+      await this.mailService.sendUserOtp(userIdentity, otpCode);
+    } else if (otpMethod === TypeSender.SMS) {
       console.log('Nothing');
     }
     // try {

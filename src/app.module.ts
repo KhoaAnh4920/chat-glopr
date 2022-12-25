@@ -22,7 +22,6 @@ import { UploadModule } from './upload/upload.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         const cacheOptions = configService.get('redis') || {};
-        // console.log('cacheOptions:', cacheOptions);
         return cacheOptions;
       },
       inject: [ConfigService],

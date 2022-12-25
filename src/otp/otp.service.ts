@@ -22,7 +22,7 @@ export class OtpService {
     secondsExpire: number,
     length: number,
     format?: RandomTypes,
-  ): Promise<any> {
+  ): Promise<string> {
     const otp = StringUtils.randomString(
       length,
       format || RandomTypes.STRING_NUMBER,
@@ -68,6 +68,7 @@ export class OtpService {
 
   public async validateOTP(payload: IValidateOTPViewReq): Promise<boolean> {
     const key = `otp_${payload.userIdentity}_${payload.context}`;
+    console.log('key: ', key);
     const requestObject = await this.cacheRepository.hgetall(key);
     if (
       requestObject &&
