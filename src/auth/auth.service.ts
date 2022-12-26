@@ -74,12 +74,20 @@ export class AuthService {
 
     if (user) {
       const payload = {
+        id: user._id,
         email: user.email,
-        sub: user._id,
+        fullName: user.fullName,
+        username: user.userName,
+        phoneNumber: user.phoneNumber,
       };
       return {
-        access_token: this.jwtService.sign(payload),
-        userProfile: payload,
+        success: true,
+        status: 201,
+        message: 'SIGN_IN_SUCCESSFULLY',
+        data: {
+          access_token: this.jwtService.sign(payload),
+          info: payload,
+        },
       };
     }
   }
