@@ -9,6 +9,7 @@ import { OtpService } from '../otp/otp.service';
 import { OTP_EXPIRE_SECOND, OTP_LENGTH } from '../otp/otp.constant';
 import { MailService } from '../mail/mail.service';
 import { StringUtils } from '../shared/common/stringUtils';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -47,34 +48,15 @@ export class UsersService {
       OTP_LENGTH,
       format,
     );
-    if (otpMethod === TypeSender.EMAIL) {
-      const checkEmail = StringUtils.validateEmail(userIdentity);
-      if (!checkEmail) throw new AppError(ERROR_CODE.EMAIL_INVALID);
-      await this.mailService.sendUserOtp(userIdentity, otpCode);
-    } else if (otpMethod === TypeSender.SMS) {
-      console.log('Nothing');
-    }
-    // try {
-    //   const result = await this.sendSMS(userIdentity, otpCode);
-    //   result.subscribe((data) => {
-    //     const {
-    //       data: { code, transactionid: transactionId, message },
-    //     } = data;
-
-    //     const history = new CreateHistoryModelReq(
-    //       userIdentity,
-    //       otpCode,
-    //       otpMethod,
-    //       context,
-    //       transactionId,
-    //       code,
-    //       message,
-    //     );
-    //     this.historyService.createHistory(history);
-    //   });
-    // } catch (err) {
-    //   console.log('ERR', err);
+    // if (otpMethod === TypeSender.EMAIL) {
+    //   const checkEmail = StringUtils.validateEmail(userIdentity);
+    //   if (!checkEmail) throw new AppError(ERROR_CODE.EMAIL_INVALID);
+    //   await this.mailService.sendUserOtp(userIdentity, otpCode);
     // }
+    if (otpMethod === TypeSender.SMS) {
+      console.log('Nothing');
+      // Send sms otp //
+    }
 
     return otpCode;
   }

@@ -14,7 +14,7 @@ import { UploadModule } from './upload/upload.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.CHAT_DB),
+    MongooseModule.forRoot(process.env.MONGO_DB),
     AuthModule,
     UsersModule,
     OtpModule.forRoot(),
