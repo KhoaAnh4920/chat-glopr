@@ -81,13 +81,8 @@ export class AuthService {
         phoneNumber: user.phoneNumber,
       };
       return {
-        success: true,
-        status: 201,
-        message: 'SIGN_IN_SUCCESSFULLY',
-        data: {
-          access_token: this.jwtService.sign(payload),
-          info: payload,
-        },
+        access_token: this.jwtService.sign(payload),
+        info: payload,
       };
     }
   }
