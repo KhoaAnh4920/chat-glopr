@@ -21,7 +21,9 @@ import { RequestSendOTPDto, ValidateOTPDto } from './dto/user.dto';
 import { Response } from 'express';
 import { ValidateOTPViewReq } from 'src/otp/otp.type';
 import { OtpService } from '../otp/otp.service';
-
+import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
+import { ISingleRes } from 'src/shared/response';
+import { IUserInfo } from './user.type';
 @Controller('users')
 export class UsersController {
   constructor(
@@ -74,5 +76,26 @@ export class UsersController {
       data: { result },
     };
     return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('users')
+  @Get('/me')
+  @ApiBearerAuth()
+  @SetScopes('user.get.me')
+  @ApiOperation({ summary: 'Get user own info' })
+  public async getMe(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Res() res: Response,
+  ) {
+    const user = await this.usersService.findOne(currentUser.userId);
+    user.password = undefined;
+    const resBody: ISingleRes<IUserInfo> = {
+      success: true,
+      statusCode: 200,
+      message: 'GET_DATA_SUCCEEDED',
+      data: user,
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
   }
 }

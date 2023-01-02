@@ -1,6 +1,6 @@
 export interface ISingleRes<T> {
   success: boolean;
-  status: number;
+  statusCode: number;
   message: string;
   data: T;
   metadata?: any;

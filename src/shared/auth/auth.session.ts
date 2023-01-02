@@ -4,8 +4,9 @@ import { ICurrentUser } from './auth.type';
 export const CurrentUser = createParamDecorator(
   (_: any, ctx: ExecutionContext): ICurrentUser => {
     const request = ctx.switchToHttp().getRequest();
+    // console.log('request.user: ', request.user);
     const currentUser: ICurrentUser = {
-      userId: request.user.userId,
+      userId: request.user._id,
       // role: request.user.role,
       // externalId: request.user.externalId,
     };

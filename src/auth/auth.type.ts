@@ -1,5 +1,4 @@
 import { ICurrentUser } from '../shared/auth';
-
 export type IPayloadJWT = ICurrentUser;
 
 export interface IAuthResponse {

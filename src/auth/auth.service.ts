@@ -14,6 +14,9 @@ import { ConfigService } from '@nestjs/config';
 import { ValidateOTPViewReq } from '../otp/otp.type';
 import { ContentRequestOTP } from '../otp/otp.enum';
 import { OtpService } from '../otp/otp.service';
+import { AppError, ERROR_CODE } from '../shared/error';
+import { IChangePasswordViewReq } from './auth.type';
+import { IUpdateUserViewReq } from '../users/user.type';
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,8 +26,8 @@ export class AuthService {
     private readonly otpService: OtpService,
   ) {}
 
-  async validateUser(email, password): Promise<UserDo> {
-    const user = await this.usersService.findOne(email);
+  async validateUser(identity, password) {
+    const user = await this.usersService.findOne(identity);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -42,7 +45,7 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    console.log('otpCode: ', registerUserDto.otpCode);
+    // console.log('otpCode: ', registerUserDto.otpCode);
     const payload = new ValidateOTPViewReq(
       ContentRequestOTP.CREATE_USERS,
       registerUserDto.phoneNumber,
@@ -67,14 +70,15 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto) {
+    console.log('Run !!!!');
     const user = await this.validateUser(
-      loginUserDto.email,
+      loginUserDto.identity,
       loginUserDto.password,
     );
 
     if (user) {
       const payload = {
-        id: user._id,
+        id: user.id,
         email: user.email,
         fullName: user.fullName,
         username: user.userName,
@@ -87,26 +91,26 @@ export class AuthService {
     }
   }
 
-  async getTokens(userId: string, username: string) {
+  async getTokens(userId: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
-          sub: userId,
-          username,
+          userId,
+          email,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-          expiresIn: '15m',
+          // expiresIn: '15m',
         },
       ),
       this.jwtService.signAsync(
         {
-          sub: userId,
-          username,
+          userId,
+          email,
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-          expiresIn: '7d',
+          // expiresIn: '7d',
         },
       ),
     ]);
@@ -127,5 +131,26 @@ export class AuthService {
     await this.usersService.update(userId, {
       refreshToken: hashedRefreshToken,
     });
+  }
+
+  public async changePassword(
+    changePasswordReq: IChangePasswordViewReq,
+  ): Promise<void> {
+    const user = await this.usersService.findOne(changePasswordReq.userId);
+
+    const compareResult = await bcrypt.compare(
+      changePasswordReq.currentPassword,
+      user.password,
+    );
+
+    if (!compareResult) {
+      throw new AppError(ERROR_CODE.UNAUTHORIZED);
+    }
+
+    const updateUserViewReq: IUpdateUserViewReq = {
+      id: user.id,
+      password: changePasswordReq.newPassword,
+    };
+    await this.usersService.updateUser(updateUserViewReq);
   }
 }

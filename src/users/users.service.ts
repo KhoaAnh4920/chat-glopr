@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ISendOtpViewReq } from './user.type';
+import { ISendOtpViewReq, IUser, UpdateUserModel } from './user.type';
 import { UsersRepository } from './users.repository';
 import { ContentRequestOTP, TypeSender } from '../otp/otp.enum';
 import { AppError, ERROR_CODE } from '../shared/error';
@@ -9,7 +9,8 @@ import { OtpService } from '../otp/otp.service';
 import { OTP_EXPIRE_SECOND, OTP_LENGTH } from '../otp/otp.constant';
 import { MailService } from '../mail/mail.service';
 import { StringUtils } from '../shared/common/stringUtils';
-
+import { IUpdateUserViewReq } from '../users/user.type';
+import { UserUtil } from './user.util';
 @Injectable()
 export class UsersService {
   constructor(
@@ -18,8 +19,8 @@ export class UsersService {
     private readonly mailService: MailService,
   ) {}
 
-  async findOne(username): Promise<any> {
-    return this.usersRepository.findOne(username);
+  async findOne(indentity): Promise<IUser> {
+    return this.usersRepository.findOne(indentity);
   }
 
   async createOne(user): Promise<any> {
@@ -59,5 +60,33 @@ export class UsersService {
     }
 
     return otpCode;
+  }
+
+  public async updateUser(viewReq: IUpdateUserViewReq): Promise<IUser> {
+    const user = await this.findOne(viewReq.id);
+    if (!user) {
+      throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+    }
+    if (viewReq.password) {
+      const password = viewReq.password
+        ? await UserUtil.hashPassword(viewReq.password)
+        : user.password;
+      const payload = new UpdateUserModel(
+        user.id,
+        viewReq.email || user.email,
+        viewReq.phoneNumber || user.phoneNumber,
+        viewReq.fullName || user.fullName,
+        viewReq.dob || user.dob,
+        password,
+        viewReq.avatar || user.avatar,
+      );
+
+      const updatedUser = await this.usersRepository.updateUser(
+        payload.id,
+        payload,
+      );
+
+      return updatedUser as IUser;
+    }
   }
 }

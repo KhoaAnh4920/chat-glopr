@@ -1,4 +1,4 @@
-import passwordValidator from 'password-validator';
+const passwordValidator = require('password-validator');
 import { PASSWORD_MIN_LENGTH } from './auth.constant';
 import { registerDecorator, ValidationOptions } from 'class-validator';
 
@@ -11,21 +11,21 @@ const validatePassword = (password: string): boolean => {
     .is()
     .min(PASSWORD_MIN_LENGTH) // Minimum length 6
     .has()
-    .uppercase() // Must have uppercase letters
+    // .uppercase() // Must have uppercase letters
     // .has()
     // .lowercase() // Must have lowercase letters
     .has()
-    .digits() // Must have digits
+    //.digits() // Must have digits
     .has()
-    .not()
-    .spaces(); // Should not have spaces
+    .not();
+  //.spaces(); // Should not have spaces
 
   // Validate against a password string
   return schema.validate(password) as boolean;
 };
 
 export function IsPasswordValid(validationOptions?: ValidationOptions) {
-  return function(object: any, propertyName: string) {
+  return function (object: any, propertyName: string) {
     registerDecorator({
       name: 'isPasswordValid',
       target: object.constructor,

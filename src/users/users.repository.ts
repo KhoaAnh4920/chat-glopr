@@ -9,8 +9,14 @@ export class UsersRepository {
     private userModel: Model<UserDocument>,
   ) {}
 
-  async findOne(email): Promise<any> {
-    const findOne = await this.userModel.findOne({ email: email });
+  async findOne(indentity): Promise<any> {
+    const findOne = await this.userModel.findOne({
+      $or: [
+        { email: indentity },
+        { id: indentity },
+        { phoneNumber: indentity },
+      ],
+    });
     return findOne;
   }
 
