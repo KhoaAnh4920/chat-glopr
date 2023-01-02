@@ -23,8 +23,14 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { ISingleRes } from '../shared/response';
 import { Response } from 'express';
-import { IAuthResponse, IChangePasswordViewReq } from './auth.type';
-import { ChangePasswordDto } from './dto/auth.dto';
+import {
+  IAuthResponse,
+  IChangePasswordViewReq,
+  INewTokenResponse,
+  IRefreshTokenReq,
+  IUserCreated,
+} from './auth.type';
+import { ChangePasswordDto, TokenRefreshDto } from './dto/auth.dto';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 
 @ApiTags('auth')
@@ -37,8 +43,18 @@ export class AuthController {
     status: 201,
     description: 'The user has been successfully created.',
   })
-  async register(@Body() registerUserDto: RegisterUserDto) {
-    return await this.authService.register(registerUserDto);
+  async register(
+    @Body() registerUserDto: RegisterUserDto,
+    @Res() res: Response,
+  ) {
+    const created = await this.authService.register(registerUserDto);
+    const bodyResponse: ISingleRes<IUserCreated> = {
+      success: true,
+      statusCode: 201,
+      message: 'REGISTRATION_SUCCESS',
+      data: created,
+    };
+    return res.status(HttpStatus.OK).send(bodyResponse);
   }
 
   @UseGuards(LocalAuthGuard) // Check user request is valid //
@@ -70,6 +86,26 @@ export class AuthController {
     };
     await this.authService.changePassword(changePasswordReq);
     return res.status(HttpStatus.NO_CONTENT).send();
+  }
+
+  @Patch('/token/refresh')
+  @ApiOperation({ summary: 'Get new token' })
+  public async getNewToken(
+    @Body() tokenRefreshDto: TokenRefreshDto,
+    @Res() res: Response,
+  ) {
+    const tokenReq: IRefreshTokenReq = {
+      refToken: tokenRefreshDto.refreshToken,
+    };
+    const newToken = await this.authService.getNewToken(tokenReq);
+
+    const bodyResponse: ISingleRes<INewTokenResponse> = {
+      success: true,
+      statusCode: 201,
+      message: 'CREATE_SUCCESS',
+      data: newToken,
+    };
+    return res.status(HttpStatus.OK).send(bodyResponse);
   }
 
   // @UseGuards(JwtAuthGuard)

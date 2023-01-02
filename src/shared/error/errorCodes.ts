@@ -24,6 +24,7 @@ enum ERROR_CODE {
   YOU_HAVE_BEEN_SPAM = 'YOU_HAVE_BEEN_SPAM',
   YOU_HAVE_RECEIVED_CODE = 'YOU_HAVE_RECEIVED_CODE',
   EMAIL_INVALID = 'EMAIL_INVALID',
+  INVALID_TOKEN = 'INVALID_TOKEN',
 }
 
 const ErrorList = {
@@ -95,6 +96,10 @@ const ErrorList = {
   [ERROR_CODE.EMAIL_INVALID]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Email address is not valid',
+  },
+  [ERROR_CODE.INVALID_TOKEN]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Invalid token',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

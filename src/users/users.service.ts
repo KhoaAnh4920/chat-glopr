@@ -67,26 +67,25 @@ export class UsersService {
     if (!user) {
       throw new AppError(ERROR_CODE.USER_NOT_FOUND);
     }
-    if (viewReq.password) {
-      const password = viewReq.password
-        ? await UserUtil.hashPassword(viewReq.password)
-        : user.password;
-      const payload = new UpdateUserModel(
-        user.id,
-        viewReq.email || user.email,
-        viewReq.phoneNumber || user.phoneNumber,
-        viewReq.fullName || user.fullName,
-        viewReq.dob || user.dob,
-        password,
-        viewReq.avatar || user.avatar,
-      );
+    const password = viewReq.password
+      ? await UserUtil.hashPassword(viewReq.password)
+      : user.password;
+    const payload = new UpdateUserModel(
+      user.id,
+      viewReq.email || user.email,
+      viewReq.phoneNumber || user.phoneNumber,
+      viewReq.fullName || user.fullName,
+      viewReq.dob || user.dob,
+      password,
+      viewReq.avatar || user.avatar,
+      viewReq.gender || user.gender,
+    );
 
-      const updatedUser = await this.usersRepository.updateUser(
-        payload.id,
-        payload,
-      );
-
-      return updatedUser as IUser;
-    }
+    const updatedUser = await this.usersRepository.updateUser(
+      payload.id,
+      payload,
+    );
+    updatedUser.password = undefined;
+    return updatedUser as IUser;
   }
 }

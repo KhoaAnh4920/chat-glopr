@@ -2,7 +2,6 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AuthService } from '../auth.service';
-import { UserDo } from 'src/_schemas/user.do';
 import { AppError, ERROR_CODE } from '../../shared/error';
 
 @Injectable()

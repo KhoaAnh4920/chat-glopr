@@ -9,13 +9,16 @@ import { RegisterUserDto } from '../auth/dto/register-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
-import { UserDo } from 'src/_schemas/user.do';
 import { ConfigService } from '@nestjs/config';
 import { ValidateOTPViewReq } from '../otp/otp.type';
 import { ContentRequestOTP } from '../otp/otp.enum';
 import { OtpService } from '../otp/otp.service';
 import { AppError, ERROR_CODE } from '../shared/error';
-import { IChangePasswordViewReq } from './auth.type';
+import {
+  IChangePasswordViewReq,
+  INewTokenResponse,
+  IRefreshTokenReq,
+} from './auth.type';
 import { IUpdateUserViewReq } from '../users/user.type';
 @Injectable()
 export class AuthService {
@@ -56,6 +59,7 @@ export class AuthService {
     const newUser = await this.usersService.createOne({
       ...registerUserDto,
       password: hash,
+      isActived: true,
     });
     if (newUser) {
       const tokens = await this.getTokens(newUser._id, newUser.email);
@@ -63,6 +67,8 @@ export class AuthService {
       return {
         _id: newUser._id,
         email: newUser.email,
+        phoneNumber: newUser.phoneNumber,
+        fullName: newUser.fullName,
         createdAt: newUser.createdAt,
         updatedAt: newUser.updatedAt,
       };
@@ -70,7 +76,6 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto) {
-    console.log('Run !!!!');
     const user = await this.validateUser(
       loginUserDto.identity,
       loginUserDto.password,
@@ -84,8 +89,13 @@ export class AuthService {
         username: user.userName,
         phoneNumber: user.phoneNumber,
       };
+      const { accessToken, refreshToken } = await this.getTokens(
+        payload.id,
+        payload.email,
+      );
       return {
-        access_token: this.jwtService.sign(payload),
+        access_token: accessToken,
+        refreshToken: refreshToken,
         info: payload,
       };
     }
@@ -110,7 +120,7 @@ export class AuthService {
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-          // expiresIn: '7d',
+          expiresIn: '90d',
         },
       ),
     ]);
@@ -152,5 +162,35 @@ export class AuthService {
       password: changePasswordReq.newPassword,
     };
     await this.usersService.updateUser(updateUserViewReq);
+  }
+
+  public async getNewToken(
+    tokenRefresh: IRefreshTokenReq,
+  ): Promise<INewTokenResponse> {
+    // Verify //
+    const tokenDecoded = this.jwtService.decode(tokenRefresh.refToken) as {
+      [key: string]: any;
+    };
+    console.log('tokenDecoded: ', tokenDecoded);
+    if (!tokenDecoded) throw new AppError(ERROR_CODE.INVALID_TOKEN);
+    const user = await this.usersService.findOne(tokenDecoded.userId);
+    if (!user) throw new AppError(ERROR_CODE.UNAUTHORIZED);
+    const { accessToken } = await this.getTokens(user.id, user.email);
+    return { newToken: accessToken };
+
+    // const compareResult = await bcrypt.compare(
+    //   changePasswordReq.currentPassword,
+    //   user.password,
+    // );
+
+    // if (!compareResult) {
+    //   throw new AppError(ERROR_CODE.UNAUTHORIZED);
+    // }
+
+    // const updateUserViewReq: IUpdateUserViewReq = {
+    //   id: user.id,
+    //   password: changePasswordReq.newPassword,
+    // };
+    // await this.usersService.updateUser(updateUserViewReq);
   }
 }

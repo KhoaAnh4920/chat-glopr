@@ -16,3 +16,10 @@ export class ChangePasswordDto {
   @IsString()
   readonly newPassword!: string;
 }
+
+export class TokenRefreshDto {
+  @ApiProperty()
+  @IsDefined()
+  @IsString()
+  readonly refreshToken!: string;
+}

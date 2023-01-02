@@ -1,5 +1,6 @@
 import { ContentRequestOTP, TypeSender } from '../otp/otp.enum';
 import { RandomTypes } from '../shared/common/stringUtils';
+import { UserGender } from '../users/users.enum';
 
 export interface IUser {
   readonly id: string;
@@ -9,6 +10,7 @@ export interface IUser {
   readonly userName: string;
   password: string;
   readonly dob: Date;
+  readonly gender: UserGender;
   readonly avatar?: string;
   readonly createdAt?: Date;
 }
@@ -37,6 +39,20 @@ export interface IUpdateUserViewReq {
   readonly avatar?: string;
   readonly dob?: Date;
   readonly password?: string;
+  readonly gender?: UserGender;
+}
+
+export class UpdateUserViewReq implements IUpdateUserViewReq {
+  constructor(
+    readonly id: string,
+    readonly email?: string,
+    readonly phoneNumber?: string,
+    readonly fullName?: string,
+    readonly avatar?: string,
+    readonly dob?: Date,
+    readonly password?: string,
+    readonly gender?: UserGender,
+  ) {}
 }
 
 export interface IUpdateUserModel {
@@ -47,6 +63,7 @@ export interface IUpdateUserModel {
   readonly avatar?: string;
   readonly dob?: Date;
   readonly password?: string;
+  readonly gender?: UserGender;
 }
 
 export class UpdateUserModel implements IUpdateUserModel {
@@ -58,5 +75,6 @@ export class UpdateUserModel implements IUpdateUserModel {
     readonly dob: Date,
     readonly password: string,
     readonly avatar?: string,
+    readonly gender?: UserGender,
   ) {}
 }

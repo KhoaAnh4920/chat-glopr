@@ -16,6 +16,8 @@ import {
 import { ContentRequestOTP, TypeSender } from '../../otp/otp.enum';
 import { RandomTypes } from '../../shared/common/stringUtils';
 import { OTP_LENGTH } from '../../otp/otp.constant';
+import { Type } from 'class-transformer';
+import { UserGender } from '../users.enum';
 
 export class RequestSendOTPDto {
   @ApiProperty({
@@ -25,7 +27,7 @@ export class RequestSendOTPDto {
   @IsEnum(ContentRequestOTP)
   context!: ContentRequestOTP;
 
-  @ApiProperty()
+  @ApiProperty({ example: '0968617132' })
   @IsDefined()
   @IsString()
   identity!: string;
@@ -33,7 +35,7 @@ export class RequestSendOTPDto {
   @ApiProperty({
     type: String,
     enum: TypeSender,
-    example: 'EMAIL | SMS',
+    example: 'SMS',
     description: 'Type Send',
   })
   @IsEnum(TypeSender)
@@ -82,4 +84,39 @@ export class ResetPasswordOtpDto {
   @IsDefined()
   @IsString()
   identity!: string;
+}
+
+export class UpdateUserDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsEmail()
+  readonly email?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  readonly fullName?: string;
+
+  @ApiProperty({ example: '0901234567', description: 'Phone number' })
+  @IsOptional()
+  @MinLength(10)
+  @MaxLength(15)
+  phoneNumber?: string;
+
+  @ApiProperty({ enum: UserGender, required: false })
+  @IsOptional()
+  @IsString()
+  readonly gender?: UserGender;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  readonly dob?: Date;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  readonly avatar?: string;
 }

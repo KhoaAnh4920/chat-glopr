@@ -7,7 +7,26 @@ export interface IAuthResponse {
 }
 
 export interface IChangePasswordViewReq {
-  readonly userId: number;
+  readonly userId: string;
   readonly currentPassword: string;
   readonly newPassword: string;
+}
+
+export interface IUserCreated {
+  readonly _id: number;
+  readonly email: string;
+  readonly phoneNumber: string;
+  readonly fullName: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly avatar?: string;
+  readonly isDelete?: boolean;
+}
+
+export interface IRefreshTokenReq {
+  readonly refToken: string;
+}
+
+export interface INewTokenResponse {
+  readonly newToken: string;
 }

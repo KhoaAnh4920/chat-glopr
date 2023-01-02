@@ -1,7 +1,7 @@
 //import { IRole } from '../../role/role.type';
 
 export interface ICurrentUser {
-  readonly userId: number;
+  readonly userId: string;
   // readonly role: IRole;
   // readonly externalId: string;
 }
