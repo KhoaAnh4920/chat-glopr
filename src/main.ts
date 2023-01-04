@@ -3,10 +3,15 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from './shared/auth';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { WebsocketAdapter } from './gateway/gateway.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // await app.listen(3000);
+  // const adapter = new WebsocketAdapter(app);
+  // app.useWebSocketAdapter(adapter);
+  app.setGlobalPrefix('api');
+  app.enableCors({ credentials: true, origin: true });
   app.useGlobalPipes(new ValidationPipe({}));
   // setup AuthGuard
   const reflector = app.get(Reflector);

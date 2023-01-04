@@ -25,6 +25,9 @@ enum ERROR_CODE {
   YOU_HAVE_RECEIVED_CODE = 'YOU_HAVE_RECEIVED_CODE',
   EMAIL_INVALID = 'EMAIL_INVALID',
   INVALID_TOKEN = 'INVALID_TOKEN',
+  FRIEND_EXISTS = 'FRIEND_EXISTS',
+  INVITE_EXISTS = 'INVITE_EXISTS',
+  NOT_FOUND_REQUEST = 'NOT_FOUND_REQUEST',
 }
 
 const ErrorList = {
@@ -100,6 +103,18 @@ const ErrorList = {
   [ERROR_CODE.INVALID_TOKEN]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Invalid token',
+  },
+  [ERROR_CODE.FRIEND_EXISTS]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Friend exists',
+  },
+  [ERROR_CODE.INVITE_EXISTS]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Invite exists',
+  },
+  [ERROR_CODE.NOT_FOUND_REQUEST]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Friend request not found',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };
