@@ -23,7 +23,12 @@ export class CacheModule {
             //   password: config.password,
             //   db: config.db,
             // });
-            const redisClient = new Redis(6379);
+            const redisClient = new Redis({
+            port: 6288, // Redis port
+            host: 'containers-us-west-141.railway.app', // Redis host
+            username: 'default', // needs Redis >= 6
+            password: 'l8l0w0sjzEqmLQw5vleR',
+            });
             return new CacheRepository(redisClient);
           },
           inject: [CACHE_OPTIONS, ...(options.inject || [])],
