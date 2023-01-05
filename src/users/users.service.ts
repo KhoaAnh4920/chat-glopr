@@ -23,6 +23,16 @@ export class UsersService {
     return this.usersRepository.findOne(indentity);
   }
 
+  public async checkUserExist(
+    email: string,
+    phoneNumber: string,
+  ): Promise<boolean> {
+    return !!(await this.usersRepository.findUserWithEmailOrPhone(
+      email,
+      phoneNumber,
+    ));
+  }
+
   async createOne(user): Promise<any> {
     const createOne = await this.usersRepository.createOne(user);
     return createOne;

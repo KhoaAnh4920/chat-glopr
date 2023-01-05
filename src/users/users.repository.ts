@@ -1,7 +1,8 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument } from 'src/_schemas/user.schema';
+import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { IUser } from './user.type';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 export class UsersRepository {
@@ -10,7 +11,7 @@ export class UsersRepository {
     private userModel: Model<UserDocument>,
   ) {}
 
-  async findOne(indentity): Promise<any> {
+  async findOne(indentity): Promise<IUser | undefined> {
     const idParam = ObjectId.isValid(indentity);
     let findOne = null;
     if (idParam) {
@@ -25,8 +26,7 @@ export class UsersRepository {
     return findOne;
   }
 
-  async createOne(user): Promise<any> {
-    console.log('user created: ', user);
+  async createOne(user): Promise<User> {
     const createOne = await this.userModel.create(user);
     return createOne;
   }
@@ -34,5 +34,14 @@ export class UsersRepository {
     return this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
       .exec();
+  }
+
+  public async findUserWithEmailOrPhone(
+    email: string,
+    phoneNumber: string,
+  ): Promise<User | undefined> {
+    return this.userModel.findOne({
+      $or: [{ email: email }, { phoneNumber: phoneNumber }],
+    });
   }
 }

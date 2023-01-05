@@ -62,4 +62,22 @@ export class FriendService {
     if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
     return this.friendRepository.getListFriendRequest(userId);
   }
+
+  async acceptFriendRequest(_id, userId): Promise<boolean> {
+    // check có lời mời này không
+    if (!(await this.existsByIds(_id, userId, typeRequest.FRIEND_REQUEST)))
+      throw new AppError(ERROR_CODE.NOT_FOUND_REQUEST);
+    // check đã là bạn bè
+    if (await this.existsByIds(_id, userId, typeRequest.FRIEND))
+      throw new AppError(ERROR_CODE.FRIEND_EXISTS);
+
+    // xóa lời mời
+    const result = await this.friendRepository.deleteFriendRequest({
+      _id,
+      userId,
+    });
+    // Add friend
+    await this.friendRepository.addFriends(_id, userId);
+    return result;
+  }
 }

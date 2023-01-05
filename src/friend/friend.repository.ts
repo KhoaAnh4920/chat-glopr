@@ -3,7 +3,11 @@ import { Model } from 'mongoose';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { FriendDocument } from 'src/_schemas/friend.schema';
 import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
-import { FriendRequestModel, IDeleteFriendRequestViewReq } from './friend.type';
+import {
+  FriendModel,
+  FriendRequestModel,
+  IDeleteFriendRequestViewReq,
+} from './friend.type';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 export class FriendRepository {
@@ -14,21 +18,6 @@ export class FriendRepository {
     @InjectModel('FriendRequest')
     private friendRequestModel: Model<FriendRequestDocument>,
   ) {}
-
-  //   async findOne(indentity): Promise<any> {
-  //     const idParam = ObjectId.isValid(indentity);
-  //     let findOne = null;
-  //     if (idParam) {
-  //       findOne = await this.userModel.findOne({
-  //         _id: indentity,
-  //       });
-  //     } else {
-  //       findOne = await this.userModel.findOne({
-  //         $or: [{ email: indentity }, { phoneNumber: indentity }],
-  //       });
-  //     }
-  //     return findOne;
-  //   }
 
   async existsByIds(userId1, userId2, type): Promise<boolean> {
     let isExists = null;
@@ -44,6 +33,12 @@ export class FriendRepository {
 
     if (isExists) return true;
     return false;
+  }
+
+  async addFriends(userId1, userId2): Promise<boolean> {
+    const payload = new FriendModel([userId1, userId2]);
+    await this.friendModel.create(payload);
+    return true;
   }
 
   async sendFriendInvite(userId1, userId2): Promise<boolean> {

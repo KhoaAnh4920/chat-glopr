@@ -41,15 +41,11 @@ export class AuthService {
   }
 
   async register(registerUserDto: RegisterUserDto) {
-    console.log('registerUserDto.email: ', registerUserDto.email);
-    const user = await this.usersService.findOne(registerUserDto.email);
-    console.log('user: ', user);
-    if (user) {
-      throw new HttpException(
-        'User with this email exist',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const user = await this.usersService.checkUserExist(
+      registerUserDto.email,
+      registerUserDto.phoneNumber,
+    );
+    if (user) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
     // console.log('otpCode: ', registerUserDto.otpCode);
     const payload = new ValidateOTPViewReq(
       ContentRequestOTP.CREATE_USERS,

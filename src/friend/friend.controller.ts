@@ -58,6 +58,34 @@ export class FriendController {
   }
 
   @ApiTags('friend')
+  @Post('')
+  @ApiOperation({ summary: 'Accept friend request' })
+  @ApiBearerAuth()
+  @SetScopes('user.friend.request')
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Accept friend request',
+  })
+  public async acceptFriendRequest(
+    @Body() payload: PayloadSendRequestDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    await this.friendService.acceptFriendRequest(
+      currentUser.userId,
+      payload.userId,
+    );
+
+    const singleRes: IEmptyDataRes = {
+      success: true,
+      statusCode: 201,
+      message: ResponseMessage.CREATE_SUCCESS,
+      data: [],
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('friend')
   @Delete('/invites/:userId')
   @ApiOperation({ summary: 'Delete friend request' })
   @ApiBearerAuth()
