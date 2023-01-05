@@ -78,6 +78,9 @@ export class FriendService {
     });
     // Add friend
     await this.friendRepository.addFriends(_id, userId);
+
+    // tạo conversation //
+
     return result;
   }
 }

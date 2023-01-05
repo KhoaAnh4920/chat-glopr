@@ -13,6 +13,8 @@ import { MorganModule, MorganInterceptor } from 'nest-morgan';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GatewayModule } from './gateway/gateway.module';
 import { FriendModule } from './friend/friend.module';
+import { ConversationModule } from './conversation/conversation.module';
+import { MessagesModule } from './messages/messages.module';
 @Module({
   imports: [
     MorganModule,
@@ -35,6 +37,8 @@ import { FriendModule } from './friend/friend.module';
     UploadModule,
     GatewayModule,
     FriendModule,
+    ConversationModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [
