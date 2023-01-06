@@ -7,7 +7,7 @@ export type ConversationDocument = Conversation & Document;
 export class Conversation {
   _id: Types.ObjectId;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   name: string;
 
   @Prop({ default: '' })

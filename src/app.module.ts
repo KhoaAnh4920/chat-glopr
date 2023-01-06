@@ -15,6 +15,7 @@ import { GatewayModule } from './gateway/gateway.module';
 import { FriendModule } from './friend/friend.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessagesModule } from './messages/messages.module';
+import { ParticipantsModule } from './participants/participants.module';
 @Module({
   imports: [
     MorganModule,
@@ -39,6 +40,7 @@ import { MessagesModule } from './messages/messages.module';
     FriendModule,
     ConversationModule,
     MessagesModule,
+    ParticipantsModule,
   ],
   controllers: [AppController],
   providers: [

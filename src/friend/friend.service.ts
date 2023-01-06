@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { ConversationService } from 'src/conversation/conversation.service';
 import { MessagingGateway } from 'src/gateway/gateway';
+import { CacheRepository } from 'src/shared/cache/cache.repository';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { UsersService } from 'src/users/users.service';
 import { typeRequest } from './friend.enum';
 import { FriendRepository } from './friend.repository';
-import { IDeleteFriendRequestViewReq } from './friend.type';
+import { IDeleteFriendRequestViewReq, IFriendList } from './friend.type';
 
 @Injectable()
 export class FriendService {
@@ -12,6 +14,8 @@ export class FriendService {
     private readonly friendRepository: FriendRepository,
     private readonly usersService: UsersService,
     private readonly messagingGateway: MessagingGateway,
+    private readonly conversationService: ConversationService,
+    private readonly cacheRepository: CacheRepository,
   ) {}
 
   async sendFriendInvite(_id, userId): Promise<boolean> {
@@ -57,13 +61,36 @@ export class FriendService {
     return res;
   }
 
-  async getListFriendRequest(userId: string): Promise<any> {
+  async getListInvitesWasSend(userId: string): Promise<any> {
     const user = await this.usersService.findOne(userId);
     if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
-    return this.friendRepository.getListFriendRequest(userId);
+    return this.friendRepository.getListInvitesWasSend(userId);
   }
 
-  async acceptFriendRequest(_id, userId): Promise<boolean> {
+  async getListInvites(userId: string): Promise<any> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+    return this.friendRepository.getListInvites(userId);
+  }
+  async getListFriends(name: string, userId: string): Promise<IFriendList[]> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+    const friends = await this.friendRepository.getListFriends(name, userId);
+    const friendsTempt = await Promise.all(
+      friends.map(async (item) => {
+        const obj = <any>{ ...item };
+        const cachedUser = await this.cacheRepository.getSocketUser(item._id);
+        if (cachedUser) {
+          obj.isOnline = cachedUser.isOnline;
+          obj.lastLogin = cachedUser.lastLogin;
+        }
+        return obj;
+      }),
+    );
+    return friendsTempt;
+  }
+
+  async acceptFriendRequest(_id, userId): Promise<any> {
     // check có lời mời này không
     if (!(await this.existsByIds(_id, userId, typeRequest.FRIEND_REQUEST)))
       throw new AppError(ERROR_CODE.NOT_FOUND_REQUEST);
@@ -72,7 +99,7 @@ export class FriendService {
       throw new AppError(ERROR_CODE.FRIEND_EXISTS);
 
     // xóa lời mời
-    const result = await this.friendRepository.deleteFriendRequest({
+    await this.friendRepository.deleteFriendRequest({
       _id,
       userId,
     });
@@ -80,7 +107,30 @@ export class FriendService {
     await this.friendRepository.addFriends(_id, userId);
 
     // tạo conversation //
+    const result =
+      await this.conversationService.createIndividualConversationWhenWasFriend(
+        _id,
+        userId,
+      );
 
+    // Fire socket //
+    // const { conversationId, isExists, message } = result;
+    // const { name, avatar } = await this.cacheRepository.getSocketUser(_id);
+    // this.messagingGateway.server
+    //   .to(userId + '')
+    //   .emit('accept-friend', { _id, name, avatar });
+    // if (isExists)
+    //   this.messagingGateway.server
+    //     .to(conversationId + '')
+    //     .emit('new-message', conversationId, message);
+    // else {
+    //   this.messagingGateway.server
+    //     .to(_id + '')
+    //     .emit('create-individual-conversation-when-was-friend', conversationId);
+    //   this.messagingGateway.server
+    //     .to(userId + '')
+    //     .emit('create-individual-conversation-when-was-friend', conversationId);
+    // }
     return result;
   }
 }

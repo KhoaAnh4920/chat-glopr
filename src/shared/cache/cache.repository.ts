@@ -14,7 +14,7 @@ export class CacheRepository {
     await this.redisClient.set(key, JSON.stringify(value));
   }
 
-  public async getSocketUser(key): Promise<JSON> {
+  public async getSocketUser(key): Promise<any> {
     const data = await this.redisClient.get(key);
     return JSON.parse(data);
   }

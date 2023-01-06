@@ -1,7 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AppError, ERROR_CODE } from 'src/shared/error';
-import { FriendDocument } from 'src/_schemas/friend.schema';
+import { Friend, FriendDocument } from 'src/_schemas/friend.schema';
 import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
 import {
   FriendModel,
@@ -66,7 +66,7 @@ export class FriendRepository {
     return true;
   }
 
-  async getListFriendRequest(_id: string): Promise<any> {
+  async getListInvitesWasSend(_id: string): Promise<any> {
     const users = await this.friendRequestModel.aggregate([
       { $match: { senderId: ObjectId(_id) } },
       { $project: { _id: 0, receiverId: 1 } },
@@ -89,7 +89,74 @@ export class FriendRepository {
         },
       },
     ]);
-    console.log('users: ', users);
+    return users;
+  }
+
+  async getListInvites(_id: string): Promise<any> {
+    const users = await this.friendRequestModel.aggregate([
+      { $match: { receiverId: ObjectId(_id) } },
+      { $project: { _id: 0, senderId: 1 } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'senderId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      { $replaceWith: '$user' },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          userName: 1,
+          avatar: 1,
+          avatarColor: 1,
+        },
+      },
+    ]);
+    return users;
+  }
+
+  async getListFriends(name: string, _id: string): Promise<Friend[]> {
+    const users = await this.friendModel.aggregate([
+      { $project: { _id: 0, userIds: 1 } },
+      {
+        $match: {
+          userIds: { $in: [ObjectId(_id)] },
+        },
+      },
+      { $unwind: '$userIds' },
+      {
+        $match: {
+          userIds: { $ne: ObjectId(_id) },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userIds',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      { $replaceWith: '$user' },
+      {
+        $match: {
+          fullName: { $regex: name, $options: 'i' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          userName: 1,
+          avatar: 1,
+        },
+      },
+    ]);
     return users;
   }
 }

@@ -35,7 +35,7 @@ export class RequestSendOTPDto {
   @ApiProperty({
     type: String,
     enum: TypeSender,
-    example: 'SMS',
+    example: 'EMAIL | SMS',
     description: 'Type Send',
   })
   @IsEnum(TypeSender)

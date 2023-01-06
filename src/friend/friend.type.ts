@@ -5,6 +5,14 @@ export interface IFriendRequestModel {
   readonly receiverId: Types.ObjectId;
 }
 
+export interface IFriendList {
+  readonly _id: Types.ObjectId;
+  readonly userName: string;
+  readonly avatar?: string;
+  readonly isOnline?: boolean;
+  readonly lastLogin?: Date;
+}
+
 export interface IFriendModel {
   readonly userIds: Types.ObjectId[];
 }

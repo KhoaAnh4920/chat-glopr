@@ -7,7 +7,10 @@ import { AppError, ERROR_CODE } from '../shared/error';
 import { OTP_COUNT } from './otp.constant';
 // import { OTP_COUNT } from './otp.constant';
 import { ContentRequestOTP } from './otp.enum';
-import { IValidateOTPViewReq } from './otp.type';
+import {
+  IValidateEmailOrPhoneOTPViewReq,
+  IValidateOTPViewReq,
+} from './otp.type';
 
 @Injectable()
 export class OtpService {
@@ -66,19 +69,24 @@ export class OtpService {
     return otp;
   }
 
-  public async validateOTP(payload: IValidateOTPViewReq): Promise<boolean> {
-    const key = `otp_${payload.userIdentity}_${payload.context}`;
-    console.log('key: ', key);
-    const requestObject = await this.cacheRepository.hgetall(key);
+  public async validateOTP(
+    payload: IValidateEmailOrPhoneOTPViewReq,
+  ): Promise<boolean> {
+    const keyPhone = `otp_${payload.userPhone}_${payload.context}`;
+    const keyEmail = `otp_${payload.userEmail}_${payload.context}`;
+    const tempObject = await this.cacheRepository.hgetall(keyPhone);
+    const requestObject =
+      Object.keys(tempObject).length !== 0
+        ? tempObject
+        : await this.cacheRepository.hgetall(keyEmail);
     if (
       requestObject &&
       requestObject['otp'] &&
       requestObject['otp'] === payload.otpCode
     ) {
-      await this.cacheRepository.del(key);
+      await this.cacheRepository.del(keyPhone);
       return true;
     }
-
     throw new AppError(ERROR_CODE.INVALID_OTP);
   }
 

@@ -28,6 +28,7 @@ enum ERROR_CODE {
   FRIEND_EXISTS = 'FRIEND_EXISTS',
   INVITE_EXISTS = 'INVITE_EXISTS',
   NOT_FOUND_REQUEST = 'NOT_FOUND_REQUEST',
+  NOT_FOUND_MESSAGE = 'NOT_FOUND_MESSAGE',
 }
 
 const ErrorList = {
@@ -115,6 +116,10 @@ const ErrorList = {
   [ERROR_CODE.NOT_FOUND_REQUEST]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Friend request not found',
+  },
+  [ERROR_CODE.NOT_FOUND_MESSAGE]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Message not found',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

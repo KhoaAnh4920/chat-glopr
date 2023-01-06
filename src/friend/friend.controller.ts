@@ -29,7 +29,7 @@ import { ResponseMessage } from 'src/shared/response';
 export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 
-  @ApiTags('friend')
+  @ApiTags('Friend')
   @Post('/invites')
   @ApiOperation({ summary: 'Send friend request' })
   @ApiBearerAuth()
@@ -57,7 +57,7 @@ export class FriendController {
     return res.status(HttpStatus.OK).send(singleRes);
   }
 
-  @ApiTags('friend')
+  @ApiTags('Friend')
   @Post('')
   @ApiOperation({ summary: 'Accept friend request' })
   @ApiBearerAuth()
@@ -71,21 +71,21 @@ export class FriendController {
     @Res() res: Response,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
-    await this.friendService.acceptFriendRequest(
+    const result = await this.friendService.acceptFriendRequest(
       currentUser.userId,
       payload.userId,
     );
 
-    const singleRes: IEmptyDataRes = {
+    const singleRes: any = {
       success: true,
       statusCode: 201,
       message: ResponseMessage.CREATE_SUCCESS,
-      data: [],
+      data: result,
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }
 
-  @ApiTags('friend')
+  @ApiTags('Friend')
   @Delete('/invites/:userId')
   @ApiOperation({ summary: 'Delete friend request' })
   @ApiBearerAuth()
@@ -114,22 +114,73 @@ export class FriendController {
     return res.status(HttpStatus.OK).send(singleRes);
   }
 
-  @ApiTags('friend')
-  @Get('/invites/')
-  @ApiOperation({ summary: 'Get friend request' })
+  @ApiTags('Friend')
+  @Get('/invites/me')
+  @ApiOperation({ summary: 'The list of friend requests sent by yourself' })
   @ApiBearerAuth()
   @SetScopes('user.friend.request')
   @ApiOkResponse({
     status: HttpStatus.OK,
-    description: 'Get friend request',
+    description: 'The list of friend requests sent by yourself',
   })
-  public async getListFriendRequest(
+  public async getListInvitesWasSend(
     @Res() res: Response,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
-    const users = await this.friendService.getListFriendRequest(
+    const users = await this.friendService.getListInvitesWasSend(
       currentUser.userId,
     );
+
+    const singleRes = {
+      success: true,
+      statusCode: 201,
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
+      data: users,
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('Friend')
+  @Get('/invites')
+  @ApiOperation({ summary: 'My friend request list' })
+  @ApiBearerAuth()
+  @SetScopes('user.friend.request')
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'My friend request list',
+  })
+  public async getListFriendInvites(
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    const users = await this.friendService.getListInvites(currentUser.userId);
+
+    const singleRes = {
+      success: true,
+      statusCode: 201,
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
+      data: users,
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+  @ApiTags('Friend')
+  @Get('')
+  @ApiOperation({ summary: 'Get list friend' })
+  @ApiBearerAuth()
+  @SetScopes('user.friend.get')
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Get list friend',
+  })
+  public async getListFriends(
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    const users = await this.friendService.getListFriends(
+      '',
+      currentUser.userId,
+    );
+    console.log('user: ', users);
 
     const singleRes = {
       success: true,

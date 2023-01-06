@@ -7,8 +7,8 @@ export type MessageDocument = Message & Document;
 export class Message {
   _id: Types.ObjectId;
 
-  @Prop({ ref: 'User', type: [SchemaTypes.ObjectId], required: true })
-  userIds: ObjectId;
+  @Prop({ ref: 'User', type: SchemaTypes.ObjectId, required: true })
+  userId: ObjectId;
 
   @Prop({ required: true })
   content: string;
@@ -71,10 +71,10 @@ export class Message {
   @Prop({ default: 0 })
   isDeleted: boolean;
 
-  @Prop({ ref: 'Conversation', type: SchemaTypes.ObjectId, required: true })
+  @Prop({ ref: 'Conversation', type: SchemaTypes.ObjectId, required: false })
   conversationId: ObjectId;
 
-  @Prop({ ref: 'Channel', type: SchemaTypes.ObjectId, required: true })
+  @Prop({ ref: 'Channel', type: SchemaTypes.ObjectId, required: false })
   channelId: ObjectId;
 }
 

@@ -10,6 +10,7 @@ import {
   FriendRequestSchema,
 } from 'src/_schemas/friendRequest.schema';
 import { FriendRepository } from './friend.repository';
+import { ConversationModule } from 'src/conversation/conversation.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FriendRepository } from './friend.repository';
     ]),
     UsersModule,
     GatewayModule,
+    ConversationModule,
   ],
   controllers: [FriendController],
   providers: [FriendService, FriendRepository],

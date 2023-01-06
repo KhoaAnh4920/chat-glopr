@@ -45,7 +45,7 @@ export class UsersController {
   public async requestSendOTP(
     @Body() payload: RequestSendOTPDto,
     @Res() res: Response,
-  ): Promise<any> {
+  ) {
     const otpCode = await this.usersService.sendOTP({
       context: payload.context,
       otpMethod: payload.method,
