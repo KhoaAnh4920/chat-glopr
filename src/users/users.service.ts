@@ -23,6 +23,16 @@ export class UsersService {
     return this.usersRepository.findOne(indentity);
   }
 
+  public async checkUserExist(
+    email: string,
+    phoneNumber: string,
+  ): Promise<boolean> {
+    return !!(await this.usersRepository.findUserWithEmailOrPhone(
+      email,
+      phoneNumber,
+    ));
+  }
+
   async createOne(user): Promise<any> {
     const createOne = await this.usersRepository.createOne(user);
     return createOne;
@@ -49,11 +59,11 @@ export class UsersService {
       OTP_LENGTH,
       format,
     );
-    // if (otpMethod === TypeSender.EMAIL) {
-    //   const checkEmail = StringUtils.validateEmail(userIdentity);
-    //   if (!checkEmail) throw new AppError(ERROR_CODE.EMAIL_INVALID);
-    //   await this.mailService.sendUserOtp(userIdentity, otpCode);
-    // }
+    if (otpMethod === TypeSender.EMAIL) {
+      const checkEmail = StringUtils.validateEmail(userIdentity);
+      if (!checkEmail) throw new AppError(ERROR_CODE.EMAIL_INVALID);
+      await this.mailService.sendUserOtp(userIdentity, otpCode);
+    }
     if (otpMethod === TypeSender.SMS) {
       console.log('Nothing');
       // Send sms otp //
@@ -86,6 +96,6 @@ export class UsersService {
       payload,
     );
     updatedUser.password = undefined;
-    return updatedUser as IUser;
+    return updatedUser;
   }
 }

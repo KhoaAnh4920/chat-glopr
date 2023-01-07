@@ -26,7 +26,7 @@ import { Response } from 'express';
 import { ValidateOTPViewReq } from 'src/otp/otp.type';
 import { OtpService } from '../otp/otp.service';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
-import { ISingleRes } from 'src/shared/response';
+import { ISingleRes, ResponseMessage } from 'src/shared/response';
 import { IUserInfo, UpdateUserViewReq, IUser } from './user.type';
 @Controller('users')
 export class UsersController {
@@ -45,7 +45,7 @@ export class UsersController {
   public async requestSendOTP(
     @Body() payload: RequestSendOTPDto,
     @Res() res: Response,
-  ): Promise<any> {
+  ) {
     const otpCode = await this.usersService.sendOTP({
       context: payload.context,
       otpMethod: payload.method,
@@ -53,8 +53,10 @@ export class UsersController {
       format: payload.format,
     });
 
-    const singleRes = {
+    const singleRes: ISingleRes<{ otpCode: string }> = {
       success: true,
+      statusCode: 200,
+      message: ResponseMessage.CREATE_SUCCESS,
       data: { otpCode },
     };
     return res.status(HttpStatus.OK).send(singleRes);
@@ -75,8 +77,10 @@ export class UsersController {
     );
     const result = await this.otpService.validateOTPVMobile(modelReq);
 
-    const singleRes = {
+    const singleRes: ISingleRes<{ result: boolean }> = {
       success: true,
+      statusCode: 200,
+      message: ResponseMessage.VERIFY_SUCCEEDED,
       data: { result },
     };
     return res.status(HttpStatus.OK).send(singleRes);
@@ -96,7 +100,7 @@ export class UsersController {
     const resBody: ISingleRes<IUserInfo> = {
       success: true,
       statusCode: 200,
-      message: 'GET_DATA_SUCCEEDED',
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
       data: user,
     };
 

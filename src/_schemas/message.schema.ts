@@ -1,13 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { SchemaTypes } from 'mongoose';
-import { Document, ObjectId } from 'mongoose';
+import { Document, ObjectId, SchemaTypes, Types } from 'mongoose';
 
 export type MessageDocument = Message & Document;
 
 @Schema({ versionKey: false, timestamps: true })
 export class Message {
-  @Prop({ ref: 'User', type: [SchemaTypes.ObjectId], required: true })
-  userIds: ObjectId;
+  _id: Types.ObjectId;
+
+  @Prop({ ref: 'User', type: SchemaTypes.ObjectId, required: true })
+  userId: ObjectId;
 
   @Prop({ required: true })
   content: string;
@@ -70,10 +71,10 @@ export class Message {
   @Prop({ default: 0 })
   isDeleted: boolean;
 
-  @Prop({ ref: 'Conversation', type: SchemaTypes.ObjectId, required: true })
+  @Prop({ ref: 'Conversation', type: SchemaTypes.ObjectId, required: false })
   conversationId: ObjectId;
 
-  @Prop({ ref: 'Channel', type: SchemaTypes.ObjectId, required: true })
+  @Prop({ ref: 'Channel', type: SchemaTypes.ObjectId, required: false })
   channelId: ObjectId;
 }
 

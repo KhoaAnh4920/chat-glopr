@@ -2,12 +2,32 @@ import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
+const util = require('util');
 
 @Injectable()
 export class CacheRepository {
   constructor(
     private readonly redisClient: Redis, // protected config: any,
   ) {}
+
+  public async setSocketUser(key, value): Promise<void> {
+    await this.redisClient.set(key, JSON.stringify(value));
+  }
+
+  public async getSocketUser(key): Promise<any> {
+    const data = await this.redisClient.get(key);
+    return JSON.parse(data);
+  }
+
+  public async handleJoin(userId): Promise<void> {
+    const cachedUser = await this.getSocketUser(userId);
+    if (cachedUser)
+      await this.setSocketUser(userId, {
+        ...cachedUser,
+        isOnline: true,
+        lastLogin: null,
+      });
+  }
 
   public async del(key: string): Promise<number> {
     return this.redisClient.del(key);

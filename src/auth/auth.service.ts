@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ConfigService } from '@nestjs/config';
-import { ValidateOTPViewReq } from '../otp/otp.type';
+import { ValidateEmailOrPhoneOTPViewReq } from '../otp/otp.type';
 import { ContentRequestOTP } from '../otp/otp.enum';
 import { OtpService } from '../otp/otp.service';
 import { AppError, ERROR_CODE } from '../shared/error';
@@ -41,17 +41,16 @@ export class AuthService {
   }
 
   async register(registerUserDto: RegisterUserDto) {
-    const user = await this.usersService.findOne(registerUserDto.email);
-    if (user) {
-      throw new HttpException(
-        'User with this email exist',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const user = await this.usersService.checkUserExist(
+      registerUserDto.email,
+      registerUserDto.phoneNumber,
+    );
+    if (user) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
     // console.log('otpCode: ', registerUserDto.otpCode);
-    const payload = new ValidateOTPViewReq(
+    const payload = new ValidateEmailOrPhoneOTPViewReq(
       ContentRequestOTP.CREATE_USERS,
       registerUserDto.phoneNumber,
+      registerUserDto.email,
       registerUserDto.otpCode,
     );
     await this.otpService.validateOTP(payload);
