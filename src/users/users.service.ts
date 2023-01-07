@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { UserDocument } from 'src/_schemas/user.schema';
+import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ISendOtpViewReq, IUser, UpdateUserModel } from './user.type';
+import {
+  IResetPasswordViewReq,
+  ISendOtpViewReq,
+  IUser,
+  UpdateUserModel,
+  UpdateUserViewReq,
+} from './user.type';
 import { UsersRepository } from './users.repository';
 import { ContentRequestOTP, TypeSender } from '../otp/otp.enum';
 import { AppError, ERROR_CODE } from '../shared/error';
@@ -11,6 +17,8 @@ import { MailService } from '../mail/mail.service';
 import { StringUtils } from '../shared/common/stringUtils';
 import { IUpdateUserViewReq } from '../users/user.type';
 import { UserUtil } from './user.util';
+import { Types } from 'mongoose';
+import { ValidateOTPViewReq } from 'src/otp/otp.type';
 @Injectable()
 export class UsersService {
   constructor(
@@ -19,7 +27,7 @@ export class UsersService {
     private readonly mailService: MailService,
   ) {}
 
-  async findOne(indentity): Promise<IUser> {
+  async findOne(indentity: string): Promise<IUser> {
     return this.usersRepository.findOne(indentity);
   }
 
@@ -33,7 +41,7 @@ export class UsersService {
     ));
   }
 
-  async createOne(user): Promise<any> {
+  async createOne(user): Promise<User> {
     const createOne = await this.usersRepository.createOne(user);
     return createOne;
   }
@@ -72,7 +80,7 @@ export class UsersService {
     return otpCode;
   }
 
-  public async updateUser(viewReq: IUpdateUserViewReq): Promise<IUser> {
+  public async updateUser(viewReq: IUpdateUserViewReq): Promise<UserDocument> {
     const user = await this.findOne(viewReq.id);
     if (!user) {
       throw new AppError(ERROR_CODE.USER_NOT_FOUND);
@@ -96,6 +104,55 @@ export class UsersService {
       payload,
     );
     updatedUser.password = undefined;
+    updatedUser.refreshToken = undefined;
     return updatedUser;
+  }
+
+  public async resetPassword(viewReq: IResetPasswordViewReq): Promise<void> {
+    const payload = new ValidateOTPViewReq(
+      ContentRequestOTP.RESET_PASSWORD,
+      viewReq.userIdentity,
+      viewReq.otpToken,
+    );
+    await this.otpService.validateOTPVMobile(payload);
+
+    const user = await this.findOne(payload.userIdentity);
+
+    const newPassword = await UserUtil.hashPassword(viewReq.password);
+
+    const payloadUpdate = new UpdateUserModel(
+      user.id,
+      user.email,
+      user.phoneNumber,
+      user.fullName,
+      user.dob,
+      newPassword,
+      user.gender,
+    );
+    try {
+      await this.usersRepository.updateUser(payloadUpdate.id, payloadUpdate);
+      return;
+    } catch (error) {
+      throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+    }
+  }
+
+  public async getUserSummaryInfo(userName: string): Promise<UserDocument> {
+    const user = await this.usersRepository.getUserSummaryInfo(userName);
+    if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+    return user;
+  }
+
+  public async getUserByIdentity(key: string): Promise<IUser> {
+    const user = await this.usersRepository.findOne(key);
+    if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+    // user.password = undefined;
+    return user;
+  }
+
+  public async getlistUser(key: string): Promise<UserDocument[]> {
+    const user = await this.usersRepository.getlistUser(key);
+    if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+    return user;
   }
 }

@@ -5,13 +5,13 @@ export type FriendRequestDocument = FriendRequest & Document;
 
 @Schema({ versionKey: false, timestamps: true })
 export class FriendRequest {
-  _id: Types.ObjectId;
+  _id: string;
 
   @Prop({ ref: 'User', type: SchemaTypes.ObjectId })
-  senderId: ObjectId;
+  senderId: string;
 
   @Prop({ ref: 'User', type: SchemaTypes.ObjectId })
-  receiverId: ObjectId;
+  receiverId: string;
 }
 
 export const FriendRequestSchema = SchemaFactory.createForClass(FriendRequest);

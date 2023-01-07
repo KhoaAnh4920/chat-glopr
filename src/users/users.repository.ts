@@ -1,5 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { identity } from 'rxjs';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from './user.type';
@@ -11,26 +12,39 @@ export class UsersRepository {
     private userModel: Model<UserDocument>,
   ) {}
 
-  async findOne(indentity): Promise<IUser | undefined> {
+  async findOne(indentity: string): Promise<IUser | undefined> {
     const idParam = ObjectId.isValid(indentity);
-    let findOne = null;
+    let user = null;
     if (idParam) {
-      findOne = await this.userModel.findOne({
-        _id: indentity,
-      });
+      user = await this.userModel.findOne(
+        {
+          _id: indentity,
+        },
+        { password: 0, refreshToken: 0 },
+      );
     } else {
-      findOne = await this.userModel.findOne({
-        $or: [{ email: indentity }, { phoneNumber: indentity }],
-      });
+      user = await this.userModel.findOne(
+        {
+          $or: [
+            { email: indentity },
+            { phoneNumber: indentity },
+            { userName: indentity },
+          ],
+        },
+        { password: 0, refreshToken: 0 },
+      );
     }
-    return findOne;
+    return user;
   }
 
   async createOne(user): Promise<User> {
     const createOne = await this.userModel.create(user);
     return createOne;
   }
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+  async updateUser(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserDocument> {
     return this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
       .exec();
@@ -43,5 +57,28 @@ export class UsersRepository {
     return this.userModel.findOne({
       $or: [{ email: email }, { phoneNumber: phoneNumber }],
     });
+  }
+
+  public async getUserSummaryInfo(
+    userName: string,
+  ): Promise<UserDocument | undefined> {
+    return this.userModel.findOne(
+      { userName },
+      '-_id userName fullName avatar isActived',
+    );
+  }
+
+  public async getlistUser(key: string): Promise<UserDocument[]> {
+    return this.userModel.find(
+      {
+        $or: [
+          { fullName: { $regex: key, $options: 'i' } },
+          { userName: { $regex: key, $options: 'i' } },
+          { phoneNumber: { $regex: key, $options: 'i' } },
+          // ...
+        ],
+      },
+      '-_id email userName fullName avatar dob gender isActived',
+    );
   }
 }

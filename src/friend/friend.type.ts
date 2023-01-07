@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
 
 export interface IFriendRequestModel {
-  readonly senderId: Types.ObjectId;
-  readonly receiverId: Types.ObjectId;
+  readonly senderId: string;
+  readonly receiverId: string;
 }
 
 export interface IFriendList {
-  readonly _id: Types.ObjectId;
+  readonly _id: string;
   readonly userName: string;
   readonly avatar?: string;
   readonly isOnline?: boolean;
@@ -14,18 +14,15 @@ export interface IFriendList {
 }
 
 export interface IFriendModel {
-  readonly userIds: Types.ObjectId[];
+  readonly userIds: string[];
 }
 
 export class FriendRequestModel implements IFriendRequestModel {
-  constructor(
-    readonly senderId: Types.ObjectId,
-    readonly receiverId: Types.ObjectId,
-  ) {}
+  constructor(readonly senderId: string, readonly receiverId: string) {}
 }
 
 export class FriendModel implements IFriendModel {
-  constructor(readonly userIds: Types.ObjectId[]) {}
+  constructor(readonly userIds: string[]) {}
 }
 
 export interface IDeleteFriendRequestViewReq {

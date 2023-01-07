@@ -20,6 +20,7 @@ import {
   IRefreshTokenReq,
 } from './auth.type';
 import { IUpdateUserViewReq } from '../users/user.type';
+import { Types } from 'mongoose';
 @Injectable()
 export class AuthService {
   constructor(
@@ -68,8 +69,8 @@ export class AuthService {
         email: newUser.email,
         phoneNumber: newUser.phoneNumber,
         fullName: newUser.fullName,
-        createdAt: newUser.createdAt,
-        updatedAt: newUser.updatedAt,
+        userName: newUser.userName,
+        gender: newUser.gender,
       };
     }
   }

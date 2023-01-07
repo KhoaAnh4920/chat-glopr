@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { ContentRequestOTP, TypeSender } from '../otp/otp.enum';
 import { RandomTypes } from '../shared/common/stringUtils';
 import { UserGender } from '../users/users.enum';
@@ -76,5 +77,18 @@ export class UpdateUserModel implements IUpdateUserModel {
     readonly password: string,
     readonly avatar?: string,
     readonly gender?: UserGender,
+  ) {}
+}
+
+export interface IResetPasswordViewReq {
+  readonly userIdentity: string;
+  readonly otpToken: string;
+  readonly password: string;
+}
+export class ResetPasswordViewReq implements IResetPasswordViewReq {
+  constructor(
+    readonly userIdentity: string,
+    readonly otpToken: string,
+    readonly password: string,
   ) {}
 }

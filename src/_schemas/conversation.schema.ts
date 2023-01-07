@@ -5,7 +5,7 @@ export type ConversationDocument = Conversation & Document;
 
 @Schema({ versionKey: false, timestamps: true })
 export class Conversation {
-  _id: Types.ObjectId;
+  _id: string;
 
   @Prop({ required: false })
   name: string;
@@ -14,16 +14,16 @@ export class Conversation {
   image: string;
 
   @Prop({ ref: 'User', type: SchemaTypes.ObjectId })
-  creatorid: ObjectId;
+  creatorid: string;
 
   @Prop({ ref: 'Message', type: SchemaTypes.ObjectId })
-  lastMessageId: ObjectId;
+  lastMessageId: string;
 
   @Prop({ ref: 'Message', type: [SchemaTypes.ObjectId], default: [] })
-  pinMessageIds: ObjectId[];
+  pinMessageIds: string[];
 
   @Prop({ ref: 'User', type: [SchemaTypes.ObjectId] })
-  members: ObjectId[];
+  members: string[];
 
   @Prop()
   type: boolean;

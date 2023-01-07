@@ -20,8 +20,8 @@ export class ConversationRepository {
   }
 
   public async existsIndividualConversation(
-    userId1: ObjectId,
-    userId2: ObjectId,
+    userId1: string,
+    userId2: string,
   ): Promise<Conversation | undefined> {
     return this.conversationModel.findOne({
       type: false,
@@ -30,14 +30,17 @@ export class ConversationRepository {
   }
 
   public async createConvesation(
-    members: ObjectId[],
+    members: string[],
     type: boolean,
   ): Promise<Conversation> {
     const payload = new ConversationModel(members, type);
     return await this.conversationModel.create(payload);
   }
 
-  async updateConversation(id, updateConversationDto): Promise<any> {
+  async updateConversation(
+    id,
+    updateConversationDto,
+  ): Promise<ConversationDocument> {
     return this.conversationModel
       .findByIdAndUpdate(id, updateConversationDto, { new: true })
       .exec();

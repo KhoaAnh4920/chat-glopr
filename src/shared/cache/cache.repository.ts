@@ -10,19 +10,19 @@ export class CacheRepository {
     private readonly redisClient: Redis, // protected config: any,
   ) {}
 
-  public async setSocketUser(key, value): Promise<void> {
+  public async setUserCache(key, value): Promise<void> {
     await this.redisClient.set(key, JSON.stringify(value));
   }
 
-  public async getSocketUser(key): Promise<any> {
+  public async getUserInCache(key) {
     const data = await this.redisClient.get(key);
     return JSON.parse(data);
   }
 
   public async handleJoin(userId): Promise<void> {
-    const cachedUser = await this.getSocketUser(userId);
+    const cachedUser = await this.getUserInCache(userId);
     if (cachedUser)
-      await this.setSocketUser(userId, {
+      await this.setUserCache(userId, {
         ...cachedUser,
         isOnline: true,
         lastLogin: null,
@@ -81,7 +81,7 @@ export class CacheRepository {
     }
   }
 
-  public async hgetall(key: string, beDeleted?: boolean): Promise<any> {
+  public async hgetall(key: string, beDeleted?: boolean) {
     const data = await this.redisClient.hgetall(key);
     if (beDeleted) {
       await this.del(key);

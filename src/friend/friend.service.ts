@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { MessagingGateway } from 'src/gateway/gateway';
 import { CacheRepository } from 'src/shared/cache/cache.repository';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { UsersService } from 'src/users/users.service';
+import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
 import { typeRequest } from './friend.enum';
 import { FriendRepository } from './friend.repository';
 import { IDeleteFriendRequestViewReq, IFriendList } from './friend.type';
@@ -18,7 +20,7 @@ export class FriendService {
     private readonly cacheRepository: CacheRepository,
   ) {}
 
-  async sendFriendInvite(_id, userId): Promise<boolean> {
+  async sendFriendInvite(_id: string, userId: string): Promise<boolean> {
     const receiverUser = await this.usersService.findOne(userId);
     const { userName, avatar } = await this.usersService.findOne(_id);
     if (!receiverUser) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
@@ -43,7 +45,11 @@ export class FriendService {
     return res;
   }
 
-  async existsByIds(userId1, userId2, type): Promise<boolean> {
+  async existsByIds(
+    userId1: string,
+    userId2: string,
+    type: typeRequest,
+  ): Promise<boolean> {
     return this.friendRepository.existsByIds(userId1, userId2, type);
   }
 
@@ -61,13 +67,15 @@ export class FriendService {
     return res;
   }
 
-  async getListInvitesWasSend(userId: string): Promise<any> {
+  async getListInvitesWasSend(
+    userId: string,
+  ): Promise<FriendRequestDocument[]> {
     const user = await this.usersService.findOne(userId);
     if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
     return this.friendRepository.getListInvitesWasSend(userId);
   }
 
-  async getListInvites(userId: string): Promise<any> {
+  async getListInvites(userId: string): Promise<FriendRequestDocument[]> {
     const user = await this.usersService.findOne(userId);
     if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
     return this.friendRepository.getListInvites(userId);
@@ -79,7 +87,7 @@ export class FriendService {
     const friendsTempt = await Promise.all(
       friends.map(async (item) => {
         const obj = <any>{ ...item };
-        const cachedUser = await this.cacheRepository.getSocketUser(item._id);
+        const cachedUser = await this.cacheRepository.getUserInCache(item._id);
         if (cachedUser) {
           obj.isOnline = cachedUser.isOnline;
           obj.lastLogin = cachedUser.lastLogin;
@@ -90,9 +98,9 @@ export class FriendService {
     return friendsTempt;
   }
 
-  async acceptFriendRequest(_id, userId): Promise<any> {
+  async acceptFriendRequest(_id: string, userId: string): Promise<any> {
     // check có lời mời này không
-    if (!(await this.existsByIds(_id, userId, typeRequest.FRIEND_REQUEST)))
+    if (!(await this.existsByIds(userId, _id, typeRequest.FRIEND_REQUEST)))
       throw new AppError(ERROR_CODE.NOT_FOUND_REQUEST);
     // check đã là bạn bè
     if (await this.existsByIds(_id, userId, typeRequest.FRIEND))
@@ -115,7 +123,7 @@ export class FriendService {
 
     // Fire socket //
     // const { conversationId, isExists, message } = result;
-    // const { name, avatar } = await this.cacheRepository.getSocketUser(_id);
+    // const { name, avatar } = await this.cacheRepository.getUserInCache(_id);
     // this.messagingGateway.server
     //   .to(userId + '')
     //   .emit('accept-friend', { _id, name, avatar });

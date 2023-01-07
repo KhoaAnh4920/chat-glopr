@@ -44,7 +44,7 @@ export class MessagingGateway
 
   @SubscribeMessage('join')
   handleJoin(
-    @MessageBody() userId: Types.ObjectId,
+    @MessageBody() userId: string,
     @ConnectedSocket() client: Socket,
   ) {
     // add user to redis //

@@ -7,6 +7,7 @@ import {
   IsEmail,
   IsNotEmpty,
 } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class PayloadSendRequestDto {
   @ApiProperty({ required: true, example: '63b52af3ca78739b1c94eb52' })

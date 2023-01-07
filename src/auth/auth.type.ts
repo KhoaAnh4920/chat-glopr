@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { ICurrentUser } from '../shared/auth';
 export type IPayloadJWT = ICurrentUser;
 
@@ -13,12 +14,12 @@ export interface IChangePasswordViewReq {
 }
 
 export interface IUserCreated {
-  readonly _id: number;
+  readonly _id: string;
   readonly email: string;
   readonly phoneNumber: string;
   readonly fullName: string;
-  readonly createdAt: string;
-  readonly updatedAt: string;
+  readonly userName: string;
+  readonly gender: string;
   readonly avatar?: string;
   readonly isDelete?: boolean;
 }

@@ -5,13 +5,13 @@ export type ParticipantsDocument = Participants & Document;
 
 @Schema({ versionKey: false, timestamps: true })
 export class Participants {
-  _id: Types.ObjectId;
+  _id: string;
 
   @Prop({ ref: 'Conversation', type: SchemaTypes.ObjectId })
-  conversationId: ObjectId;
+  conversationId: string;
 
   @Prop({ ref: 'User', type: SchemaTypes.ObjectId })
-  userId: ObjectId;
+  userId: string;
 
   @Prop()
   name: string;
@@ -28,7 +28,7 @@ export class Participants {
     ],
     default: [],
   })
-  lastViewOfChannels: { channelId: ObjectId; lastView: Date }[];
+  lastViewOfChannels: { channelId: string; lastView: Date }[];
 
   @Prop({ default: true })
   isNotify: boolean;

@@ -5,22 +5,22 @@ export type MessageDocument = Message & Document;
 
 @Schema({ versionKey: false, timestamps: true })
 export class Message {
-  _id: Types.ObjectId;
+  _id: ObjectId;
 
   @Prop({ ref: 'User', type: SchemaTypes.ObjectId, required: true })
-  userId: ObjectId;
+  userId: string;
 
   @Prop({ required: true })
   content: string;
 
   @Prop({ ref: 'User', type: [SchemaTypes.ObjectId], default: [] })
-  tags: ObjectId[];
+  tags: string[];
 
   @Prop({ type: [SchemaTypes.ObjectId] })
-  replyMessageId: ObjectId;
+  replyMessageId: string;
 
   @Prop({ ref: 'User', type: [SchemaTypes.ObjectId], default: [] })
-  manipulatedUserIds: ObjectId[];
+  manipulatedUserIds: string[];
 
   @Prop({
     required: true,
@@ -47,7 +47,7 @@ export class Message {
     default: [],
   })
   reacts: {
-    userId: ObjectId;
+    userId: string;
     typeReaction: number;
   }[];
 
@@ -61,21 +61,21 @@ export class Message {
     require: false,
   })
   options: {
-    userIds: ObjectId[];
+    userIds: string[];
     name: string;
   }[];
 
   @Prop({ ref: 'User', type: [SchemaTypes.ObjectId], default: [] })
-  deletedUserIds: ObjectId[];
+  deletedUserIds: string[];
 
   @Prop({ default: 0 })
   isDeleted: boolean;
 
   @Prop({ ref: 'Conversation', type: SchemaTypes.ObjectId, required: false })
-  conversationId: ObjectId;
+  conversationId: string;
 
   @Prop({ ref: 'Channel', type: SchemaTypes.ObjectId, required: false })
-  channelId: ObjectId;
+  channelId: string;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

@@ -23,13 +23,15 @@ export class ConversationService {
     private readonly messagesService: MessagesService,
   ) {}
 
-  async findOne(indentity): Promise<IConversationModel> {
+  async findOne(
+    indentity: Types.ObjectId | string,
+  ): Promise<IConversationModel> {
     return this.conversationRepository.findOne(indentity);
   }
 
   public async createIndividualConversationWhenWasFriend(
-    userId1: ObjectId,
-    userId2: ObjectId,
+    userId1: string,
+    userId2: string,
   ) {
     const { _id, isExists } = await this.createIndividualConversation(
       userId1,
@@ -49,8 +51,8 @@ export class ConversationService {
   }
 
   public async createIndividualConversation(
-    userId1: ObjectId,
-    userId2: ObjectId,
+    userId1: string,
+    userId2: string,
   ): Promise<ICreateIndividual> {
     const { userName1, userName2, conversationId } =
       await this.validateIndividualConversation(userId1, userId2);
@@ -76,9 +78,9 @@ export class ConversationService {
   }
 
   public async checkIndividualConversation(
-    userId1: ObjectId,
-    userId2: ObjectId,
-  ): Promise<Types.ObjectId | undefined> {
+    userId1: string,
+    userId2: string,
+  ): Promise<string | undefined> {
     const conversation =
       await this.conversationRepository.existsIndividualConversation(
         userId1,
@@ -89,8 +91,8 @@ export class ConversationService {
   }
 
   public async validateIndividualConversation(
-    userId1: ObjectId,
-    userId2: ObjectId,
+    userId1: string,
+    userId2: string,
   ): Promise<IValidateIndividual> {
     const conversationId = await this.checkIndividualConversation(
       userId1,

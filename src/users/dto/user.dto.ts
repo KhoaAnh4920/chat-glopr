@@ -120,3 +120,24 @@ export class UpdateUserDto {
   @IsString()
   readonly avatar?: string;
 }
+
+export class PayloadGetSummaryUserDto {
+  @ApiProperty({ required: true, example: 'khoaanh4920' })
+  @IsDefined()
+  @IsString()
+  readonly userName?: string;
+}
+
+export class SearchUserDto {
+  @ApiProperty({ required: false, example: 'Phu Ngoc Thuy' })
+  @IsOptional()
+  @IsString()
+  readonly key?: string;
+}
+
+export class PayloadGetDetailUserDto {
+  @ApiProperty({ required: false, example: '63b52a80c9ab02b403f2da8e' })
+  @IsOptional()
+  @IsString()
+  readonly key?: string;
+}

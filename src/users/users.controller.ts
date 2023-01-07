@@ -18,7 +18,11 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import {
+  PayloadGetDetailUserDto,
+  PayloadGetSummaryUserDto,
   RequestSendOTPDto,
+  ResetPasswordOtpDto,
+  SearchUserDto,
   UpdateUserDto,
   ValidateOTPDto,
 } from './dto/user.dto';
@@ -27,7 +31,13 @@ import { ValidateOTPViewReq } from 'src/otp/otp.type';
 import { OtpService } from '../otp/otp.service';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 import { ISingleRes, ResponseMessage } from 'src/shared/response';
-import { IUserInfo, UpdateUserViewReq, IUser } from './user.type';
+import {
+  IUserInfo,
+  UpdateUserViewReq,
+  ResetPasswordViewReq,
+  IUser,
+} from './user.type';
+import { User, UserDocument } from 'src/_schemas/user.schema';
 @Controller('users')
 export class UsersController {
   constructor(
@@ -96,7 +106,6 @@ export class UsersController {
     @Res() res: Response,
   ) {
     const user = await this.usersService.findOne(currentUser.userId);
-    user.password = undefined;
     const resBody: ISingleRes<IUserInfo> = {
       success: true,
       statusCode: 200,
@@ -130,11 +139,92 @@ export class UsersController {
     const updatedCustomer = await this.usersService.updateUser(
       updateCustomerViewReq,
     );
-    const resBody: ISingleRes<IUser> = {
+    const resBody: ISingleRes<UserDocument> = {
       success: true,
       statusCode: 200,
       message: 'GET_DATA_SUCCEEDED',
       data: updatedCustomer,
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('users')
+  @Patch('retrive-password')
+  @ApiOperation({ summary: 'User reset password' })
+  @ApiOkResponse({ status: HttpStatus.OK, description: 'Reset password' })
+  public async resetPassword(@Body() resetPasswordDto: ResetPasswordOtpDto) {
+    const viewRequest = new ResetPasswordViewReq(
+      resetPasswordDto.identity,
+      resetPasswordDto.otpToken,
+      resetPasswordDto.password,
+    );
+    await this.usersService.resetPassword(viewRequest);
+    return { success: true };
+  }
+
+  @ApiTags('users')
+  @Get('/:userName')
+  @ApiOperation({ summary: 'Get a summary of information about user' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Get a summary of information about user',
+  })
+  public async getUserSummaryInfo(
+    @Param() params: PayloadGetSummaryUserDto,
+    @Res() res: Response,
+  ) {
+    const user = await this.usersService.getUserSummaryInfo(params.userName);
+    const resBody: ISingleRes<UserDocument> = {
+      success: true,
+      statusCode: 200,
+      message: 'GET_DATA_SUCCEEDED',
+      data: user,
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('users')
+  @Get('detail/:key')
+  @ApiOperation({ summary: 'Get detail user by id or username' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Get detail user by id or username',
+  })
+  public async getUserByIdentity(
+    @Param() params: PayloadGetDetailUserDto,
+    @Res() res: Response,
+  ) {
+    const user = await this.usersService.getUserByIdentity(params.key);
+    const resBody: ISingleRes<IUser> = {
+      success: true,
+      statusCode: 200,
+      message: 'GET_DATA_SUCCEEDED',
+      data: user,
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('users')
+  @Get()
+  @ApiOperation({ summary: 'Search user' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Get list user',
+  })
+  public async getlistUser(
+    @Query() query: SearchUserDto,
+    @Res() res: Response,
+  ) {
+    console.log('query: ', query);
+    const data = await this.usersService.getlistUser(query.key);
+    const resBody: ISingleRes<UserDocument[]> = {
+      success: true,
+      statusCode: 200,
+      message: 'GET_DATA_SUCCEEDED',
+      data: data,
     };
 
     return res.status(HttpStatus.OK).send(resBody);

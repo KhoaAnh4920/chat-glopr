@@ -5,10 +5,10 @@ export type FriendDocument = Friend & Document;
 
 @Schema({ versionKey: false, timestamps: true })
 export class Friend {
-  _id: Types.ObjectId;
+  _id: string;
 
   @Prop({ ref: 'User', type: [SchemaTypes.ObjectId] })
-  userIds: ObjectId[];
+  userIds: string[];
 }
 
 export const FriendSchema = SchemaFactory.createForClass(Friend);

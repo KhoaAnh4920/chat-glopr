@@ -1,8 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { Friend, FriendDocument } from 'src/_schemas/friend.schema';
 import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
+import { typeRequest } from './friend.enum';
 import {
   FriendModel,
   FriendRequestModel,
@@ -19,29 +20,38 @@ export class FriendRepository {
     private friendRequestModel: Model<FriendRequestDocument>,
   ) {}
 
-  async existsByIds(userId1, userId2, type): Promise<boolean> {
+  public async existsByIds(
+    userId1: string,
+    userId2: string,
+    type: typeRequest,
+  ): Promise<boolean> {
     let isExists = null;
-    if (type === 'FRIEND')
+
+    if (type === typeRequest.FRIEND) {
       isExists = await this.friendModel.findOne({
         userIds: { $all: [userId1, userId2] },
       });
-    else
+    } else {
       isExists = await this.friendRequestModel.findOne({
         senderId: userId1,
         receiverId: userId2,
       });
+    }
 
     if (isExists) return true;
     return false;
   }
 
-  async addFriends(userId1, userId2): Promise<boolean> {
+  public async addFriends(userId1: string, userId2: string): Promise<boolean> {
     const payload = new FriendModel([userId1, userId2]);
     await this.friendModel.create(payload);
     return true;
   }
 
-  async sendFriendInvite(userId1, userId2): Promise<boolean> {
+  public async sendFriendInvite(
+    userId1: string,
+    userId2: string,
+  ): Promise<boolean> {
     const payload = new FriendRequestModel(userId1, userId2);
     try {
       await this.friendRequestModel.create(payload);
@@ -52,7 +62,7 @@ export class FriendRepository {
     }
   }
 
-  async deleteFriendRequest(
+  public async deleteFriendRequest(
     viewReq: IDeleteFriendRequestViewReq,
   ): Promise<boolean> {
     const queryResult = await this.friendRequestModel.deleteOne({
@@ -66,7 +76,9 @@ export class FriendRepository {
     return true;
   }
 
-  async getListInvitesWasSend(_id: string): Promise<any> {
+  public async getListInvitesWasSend(
+    _id: string,
+  ): Promise<FriendRequestDocument[]> {
     const users = await this.friendRequestModel.aggregate([
       { $match: { senderId: ObjectId(_id) } },
       { $project: { _id: 0, receiverId: 1 } },
@@ -92,7 +104,7 @@ export class FriendRepository {
     return users;
   }
 
-  async getListInvites(_id: string): Promise<any> {
+  public async getListInvites(_id: string): Promise<FriendRequestDocument[]> {
     const users = await this.friendRequestModel.aggregate([
       { $match: { receiverId: ObjectId(_id) } },
       { $project: { _id: 0, senderId: 1 } },
@@ -112,14 +124,13 @@ export class FriendRepository {
           name: 1,
           userName: 1,
           avatar: 1,
-          avatarColor: 1,
         },
       },
     ]);
     return users;
   }
 
-  async getListFriends(name: string, _id: string): Promise<Friend[]> {
+  public async getListFriends(name: string, _id: string): Promise<Friend[]> {
     const users = await this.friendModel.aggregate([
       { $project: { _id: 0, userIds: 1 } },
       {

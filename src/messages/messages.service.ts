@@ -32,8 +32,6 @@ export class MessagesService {
 
     if (channelId) delete message.conversationId;
 
-    console.log('Check before add text: ', userId);
-
     const saveMessage = await this.messagesRepository.addText({
       userId,
       ...message,
