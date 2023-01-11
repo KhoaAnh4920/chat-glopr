@@ -29,7 +29,7 @@ export class MessagingGateway
   server: Server;
 
   afterInit(server: Server) {
-    console.log(server);
+    console.log('Init socket server');
     //Do stuffs
   }
 
@@ -43,11 +43,9 @@ export class MessagingGateway
   }
 
   @SubscribeMessage('join')
-  handleJoin(
-    @MessageBody() userId: string,
-    @ConnectedSocket() client: Socket,
-  ) {
+  handleJoin(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
     // add user to redis //
+    console.log('userId join: ', userId);
     client.join(userId.toString());
     this.cacheRepository.handleJoin(userId.toString());
   }

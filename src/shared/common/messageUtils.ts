@@ -1,5 +1,5 @@
-const messageUtils = {
-  convertMessageOfGroup: (message) => {
+export class messageUtils {
+  public static convertMessageOfGroup(message) {
     const { _id, isDeleted, replyMessage, replyUser, reactUsers, reacts } =
       message;
 
@@ -62,10 +62,9 @@ const messageUtils = {
       replyMessage: replyMessageResult,
       reacts: reactsResult,
     };
-  },
+  }
 
-  convertMessageOfIndividual: function (message) {
-    console.log('message: ', message);
+  public static convertMessageOfIndividual(message) {
     const {
       _id,
       isDeleted,
@@ -146,9 +145,13 @@ const messageUtils = {
       replyMessage: replyMessageResult,
       reacts: reactsResult,
     };
-  },
+  }
 
-  getUserForIndividualConversation: (userId, participants, userInfos) => {
+  public static getUserForIndividualConversation(
+    userId,
+    participants,
+    userInfos,
+  ) {
     const participantsSearch = participants.find(
       (participantEle) => participantEle.userId + '' == userId + '',
     );
@@ -162,7 +165,5 @@ const messageUtils = {
       name: participantsSearch.name,
       avatar: userInfoSearch.avatar ? userInfoSearch.avatar : '',
     };
-  },
-};
-
-module.exports = messageUtils;
+  }
+}

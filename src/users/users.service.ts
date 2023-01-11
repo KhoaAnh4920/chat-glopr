@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
+  ICreateUserViewReq,
   IResetPasswordViewReq,
   ISendOtpViewReq,
   IUser,
@@ -41,7 +42,7 @@ export class UsersService {
     ));
   }
 
-  async createOne(user): Promise<User> {
+  async createOne(user: ICreateUserViewReq): Promise<User> {
     const createOne = await this.usersRepository.createOne(user);
     return createOne;
   }
@@ -75,6 +76,8 @@ export class UsersService {
     if (otpMethod === TypeSender.SMS) {
       console.log('Nothing');
       // Send sms otp //
+      const checkPhone = StringUtils.isVietnamesePhoneNumber(userIdentity);
+      if (!checkPhone) throw new AppError(ERROR_CODE.PHONE_INVALID);
     }
 
     return otpCode;

@@ -11,21 +11,23 @@ export class CacheRepository {
   ) {}
 
   public async setUserCache(key, value): Promise<void> {
+    console.log('key: ', key);
     await this.redisClient.set(key, JSON.stringify(value));
   }
 
   public async getUserInCache(key) {
+    console.log('Check get key: ', key);
     const data = await this.redisClient.get(key);
     return JSON.parse(data);
   }
 
   public async handleJoin(userId): Promise<void> {
     const cachedUser = await this.getUserInCache(userId);
-    if (cachedUser)
+    if (!cachedUser)
       await this.setUserCache(userId, {
         ...cachedUser,
         isOnline: true,
-        lastLogin: null,
+        lastLogin: new Date(),
       });
   }
 

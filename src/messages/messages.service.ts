@@ -2,7 +2,8 @@ import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { ParticipantsService } from 'src/participants/participants.service';
 import { MessagesRepository } from './message.repository';
-const messageUtils = require('../shared/common/messageUtils');
+import { ICreateTextMessageViewReq, IMessagesResponse } from './messages.type';
+import { messageUtils } from '../shared/common/messageUtils';
 
 @Injectable()
 export class MessagesService {
@@ -13,7 +14,7 @@ export class MessagesService {
     private readonly participantsService: ParticipantsService,
   ) {}
 
-  public async getById(_id, type) {
+  public async getById(_id, type): Promise<IMessagesResponse> {
     if (type) {
       const message = await this.messagesRepository.getByIdOfGroup(_id);
       messageUtils;
@@ -21,13 +22,14 @@ export class MessagesService {
     }
 
     const message = await this.messagesRepository.getByIdOfIndividual(_id);
-    console.log('Check message: ', message);
     return messageUtils.convertMessageOfIndividual(message);
   }
 
-  public async addText(message, userId): Promise<any> {
+  public async addText(
+    message: ICreateTextMessageViewReq,
+    userId: string,
+  ): Promise<IMessagesResponse> {
     // validate //
-
     const { channelId, conversationId } = message;
 
     if (channelId) delete message.conversationId;
@@ -40,7 +42,11 @@ export class MessagesService {
     return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
   }
 
-  public async updateWhenHasNewMessage(saveMessage, conversationId, userId) {
+  public async updateWhenHasNewMessage(
+    saveMessage,
+    conversationId,
+    userId,
+  ): Promise<IMessagesResponse> {
     const { _id, channelId } = saveMessage;
 
     if (channelId) {

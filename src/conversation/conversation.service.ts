@@ -5,13 +5,22 @@ import { UsersService } from 'src/users/users.service';
 import {
   IConversationModel,
   ICreateIndividual,
+  ISummaryConversation,
   IUpdateConversationViewReq,
   IValidateIndividual,
+  ResConverObjLayout,
   UpdateConversationModel,
 } from './consersation.type';
 import { ParticipantsRepository } from 'src/participants/participants.repository';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { MessagesService } from 'src/messages/messages.service';
+import { MessagesRepository } from 'src/messages/message.repository';
+import { FriendService } from 'src/friend/friend.service';
+import { DateUtils } from 'src/shared/common/dateUtils';
+import { typeMessage } from 'src/messages/messages.enum';
+import { ICreateTextMessageViewReq } from 'src/messages/messages.type';
+import { UsersRepository } from 'src/users/users.repository';
+import { CacheRepository } from 'src/shared/cache/cache.repository';
 
 @Injectable()
 export class ConversationService {
@@ -21,9 +30,14 @@ export class ConversationService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => MessagesService))
     private readonly messagesService: MessagesService,
+    private readonly messagesRepository: MessagesRepository,
+    @Inject(forwardRef(() => FriendService))
+    private readonly friendService: FriendService,
+    private readonly usersRepository: UsersRepository,
+    private readonly cacheRepository: CacheRepository,
   ) {}
 
-  async findOne(
+  public async findOne(
     indentity: Types.ObjectId | string,
   ): Promise<IConversationModel> {
     return this.conversationRepository.findOne(indentity);
@@ -39,9 +53,9 @@ export class ConversationService {
     );
 
     // Create notify message
-    const newMessage = {
+    const newMessage: ICreateTextMessageViewReq = {
       content: 'Đã là bạn bè',
-      type: 'NOTIFY',
+      type: typeMessage.NOTIFY,
       conversationId: _id,
     };
 
@@ -75,6 +89,63 @@ export class ConversationService {
       userName2,
     );
     return { _id, isExists: false };
+  }
+
+  public async createGroupConversation(
+    creatorId: string,
+    name: string,
+    userIds: string[],
+  ): Promise<string> {
+    if (userIds.length <= 0) throw new AppError(ERROR_CODE.USER_IDS_INVALID);
+
+    // Check user is exists //
+    const userIdsTempt = [creatorId, ...userIds];
+    console.log('userIds: ', userIds);
+    console.log('userIdsTempt: ', userIdsTempt);
+    await this.usersRepository.checkByIds(userIdsTempt);
+
+    console.log('bbb');
+
+    // Create new conversation
+    const { _id } = await this.conversationRepository.createConvesation(
+      userIdsTempt,
+      true,
+      name,
+      creatorId,
+    );
+
+    const newMessage: ICreateTextMessageViewReq = {
+      content: 'Đã tạo nhóm',
+      type: typeMessage.NOTIFY,
+      conversationId: _id,
+    };
+
+    await this.messagesRepository.addText({
+      userId: creatorId,
+      ...newMessage,
+    });
+
+    // lưu danh sách user
+    await Promise.all(
+      userIdsTempt.map(async (userId) => {
+        await this.participantsRepository.createParticipants(_id, userId, '');
+      }),
+    );
+
+    const memberAddMessage: ICreateTextMessageViewReq = {
+      manipulatedUserIds: [...userIds],
+      content: 'Đã thêm vào nhóm',
+      type: typeMessage.NOTIFY,
+      conversationId: _id,
+    };
+    const messRes = await this.messagesRepository.addText({
+      userId: creatorId,
+      ...memberAddMessage,
+    });
+    await this.conversationRepository.updateConversation(_id, {
+      lastMessageId: messRes._id,
+    });
+    return _id;
   }
 
   public async checkIndividualConversation(
@@ -113,14 +184,14 @@ export class ConversationService {
   ): Promise<IConversationModel> {
     const conver = await this.findOne(viewReq.id);
     if (!conver) {
-      throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+      throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
     }
 
     const payload = new UpdateConversationModel(
       conver._id,
       viewReq.name || conver.name,
       viewReq.image || conver.image,
-      viewReq.creatorid || conver.creatorid,
+      viewReq.creatorid || conver.creatorId,
       viewReq.lastMessageId || conver.lastMessageId,
       viewReq.pinMessageIds || conver.pinMessageIds,
       viewReq.members || conver.members,
@@ -131,5 +202,159 @@ export class ConversationService {
     const updateConversation =
       await this.conversationRepository.updateConversation(payload.id, payload);
     return updateConversation as IConversationModel;
+  }
+
+  public async getList(userId: string): Promise<ISummaryConversation[]> {
+    const conversations = await this.conversationRepository.getListByUserId(
+      userId,
+    );
+    const conversationIds = conversations.map(
+      (conversationEle) => conversationEle._id,
+    );
+    return this.getListSummaryByIds(conversationIds, userId);
+  }
+
+  public async getListIndividual(
+    name: string,
+    userId: string,
+  ): Promise<ISummaryConversation[]> {
+    const conversations =
+      await this.conversationRepository.getListIndividualByNameContainAndUserId(
+        name,
+        userId,
+      );
+    const conversationIds = conversations.map(
+      (conversationEle) => conversationEle._id,
+    );
+    return this.getListSummaryByIds(conversationIds, userId);
+  }
+
+  public async getListGroup(
+    name: string,
+    userId: string,
+  ): Promise<ISummaryConversation[]> {
+    const conversations =
+      await this.conversationRepository.getListGroupByNameContainAndUserId(
+        name,
+        userId,
+      );
+    const conversationIds = conversations.map(
+      (conversationEle) => conversationEle._id,
+    );
+    return this.getListSummaryByIds(conversationIds, userId);
+  }
+
+  public async getListSummaryByIds(
+    ids: string[],
+    userId: string,
+  ): Promise<ISummaryConversation[]> {
+    const conversationsResult = [];
+    for (const id of ids) {
+      const conversation = await this.getSummaryByIdAndUserId(id, userId);
+      conversationsResult.push(conversation);
+    }
+
+    return conversationsResult;
+  }
+
+  // get thông tin tóm tắt của 1 cuộc hộp thoại.
+  public async getSummaryByIdAndUserId(
+    _id: string,
+    userId: string,
+  ): Promise<ISummaryConversation> {
+    const member =
+      await this.participantsRepository.getByConversationIdAndUserId(
+        _id,
+        userId,
+      );
+    const { lastView, isNotify } = member;
+    const conversation = await this.conversationRepository.findOne(_id);
+    const { lastMessageId, type, members, isJoinFromLink } = conversation;
+    const lastMessage = lastMessageId
+      ? await this.messagesService.getById(lastMessageId, type)
+      : null;
+    const numberUnread = await this.messagesRepository.countUnread(
+      lastView,
+      _id,
+    );
+    let nameAndAvatarInfo;
+    if (type) nameAndAvatarInfo = await this.getGroupConversation(conversation);
+    else {
+      nameAndAvatarInfo =
+        await this.participantsRepository.getIndividualConversation(
+          _id,
+          userId,
+        );
+
+      const { members } = conversation;
+      const index = members.findIndex((ele) => ele + '' != userId);
+      nameAndAvatarInfo.userId = members[index];
+      nameAndAvatarInfo.friendStatus = await this.friendService.getFriendStatus(
+        userId,
+        members[index],
+      );
+      const cachedUser = await this.cacheRepository.getUserInCache(
+        members[index],
+      );
+      if (cachedUser) {
+        nameAndAvatarInfo.isOnline = cachedUser.isOnline;
+        nameAndAvatarInfo.lastLogin = cachedUser.lastLogin;
+      } else {
+        nameAndAvatarInfo.isOnline = false;
+        nameAndAvatarInfo.lastLogin = null;
+      }
+    }
+
+    let lastMessageTempt = {};
+
+    const numberOfDeletedMessages =
+      await this.messagesRepository.numberOfDeletedMessages(_id, userId);
+    if (!lastMessage || numberOfDeletedMessages === 0) lastMessageTempt = null;
+    else
+      lastMessageTempt = {
+        ...lastMessage,
+        createdAt: DateUtils.toTime(lastMessage.createdAt),
+      };
+    return {
+      _id,
+      ...nameAndAvatarInfo,
+      type,
+      totalMembers: members.length,
+      numberUnread,
+      lastMessage: lastMessageTempt,
+      isNotify,
+      isJoinFromLink,
+    };
+  }
+
+  public async getGroupConversation(conversation: IConversationModel) {
+    const { _id, name, image } = conversation;
+
+    let groupName = '';
+    const groupAvatar = [];
+    if (!name || !image) {
+      const nameAndAvataresOfGroup =
+        await this.conversationRepository.getListNameAndAvatarOfMembersById(
+          _id,
+        );
+
+      for (const tempt of nameAndAvataresOfGroup) {
+        const nameTempt = tempt.name;
+        const { avatar } = tempt;
+
+        groupName += `, ${nameTempt}`;
+        groupAvatar.push({ avatar });
+      }
+    }
+
+    const result: ResConverObjLayout = {
+      name,
+      image,
+    };
+
+    if (!name) result.name = groupName.slice(2);
+    if (!image) result.image = groupAvatar;
+
+    return result;
   }
 }

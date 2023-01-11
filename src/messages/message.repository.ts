@@ -12,14 +12,13 @@ export class MessagesRepository {
   ) {}
 
   public async addText(payload: IMessagesModel): Promise<Message> {
-    console.log('Check payload: ', payload);
-    console.log('Check add text: ', payload.userId);
-    const dataMessages = new MessagesModel(
-      payload.userId,
-      payload.content,
-      payload.type,
-      payload.conversationId,
-    );
+    const dataMessages: MessagesModel = {
+      userId: payload.userId,
+      content: payload.content,
+      type: payload.type,
+      conversationId: payload.conversationId,
+      manipulatedUserIds: payload.manipulatedUserIds || [],
+    };
     return await this.messageModel.create(dataMessages);
   }
 
@@ -211,5 +210,19 @@ export class MessagesRepository {
 
     if (messages.length > 0) return messages[0];
     throw new AppError(ERROR_CODE.NOT_FOUND_MESSAGE);
+  }
+
+  public async countUnread(time: Date, conversationId: string) {
+    return await this.messageModel.countDocuments({
+      createdAt: { $gt: time },
+      conversationId,
+    });
+  }
+
+  public async numberOfDeletedMessages(_id: string, userId: string) {
+    return await this.messageModel.countDocuments({
+      conversationId: _id,
+      deletedUserIds: { $nin: [userId] },
+    });
   }
 }

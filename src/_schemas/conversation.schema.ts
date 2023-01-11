@@ -7,13 +7,13 @@ export type ConversationDocument = Conversation & Document;
 export class Conversation {
   _id: string;
 
-  @Prop({ required: false })
+  @Prop({ required: false, default: '' })
   name: string;
 
   @Prop({ default: '' })
   image: string;
 
-  @Prop({ ref: 'User', type: SchemaTypes.ObjectId })
+  @Prop({ ref: 'User', type: SchemaTypes.ObjectId, default: null })
   creatorid: string;
 
   @Prop({ ref: 'Message', type: SchemaTypes.ObjectId })

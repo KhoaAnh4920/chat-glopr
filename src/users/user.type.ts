@@ -92,3 +92,24 @@ export class ResetPasswordViewReq implements IResetPasswordViewReq {
     readonly password: string,
   ) {}
 }
+
+export interface ICreateUserViewReq {
+  readonly fullName?: string;
+  readonly userName?: string;
+  readonly email: string;
+  readonly password: string;
+  readonly isActived: boolean;
+  readonly phoneNumber: string;
+  readonly otpCode: string;
+}
+export class CreateCustomerViewReq implements ICreateUserViewReq {
+  constructor(
+    readonly email: string,
+    readonly password: string,
+    readonly phoneNumber: string,
+    readonly otpCode: string,
+    readonly isActived: boolean,
+    readonly fullName?: string,
+    readonly userName?: string,
+  ) {}
+}

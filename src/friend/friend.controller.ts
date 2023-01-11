@@ -180,7 +180,7 @@ export class FriendController {
       '',
       currentUser.userId,
     );
-    console.log('user: ', users);
+    // console.log('user: ', users);
 
     const singleRes = {
       success: true,

@@ -2,3 +2,10 @@ export enum typeRequest {
   FRIEND = 'FRIEND',
   FRIEND_REQUEST = 'FRIEND_REQUEST',
 }
+
+export enum FRIEND_STATUS {
+  FRIEND = 'FRIEND',
+  FOLLOWER = 'FOLLOWER',
+  YOU_FOLLOW = 'YOU_FOLLOW',
+  NOT_FRIEND = 'NOT_FRIEND',
+}

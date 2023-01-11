@@ -19,6 +19,10 @@ export class StringUtils {
     return re.test(email);
   }
 
+  public static isVietnamesePhoneNumber(number: string): boolean {
+    return /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/.test(number);
+  }
+
   public static md5(input: string): string {
     return createHash('md5').update(input).digest('hex');
   }

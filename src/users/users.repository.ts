@@ -1,9 +1,10 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { identity } from 'rxjs';
+import { AppError, ERROR_CODE } from 'src/shared/error';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IUser } from './user.type';
+import { ICreateUserViewReq, IUser } from './user.type';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 export class UsersRepository {
@@ -16,28 +17,22 @@ export class UsersRepository {
     const idParam = ObjectId.isValid(indentity);
     let user = null;
     if (idParam) {
-      user = await this.userModel.findOne(
-        {
-          _id: indentity,
-        },
-        { password: 0, refreshToken: 0 },
-      );
+      user = await this.userModel.findOne({
+        _id: indentity,
+      });
     } else {
-      user = await this.userModel.findOne(
-        {
-          $or: [
-            { email: indentity },
-            { phoneNumber: indentity },
-            { userName: indentity },
-          ],
-        },
-        { password: 0, refreshToken: 0 },
-      );
+      user = await this.userModel.findOne({
+        $or: [
+          { email: indentity },
+          { phoneNumber: indentity },
+          { userName: indentity },
+        ],
+      });
     }
     return user;
   }
 
-  async createOne(user): Promise<User> {
+  async createOne(user: ICreateUserViewReq): Promise<User> {
     const createOne = await this.userModel.create(user);
     return createOne;
   }
@@ -80,5 +75,17 @@ export class UsersRepository {
       },
       '-_id email userName fullName avatar dob gender isActived',
     );
+  }
+
+  public async checkByIds(ids: string[]) {
+    for (const idEle of ids) {
+      const user = await this.userModel.findOne({
+        _id: idEle,
+        isActived: true,
+        isDeleted: false,
+      });
+
+      if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
+    }
   }
 }

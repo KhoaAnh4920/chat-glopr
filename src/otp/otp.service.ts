@@ -37,12 +37,12 @@ export class OtpService {
     const count = await this.cacheRepository.increaseCount(key);
     const checkTime = await this.cacheRepository.checkTimeSending(key);
     const checkSpam = await this.cacheRepository.checkSpam(key);
-    if (checkSpam) {
-      throw new AppError(ERROR_CODE.YOU_HAVE_BEEN_SPAM);
-    }
-    if (!checkTime) {
-      throw new AppError(ERROR_CODE.YOU_HAVE_RECEIVED_CODE);
-    }
+    // if (checkSpam) {
+    //   throw new AppError(ERROR_CODE.YOU_HAVE_BEEN_SPAM);
+    // }
+    // if (!checkTime) {
+    //   throw new AppError(ERROR_CODE.YOU_HAVE_RECEIVED_CODE);
+    // }
     await this.cacheRepository.del(key);
     const cacheObject = [
       'otp',

@@ -11,6 +11,7 @@ import { GatewayModule } from 'src/gateway/gateway.module';
 import { ConversationRepository } from './conversation.repository';
 import { ParticipantsModule } from 'src/participants/participants.module';
 import { MessagesModule } from 'src/messages/messages.module';
+import { FriendModule } from 'src/friend/friend.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MessagesModule } from 'src/messages/messages.module';
     GatewayModule,
     ParticipantsModule,
     forwardRef(() => MessagesModule),
+    forwardRef(() => FriendModule),
   ],
   controllers: [ConversationController],
   providers: [ConversationService, ConversationRepository],

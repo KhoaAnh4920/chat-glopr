@@ -1,4 +1,6 @@
 import { ObjectId, Types } from 'mongoose';
+import { FRIEND_STATUS } from 'src/friend/friend.enum';
+import { IMessagesResponse } from 'src/messages/messages.type';
 
 export interface IValidateIndividual {
   readonly conversationId?: string;
@@ -15,7 +17,7 @@ export interface IConversationModel {
   readonly _id?: string;
   readonly name?: string;
   readonly image?: string;
-  readonly creatorid?: string;
+  readonly creatorId?: string;
   readonly lastMessageId?: string;
   readonly pinMessageIds?: string[];
   readonly members: string[];
@@ -29,7 +31,7 @@ export class ConversationModel implements IConversationModel {
     readonly type: boolean,
     readonly name?: string,
     readonly image?: string,
-    readonly creatorid?: string,
+    readonly creatorId?: string,
     readonly lastMessageId?: string,
     readonly pinMessageIds?: string[],
     readonly isJoinFromLink?: boolean,
@@ -86,4 +88,22 @@ export class UpdateConversationModel implements IUpdateConversationModel {
     readonly type?: boolean,
     readonly isJoinFromLink?: boolean,
   ) {}
+}
+
+export interface ResConverObjLayout {
+  name: string;
+  image: string | string[];
+}
+
+export interface ISummaryConversation {
+  _id: string;
+  avatar: string | string[];
+  userId: string;
+  friendStatus: FRIEND_STATUS;
+  type: boolean;
+  totalMembers: number;
+  numberUnread: number;
+  lastMessage: IMessagesResponse;
+  isNotify: boolean;
+  isJoinFromLink: false;
 }

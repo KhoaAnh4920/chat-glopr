@@ -24,5 +24,6 @@ import { ConversationModule } from 'src/conversation/conversation.module';
   ],
   controllers: [FriendController],
   providers: [FriendService, FriendRepository],
+  exports: [FriendModule, FriendService, FriendRepository],
 })
 export class FriendModule {}

@@ -6,7 +6,7 @@ import { CacheRepository } from 'src/shared/cache/cache.repository';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { UsersService } from 'src/users/users.service';
 import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
-import { typeRequest } from './friend.enum';
+import { FRIEND_STATUS, typeRequest } from './friend.enum';
 import { FriendRepository } from './friend.repository';
 import { IDeleteFriendRequestViewReq, IFriendList } from './friend.type';
 
@@ -140,5 +140,37 @@ export class FriendService {
     //     .emit('create-individual-conversation-when-was-friend', conversationId);
     // }
     return result;
+  }
+
+  public async getFriendStatus(myId, searchUserId) {
+    let status = FRIEND_STATUS.NOT_FRIEND;
+    // check xem có bạn bè không
+    if (
+      await this.friendRepository.existsByIds(
+        myId,
+        searchUserId,
+        typeRequest.FRIEND,
+      )
+    )
+      status = FRIEND_STATUS.FRIEND;
+    // check đối phương  gởi lời mời
+    else if (
+      await this.friendRepository.existsByIds(
+        searchUserId,
+        myId,
+        typeRequest.FRIEND_REQUEST,
+      )
+    )
+      status = FRIEND_STATUS.FOLLOWER;
+    // check mình gởi lời mời
+    else if (
+      await this.friendRepository.existsByIds(
+        myId,
+        searchUserId,
+        typeRequest.FRIEND_REQUEST,
+      )
+    )
+      status = FRIEND_STATUS.YOU_FOLLOW;
+    return status;
   }
 }

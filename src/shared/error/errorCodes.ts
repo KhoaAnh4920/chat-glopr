@@ -29,6 +29,9 @@ enum ERROR_CODE {
   INVITE_EXISTS = 'INVITE_EXISTS',
   NOT_FOUND_REQUEST = 'NOT_FOUND_REQUEST',
   NOT_FOUND_MESSAGE = 'NOT_FOUND_MESSAGE',
+  PHONE_INVALID = 'PHONE_INVALID',
+  NOT_FOUND_CONSERVATION = 'NOT_FOUND_CONSERVATION',
+  USER_IDS_INVALID = 'USER_IDS_INVALID',
 }
 
 const ErrorList = {
@@ -120,6 +123,18 @@ const ErrorList = {
   [ERROR_CODE.NOT_FOUND_MESSAGE]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Message not found',
+  },
+  [ERROR_CODE.PHONE_INVALID]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Phone number is not valid',
+  },
+  [ERROR_CODE.NOT_FOUND_CONSERVATION]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Conversation not found',
+  },
+  [ERROR_CODE.USER_IDS_INVALID]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'UserId invalid',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

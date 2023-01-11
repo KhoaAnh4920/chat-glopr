@@ -23,10 +23,99 @@ export class ParticipantsRepository {
     return await this.participantsModel.create(payload);
   }
 
-  public async updateLastViewOfConversation(conversationId, userId) {
+  public async updateLastViewOfConversation(
+    conversationId: string,
+    userId: string,
+  ) {
     return this.participantsModel.updateOne(
       { conversationId, userId },
       { $set: { lastView: new Date() } },
     );
+  }
+
+  public async getByConversationIdAndUserId(
+    conversationId: string,
+    userId: string,
+  ) {
+    const member = await this.participantsModel.findOne({
+      conversationId,
+      userId,
+    });
+
+    if (!member) throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
+
+    return member;
+  }
+
+  public async getIndividualConversation(
+    _id: string,
+    userId: string,
+  ): Promise<ParticipantsDocument> {
+    const datas = await this.participantsModel.aggregate([
+      {
+        $match: {
+          conversationId: ObjectId(_id),
+          userId: { $ne: ObjectId(userId) },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $project: {
+          _id: 0,
+          name: '$user.fullName',
+          avatar: '$user.avatar',
+        },
+      },
+    ]);
+
+    return datas[0];
+  }
+
+  public async getListInfosByConversationId(
+    conversationId: string,
+  ): Promise<ParticipantsDocument[]> {
+    const data = await this.participantsModel.aggregate([
+      {
+        $match: {
+          conversationId: ObjectId(conversationId),
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            _id: 1,
+            fullName: 1,
+            userName: 1,
+            avatar: 1,
+          },
+        },
+      },
+      {
+        $replaceWith: '$user',
+      },
+    ]);
+    return data;
   }
 }
