@@ -23,7 +23,6 @@ export class CacheModule {
             //   password: config.password,
             //   db: config.db,
             // });
-            console.log('redisClient: ', process.env.REDIS_PORT);
             return new CacheRepository(redisClient);
           },
           inject: [CACHE_OPTIONS, ...(options.inject || [])],
