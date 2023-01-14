@@ -72,29 +72,29 @@ export class UsersController {
     return res.status(HttpStatus.OK).send(singleRes);
   }
 
-  @ApiTags('users')
-  @Post('validate-otp')
-  @ApiOperation({ summary: 'Validate  OTP' })
-  @ApiOkResponse({ status: HttpStatus.OK, description: 'Validate OTP' })
-  public async validateOtp(
-    @Body() validateOTPDto: ValidateOTPDto,
-    @Res() res: Response,
-  ) {
-    const modelReq = new ValidateOTPViewReq(
-      validateOTPDto.context,
-      validateOTPDto.identity,
-      validateOTPDto.otpCode,
-    );
-    const result = await this.otpService.validateOTPVMobile(modelReq);
+  // @ApiTags('users')
+  // @Post('validate-otp')
+  // @ApiOperation({ summary: 'Validate  OTP' })
+  // @ApiOkResponse({ status: HttpStatus.OK, description: 'Validate OTP' })
+  // public async validateOtp(
+  //   @Body() validateOTPDto: ValidateOTPDto,
+  //   @Res() res: Response,
+  // ) {
+  //   const modelReq = new ValidateOTPViewReq(
+  //     validateOTPDto.context,
+  //     validateOTPDto.identity,
+  //     validateOTPDto.otpCode,
+  //   );
+  //   const result = await this.otpService.validateOTPVMobile(modelReq);
 
-    const singleRes: ISingleRes<{ result: boolean }> = {
-      success: true,
-      statusCode: 200,
-      message: ResponseMessage.VERIFY_SUCCEEDED,
-      data: { result },
-    };
-    return res.status(HttpStatus.OK).send(singleRes);
-  }
+  //   const singleRes: ISingleRes<{ result: boolean }> = {
+  //     success: true,
+  //     statusCode: 200,
+  //     message: ResponseMessage.VERIFY_SUCCEEDED,
+  //     data: { result },
+  //   };
+  //   return res.status(HttpStatus.OK).send(singleRes);
+  // }
 
   @ApiTags('users')
   @Get('/me')
