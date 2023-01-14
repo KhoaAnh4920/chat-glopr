@@ -10,7 +10,6 @@ import {
   IsNumber,
   IsEnum,
 } from 'class-validator';
-import { Types } from 'mongoose';
 import { typeSearchConversation } from './conversation.enum';
 
 export class PayloadCreateIndividualDto {
@@ -34,6 +33,51 @@ export class PayloadCreateGroupDto {
   })
   @IsDefined()
   readonly userIds!: string[];
+}
+
+export class PayloadAddMemberGroupDto {
+  @ApiProperty({ required: true, example: '63be4eb7051727fa65feaaf4' })
+  @IsDefined()
+  @IsString()
+  readonly converId!: string;
+
+  @ApiProperty({
+    required: true,
+    type: [String],
+    example: ['63b52af3ca78739b1c94eb52'],
+    default: [],
+  })
+  @IsDefined()
+  readonly userIds!: string[];
+}
+
+export class PayloadDeleteMemberGroupDto {
+  @ApiProperty({ required: true, example: '63be4eb7051727fa65feaaf4' })
+  @IsDefined()
+  @IsString()
+  readonly converId!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+    example: '63b52af3ca78739b1c94eb52',
+  })
+  @IsDefined()
+  readonly userId!: string;
+}
+
+export class ParamsDeleteConversationGroupDto {
+  @ApiProperty({ required: true, example: '63be4eb7051727fa65feaaf4' })
+  @IsDefined()
+  @IsString()
+  readonly converId!: string;
+}
+
+export class ParamsLeaveGroupGroupDto {
+  @ApiProperty({ required: true, example: '63be4eb7051727fa65feaaf4' })
+  @IsDefined()
+  @IsString()
+  readonly converId!: string;
 }
 
 export class GetListConversationDto {

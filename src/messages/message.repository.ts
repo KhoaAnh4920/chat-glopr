@@ -58,11 +58,11 @@ export class MessagesRepository {
           userId: 1,
           participants: {
             userId: 1,
-            name: 1,
+            fullName: 1,
           },
           userInfos: {
             _id: 1,
-            name: 1,
+            fullName: 1,
             avatar: 1,
           },
           content: 1,
@@ -163,17 +163,17 @@ export class MessagesRepository {
         $project: {
           user: {
             _id: 1,
-            name: 1,
+            fullName: 1,
             avatar: 1,
           },
           manipulatedUsers: {
             _id: 1,
-            name: 1,
+            fullName: 1,
             avatar: 1,
           },
           userOptions: {
             _id: 1,
-            name: 1,
+            fullName: 1,
             avatar: 1,
           },
           options: 1,
@@ -187,17 +187,17 @@ export class MessagesRepository {
           },
           replyUser: {
             _id: 1,
-            name: 1,
+            fullName: 1,
             avatar: 1,
           },
           tagUsers: {
             _id: 1,
-            name: 1,
+            fullName: 1,
           },
           reacts: 1,
           reactUsers: {
             _id: 1,
-            name: 1,
+            fullName: 1,
             avatar: 1,
           },
           isDeleted: 1,
@@ -224,5 +224,241 @@ export class MessagesRepository {
       conversationId: _id,
       deletedUserIds: { $nin: [userId] },
     });
+  }
+
+  public async deleteAll(conversationId: string, userId: string) {
+    return await this.messageModel.updateMany(
+      { conversationId, deletedUserIds: { $nin: [userId] } },
+      { $push: { deletedUserIds: userId } },
+    );
+  }
+
+  public async getListByConversationIdAndUserIdOfGroup(
+    conversationId: string,
+    userId: string,
+    skip: number,
+    limit: number,
+  ) {
+    return await this.messageModel.aggregate([
+      {
+        $match: {
+          conversationId: ObjectId(conversationId),
+          deletedUserIds: {
+            $nin: [ObjectId(userId)],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'manipulatedUserIds',
+          foreignField: '_id',
+          as: 'manipulatedUsers',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'options.userIds',
+          foreignField: '_id',
+          as: 'userOptions',
+        },
+      },
+      // replyMessage
+      {
+        $lookup: {
+          from: 'messages',
+          localField: 'replyMessageId',
+          foreignField: '_id',
+          as: 'replyMessage',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'replyMessage.userId',
+          foreignField: '_id',
+          as: 'replyUser',
+        },
+      },
+      // lấy danh sách user thả react
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'reacts.userId',
+          foreignField: '_id',
+          as: 'reactUsers',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'tags',
+          foreignField: '_id',
+          as: 'tagUsers',
+        },
+      },
+
+      {
+        $project: {
+          user: {
+            _id: 1,
+            fullName: 1,
+            avatar: 1,
+          },
+          manipulatedUsers: {
+            _id: 1,
+            fullName: 1,
+            avatar: 1,
+          },
+          userOptions: {
+            _id: 1,
+            fullName: 1,
+            avatar: 1,
+          },
+          options: 1,
+          content: 1,
+          type: 1,
+          replyMessage: {
+            _id: 1,
+            content: 1,
+            type: 1,
+            isDeleted: 1,
+          },
+          replyUser: {
+            _id: 1,
+            fullName: 1,
+            avatar: 1,
+          },
+
+          tagUsers: {
+            _id: 1,
+            fullName: 1,
+          },
+          reacts: 1,
+          reactUsers: {
+            _id: 1,
+            fullName: 1,
+            avatar: 1,
+          },
+          isDeleted: 1,
+          createdAt: 1,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $sort: {
+          createdAt: 1,
+        },
+      },
+    ]);
+  }
+
+  public async getListByConversationIdAndUserIdOfIndividual(
+    conversationId: string,
+    userId: string,
+    skip: number,
+    limit: number,
+  ) {
+    return await this.messageModel.aggregate([
+      {
+        $match: {
+          conversationId: ObjectId(conversationId),
+          deletedUserIds: {
+            $nin: [ObjectId(userId)],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'messages',
+          localField: 'replyMessageId',
+          foreignField: '_id',
+          as: 'replyMessage',
+        },
+      },
+      {
+        $lookup: {
+          from: 'participants',
+          localField: 'conversationId',
+          foreignField: 'conversationId',
+          as: 'participants',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'members.userId',
+          foreignField: '_id',
+          as: 'userInfos',
+        },
+      },
+      {
+        $project: {
+          userId: 1,
+          participants: {
+            userId: 1,
+            fullName: 1,
+          },
+          userInfos: {
+            _id: 1,
+            fullName: 1,
+            avatar: 1,
+          },
+          content: 1,
+          type: 1,
+          replyMessage: {
+            _id: 1,
+            content: 1,
+            type: 1,
+            isDeleted: 1,
+            userId: 1,
+          },
+          reacts: {
+            userId: 1,
+            type: 1,
+          },
+          isDeleted: 1,
+          createdAt: 1,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $sort: {
+          createdAt: 1,
+        },
+      },
+    ]);
   }
 }

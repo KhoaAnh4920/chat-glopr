@@ -24,8 +24,12 @@ import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 import { ResponseMessage } from 'src/shared/response';
 import {
   GetListConversationDto,
+  ParamsDeleteConversationGroupDto,
+  ParamsLeaveGroupGroupDto,
+  PayloadAddMemberGroupDto,
   PayloadCreateGroupDto,
   PayloadCreateIndividualDto,
+  PayloadDeleteMemberGroupDto,
   PayloadGetMemberDto,
   PayloadGetOneDto,
 } from './conversation.dto';
@@ -190,6 +194,150 @@ export class ConversationController {
       statusCode: 200,
       message: ResponseMessage.CREATE_SUCCESS,
       data: users,
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('Conversation')
+  @Post('members')
+  @ApiOperation({ summary: 'Add member to conversation' })
+  @ApiBearerAuth()
+  @SetScopes('user.conversation.create')
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Add member to conversation',
+  })
+  public async addMemberToConversation(
+    @Body() payload: PayloadAddMemberGroupDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    const dataRes = await this.conversationService.addMemberToConversation(
+      currentUser.userId,
+      payload.converId,
+      payload.userIds,
+    );
+    // Fire socket //
+    this.messagingGateway.server
+      .to(payload.converId)
+      .emit('new-message', payload.converId, dataRes);
+    payload.userIds.forEach((userIdEle) =>
+      this.messagingGateway.server
+        .to(userIdEle)
+        .emit('added-group', payload.converId),
+    );
+    this.messagingGateway.server
+      .to(payload.converId)
+      .emit('update-member', payload.converId);
+    const resBody: IEmptyDataRes = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.CREATE_SUCCESS,
+      data: [],
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('Conversation')
+  @Delete('/:converId/members/:userId')
+  @ApiOperation({ summary: 'Delete member' })
+  @ApiBearerAuth()
+  @SetScopes('user.conversation.delete')
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Delete member',
+  })
+  public async deleteMember(
+    @Param() params: PayloadDeleteMemberGroupDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    const dataRes = await this.conversationService.deleteMember(
+      currentUser.userId,
+      params.converId,
+      params.userId,
+    );
+    // Fire socket //
+    this.messagingGateway.server
+      .to(params.converId)
+      .emit('new-message', params.converId, dataRes);
+    this.messagingGateway.server
+      .to(params.userId)
+      .emit('deleted-group', params.converId);
+    this.messagingGateway.server
+      .to(params.converId)
+      .emit('update-member', params.converId);
+    const resBody: IEmptyDataRes = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.DELETE_DATA_SUCCEEDED,
+      data: [],
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('Conversation')
+  @Delete('/:converId/members/leave')
+  @ApiOperation({ summary: 'Leave group' })
+  @ApiBearerAuth()
+  @SetScopes('user.conversation.delete')
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Leave group',
+  })
+  public async leaveGroup(
+    @Param() params: ParamsLeaveGroupGroupDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    const dataRes = await this.conversationService.leaveGroup(
+      params.converId,
+      currentUser.userId,
+    );
+    // Fire socket //
+    this.messagingGateway.server
+      .to(params.converId)
+      .emit('new-message', params.converId, dataRes);
+    this.messagingGateway.server
+      .to(params.converId)
+      .emit('update-member', params.converId);
+    const resBody: IEmptyDataRes = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.DELETE_DATA_SUCCEEDED,
+      data: [],
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('Conversation')
+  @Delete('/:converId')
+  @ApiOperation({ summary: 'Delete conversation' })
+  @ApiBearerAuth()
+  @SetScopes('user.conversation.delete')
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Delete conversation',
+  })
+  public async deleteConversation(
+    @Param() params: ParamsDeleteConversationGroupDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    console.log('params: ', params);
+    await this.conversationService.deleteConversation(
+      params.converId,
+      currentUser.userId,
+    );
+    const resBody: IEmptyDataRes = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.DELETE_DATA_SUCCEEDED,
+      data: [],
     };
 
     return res.status(HttpStatus.OK).send(resBody);

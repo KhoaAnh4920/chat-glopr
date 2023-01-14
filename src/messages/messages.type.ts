@@ -3,17 +3,17 @@ import { typeMessage } from './messages.enum';
 
 export interface IMessagesResponse {
   readonly _id: string;
-  readonly content: string;
-  readonly type: string;
+  readonly content?: string;
+  readonly type?: string;
   readonly conversationId?: ObjectId;
   readonly channelId?: ObjectId;
   readonly createdAt: Date;
   readonly replyMessageId?: ObjectId;
-  readonly participants: {
+  readonly participants?: {
     userId: ObjectId;
     name: string;
   }[];
-  readonly user: {
+  readonly user?: {
     _id: string;
     name: string;
     avatar: string;
@@ -29,6 +29,7 @@ export interface IMessagesResponse {
     name: string;
   }[];
   readonly deletedUserIds?: ObjectId[];
+  readonly isDeleted?: boolean;
 }
 
 export interface IMessagesModel {
@@ -85,9 +86,23 @@ export class CreateTextMessageViewReq implements ICreateTextMessageViewReq {
   constructor(
     readonly content: string,
     readonly type: typeMessage,
-    conversationId?: string,
-    channelId?: string,
+    readonly conversationId?: string,
+    readonly channelId?: string,
     readonly userId?: string,
     readonly manipulatedUserIds?: string[],
+  ) {}
+}
+
+export interface IGetListMessageSlot {
+  readonly conversationId: string;
+  readonly page: number;
+  readonly pageSize: number;
+}
+
+export class GetListMessageSlot implements IGetListMessageSlot {
+  constructor(
+    readonly conversationId: string,
+    readonly page: number = 1,
+    readonly pageSize: number = 10,
   ) {}
 }

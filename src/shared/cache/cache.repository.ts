@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
-const util = require('util');
 
 @Injectable()
 export class CacheRepository {
@@ -23,12 +22,18 @@ export class CacheRepository {
 
   public async handleJoin(userId): Promise<void> {
     const cachedUser = await this.getUserInCache(userId);
-    if (!cachedUser)
+    if (cachedUser)
       await this.setUserCache(userId, {
         ...cachedUser,
         isOnline: true,
-        lastLogin: new Date(),
+        lastLogin: null,
       });
+    else {
+      await this.setUserCache(userId, {
+        isOnline: true,
+        lastLogin: null,
+      });
+    }
   }
 
   public async del(key: string): Promise<number> {

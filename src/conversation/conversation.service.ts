@@ -18,7 +18,10 @@ import { MessagesRepository } from 'src/messages/message.repository';
 import { FriendService } from 'src/friend/friend.service';
 import { DateUtils } from 'src/shared/common/dateUtils';
 import { typeMessage } from 'src/messages/messages.enum';
-import { ICreateTextMessageViewReq } from 'src/messages/messages.type';
+import {
+  ICreateTextMessageViewReq,
+  IMessagesResponse,
+} from 'src/messages/messages.type';
 import { UsersRepository } from 'src/users/users.repository';
 import { CacheRepository } from 'src/shared/cache/cache.repository';
 
@@ -100,11 +103,7 @@ export class ConversationService {
 
     // Check user is exists //
     const userIdsTempt = [creatorId, ...userIds];
-    console.log('userIds: ', userIds);
-    console.log('userIdsTempt: ', userIdsTempt);
     await this.usersRepository.checkByIds(userIdsTempt);
-
-    console.log('bbb');
 
     // Create new conversation
     const { _id } = await this.conversationRepository.createConvesation(
@@ -327,7 +326,9 @@ export class ConversationService {
     };
   }
 
-  public async getGroupConversation(conversation: IConversationModel) {
+  public async getGroupConversation(
+    conversation: IConversationModel,
+  ): Promise<ResConverObjLayout> {
     const { _id, name, image } = conversation;
 
     let groupName = '';
@@ -356,5 +357,119 @@ export class ConversationService {
     if (!image) result.image = groupAvatar;
 
     return result;
+  }
+
+  public async addMemberToConversation(
+    userId: string,
+    converId: string,
+    userIds: string[],
+  ): Promise<IMessagesResponse> {
+    // add member trong conversation
+
+    await this.conversationRepository.addMemberConversation(converId, userIds);
+    // lưu danh sách user
+    await Promise.all(
+      userIds.map(async (userId) => {
+        await this.participantsRepository.createParticipants(
+          converId,
+          userId,
+          '',
+        );
+      }),
+    );
+    const memberAddMessage: ICreateTextMessageViewReq = {
+      manipulatedUserIds: [...userIds],
+      content: 'Đã thêm vào nhóm',
+      type: typeMessage.NOTIFY,
+      conversationId: converId,
+    };
+    const messRes = await this.messagesRepository.addText({
+      userId: userId,
+      ...memberAddMessage,
+    });
+    const payload: UpdateConversationModel = {
+      id: converId,
+      lastMessageId: messRes._id + '',
+    };
+
+    await this.conversationRepository.updateConversation(payload.id, payload);
+
+    await this.participantsRepository.updateLastViewOfConversation(
+      converId,
+      userId,
+    );
+
+    return this.messagesService.getById(messRes._id + '', true);
+  }
+
+  public async deleteMember(
+    userId: string,
+    converId: string,
+    deleteUserId: string,
+  ): Promise<IMessagesResponse> {
+    // delete member trong conversation
+    await this.conversationRepository.deleteMember(converId, deleteUserId);
+    await this.participantsRepository.deleteMember(converId, deleteUserId);
+
+    const memberDeleteMessage: ICreateTextMessageViewReq = {
+      manipulatedUserIds: [deleteUserId],
+      content: 'Đã xóa ra khỏi nhóm',
+      type: typeMessage.NOTIFY,
+      conversationId: converId,
+    };
+    const messRes = await this.messagesRepository.addText({
+      userId: userId,
+      ...memberDeleteMessage,
+    });
+    const payload: UpdateConversationModel = {
+      id: converId,
+      lastMessageId: messRes._id + '',
+    };
+
+    await this.conversationRepository.updateConversation(payload.id, payload);
+
+    await this.participantsRepository.updateLastViewOfConversation(
+      converId,
+      userId,
+    );
+    return this.messagesService.getById(messRes._id + '', true);
+  }
+
+  public async leaveGroup(
+    converId: string,
+    userId: string,
+  ): Promise<IMessagesResponse> {
+    // delete member trong conversation
+    await this.conversationRepository.deleteMember(converId, userId);
+    await this.participantsRepository.deleteMember(converId, userId);
+
+    const memberDeleteMessage: ICreateTextMessageViewReq = {
+      content: 'Đã rời khỏi nhóm',
+      type: typeMessage.NOTIFY,
+      conversationId: converId,
+    };
+    const messRes = await this.messagesRepository.addText({
+      userId: userId,
+      ...memberDeleteMessage,
+    });
+    const payload: UpdateConversationModel = {
+      id: converId,
+      lastMessageId: messRes._id + '',
+    };
+
+    await this.conversationRepository.updateConversation(payload.id, payload);
+
+    return this.messagesService.getById(messRes._id + '', true);
+  }
+
+  public async deleteConversation(
+    converId: string,
+    userId: string,
+  ): Promise<boolean> {
+    // delete trong conversation
+    await this.conversationRepository.deleteConversation(converId, userId);
+    // delete message //
+    await this.messagesRepository.deleteAll(converId, userId);
+    return true;
   }
 }

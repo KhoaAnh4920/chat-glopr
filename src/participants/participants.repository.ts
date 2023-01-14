@@ -118,4 +118,15 @@ export class ParticipantsRepository {
     ]);
     return data;
   }
+
+  public async deleteMember(
+    converId: string,
+    userId: string,
+  ): Promise<boolean> {
+    await this.participantsModel.deleteOne({
+      conversationId: converId,
+      userId: userId,
+    });
+    return true;
+  }
 }

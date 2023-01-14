@@ -63,6 +63,9 @@ export class ConversationRepository {
     return this.conversationModel
       .find({
         members: { $in: [userId] },
+        deletedUserIds: {
+          $nin: [userId],
+        },
       })
       .sort({ updatedAt: -1 });
   }
@@ -76,6 +79,9 @@ export class ConversationRepository {
         $match: {
           members: { $in: [ObjectId(userId)] },
           type: false,
+          deletedUserIds: {
+            $nin: [userId],
+          },
         },
       },
       {
@@ -113,6 +119,9 @@ export class ConversationRepository {
         members: { $in: [userId] },
         type: true,
         name: { $regex: name, $options: 'i' },
+        deletedUserIds: {
+          $nin: [userId],
+        },
       })
       .sort({ updatedAt: -1 });
   }
@@ -137,12 +146,61 @@ export class ConversationRepository {
     return await this.conversationModel.create(payload);
   }
 
-  async updateConversation(
+  public async updateConversation(
     id,
     updateConversationDto,
   ): Promise<ConversationDocument> {
     return this.conversationModel
       .findByIdAndUpdate(id, updateConversationDto, { new: true })
       .exec();
+  }
+
+  public async addMemberConversation(
+    id: string,
+    userIds: string[],
+  ): Promise<boolean> {
+    await this.conversationModel.updateOne(
+      { _id: id },
+      { $push: { members: userIds } },
+    );
+    return true;
+  }
+
+  public async deleteMember(id: string, userIds: string): Promise<boolean> {
+    await this.conversationModel.updateOne(
+      { _id: ObjectId(id) },
+      { $pull: { members: userIds } },
+    );
+    return true;
+  }
+
+  public async deleteConversation(
+    id: string,
+    userIds: string,
+  ): Promise<boolean> {
+    await this.conversationModel.updateOne(
+      { _id: ObjectId(id) },
+      { $push: { deletedUserIds: userIds } },
+    );
+    return true;
+  }
+
+  public async resetUserDeleteConversation(id: string): Promise<boolean> {
+    await this.conversationModel.updateOne(
+      { _id: ObjectId(id) },
+      { deletedUserIds: [] },
+    );
+    return true;
+  }
+
+  public async getByIdAndUserId(_id: string, userId: string) {
+    const conversation = await this.conversationModel.findOne({
+      _id,
+      members: { $in: [userId] },
+    });
+
+    if (!conversation) throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
+
+    return conversation;
   }
 }

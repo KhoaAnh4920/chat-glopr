@@ -23,8 +23,16 @@ import { Response } from 'express';
 import { IEmptyDataRes, ISingleRes } from 'src/shared/response';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 import { ResponseMessage } from 'src/shared/response';
-import { PayloadSendTextMessageDto } from './messages.dto';
-import { CreateTextMessageViewReq, IMessagesResponse } from './messages.type';
+import {
+  ParamsGetConversationDto,
+  GetListMessageDto,
+  PayloadSendTextMessageDto,
+} from './messages.dto';
+import {
+  CreateTextMessageViewReq,
+  GetListMessageSlot,
+  IMessagesResponse,
+} from './messages.type';
 import { ConversationService } from 'src/conversation/conversation.service';
 
 @Controller('messages')
@@ -61,11 +69,11 @@ export class MessagesController {
       conversationId = resConver._id;
     }
 
-    const payloadSendMess = new CreateTextMessageViewReq(
-      payload.content,
-      payload.type,
-      conversationId,
-    );
+    const payloadSendMess: CreateTextMessageViewReq = {
+      content: payload.content,
+      type: payload.type,
+      conversationId: conversationId,
+    };
     const dataMess = await this.messagesService.addText(
       payloadSendMess,
       currentUser.userId,
@@ -79,6 +87,39 @@ export class MessagesController {
       statusCode: 201,
       message: ResponseMessage.CREATE_SUCCESS,
       data: dataMess,
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('Messages')
+  @Get('/:converId')
+  @ApiBearerAuth()
+  @SetScopes('user.messages.get')
+  @ApiOperation({ summary: 'Get list message of conversation' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Get list message of conversation',
+  })
+  public async getList(
+    @Query() query: GetListMessageDto,
+    @Param() params: ParamsGetConversationDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    const payload = new GetListMessageSlot(
+      params.converId,
+      +query.page || 1,
+      +query.pageSize || 20,
+    );
+    const result = await this.messagesService.getList(
+      payload,
+      currentUser.userId,
+    );
+    const singleRes: ISingleRes<IMessagesResponse[]> = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
+      data: result,
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }

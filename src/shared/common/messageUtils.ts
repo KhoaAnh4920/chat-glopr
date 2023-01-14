@@ -1,5 +1,7 @@
+import { IMessagesResponse } from 'src/messages/messages.type';
+
 export class messageUtils {
-  public static convertMessageOfGroup(message) {
+  public static convertMessageOfGroup(message): IMessagesResponse {
     const { _id, isDeleted, replyMessage, replyUser, reactUsers, reacts } =
       message;
 

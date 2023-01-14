@@ -30,6 +30,9 @@ export class Conversation {
 
   @Prop({ default: 0, type: Boolean })
   isJoinFromLink: boolean;
+
+  @Prop({ ref: 'User', type: [SchemaTypes.ObjectId], default: [] })
+  deletedUserIds: string[];
 }
 
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);
