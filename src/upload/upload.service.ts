@@ -7,10 +7,18 @@ export class UploadService {
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
-      const upload = v2.uploader.upload_stream((error, result) => {
-        if (error) return reject(error);
-        resolve(result);
-      });
+      const upload = v2.uploader.upload_stream(
+        {
+          folder: 'avatar',
+          use_filename: true,
+          unique_filename: true,
+        },
+        (error: Error, result: UploadApiResponse) => {
+          if (result) resolve(result);
+          else reject(error);
+        },
+      );
+      // read file and upload to cloundinary  //
       toStream(file.buffer).pipe(upload);
     });
   }
