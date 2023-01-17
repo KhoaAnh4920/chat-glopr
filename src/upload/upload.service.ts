@@ -5,11 +5,12 @@ import toStream = require('buffer-to-stream');
 export class UploadService {
   async uploadImage(
     file: Express.Multer.File,
+    nameFolder: string,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
       const upload = v2.uploader.upload_stream(
         {
-          folder: 'avatar',
+          folder: nameFolder,
           use_filename: true,
           unique_filename: true,
         },
@@ -23,9 +24,30 @@ export class UploadService {
     });
   }
 
-  async uploadImageToCloudinary(file: Express.Multer.File) {
-    return await this.uploadImage(file).catch(() => {
+  async uploadImageToCloudinary(file: Express.Multer.File, nameFolder: string) {
+    return await this.uploadImage(file, nameFolder).catch(() => {
       throw new BadRequestException('Invalid file type.');
     });
+  }
+
+  async uploadMultiImageToCloudinary(
+    files: Express.Multer.File[],
+    nameFolder: string,
+  ): Promise<string[]> {
+    // return await this.uploadImage(file).catch(() => {
+    //   throw new BadRequestException('Invalid file type.');
+    // });
+    const result: string[] = [];
+    await Promise.all(
+      files.map(async (file) => {
+        const res = await this.uploadImage(file, nameFolder).catch(() => {
+          throw new BadRequestException('Invalid file type.');
+        });
+        result.push(res.secure_url);
+      }),
+    );
+    console.log('result: ', result);
+    console.log('Type: ', typeof result);
+    return result;
   }
 }

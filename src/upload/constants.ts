@@ -1,4 +1,6 @@
-import { FileValidator } from '@nestjs/common';
+import { FileValidator, UnsupportedMediaTypeException } from '@nestjs/common';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { AppError, ERROR_CODE } from 'src/shared/error';
 
 export const CLOUDINARY = 'Cloudinary';
 
@@ -34,3 +36,27 @@ export class TypeFileValidator extends FileValidator<FileTypeValidatorOptions> {
     return 'Unsupported file format';
   }
 }
+
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  callback: (error: Error, acceptFile: boolean) => void,
+) => {
+  if (
+    !Boolean(
+      file.mimetype.match(
+        /(jpg|jpeg|png|gif|mp3|mp4|pdf|doc|docx|ppt|pptx|rar|zip)/,
+      ),
+    )
+  )
+    callback(
+      new UnsupportedMediaTypeException(`Unsupported ${file.mimetype} file`),
+      false,
+    );
+  callback(null, true);
+};
+
+export const filesOptions: MulterOptions = {
+  limits: { fileSize: 20971520 },
+  fileFilter: fileFilter,
+};

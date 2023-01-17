@@ -2,7 +2,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { Message, MessageDocument } from 'src/_schemas/message.schema';
-import { IMessagesModel, MessagesModel } from './messages.type';
+import {
+  IMessagesModel,
+  IMessagesResponse,
+  MessagesModel,
+} from './messages.type';
+import { UpdateResult } from 'mongodb';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 export class MessagesRepository {
@@ -212,21 +217,30 @@ export class MessagesRepository {
     throw new AppError(ERROR_CODE.NOT_FOUND_MESSAGE);
   }
 
-  public async countUnread(time: Date, conversationId: string) {
+  public async countUnread(
+    time: Date,
+    conversationId: string,
+  ): Promise<number> {
     return await this.messageModel.countDocuments({
       createdAt: { $gt: time },
       conversationId,
     });
   }
 
-  public async numberOfDeletedMessages(_id: string, userId: string) {
+  public async numberOfDeletedMessages(
+    _id: string,
+    userId: string,
+  ): Promise<number> {
     return await this.messageModel.countDocuments({
       conversationId: _id,
       deletedUserIds: { $nin: [userId] },
     });
   }
 
-  public async deleteAll(conversationId: string, userId: string) {
+  public async deleteAll(
+    conversationId: string,
+    userId: string,
+  ): Promise<UpdateResult> {
     return await this.messageModel.updateMany(
       { conversationId, deletedUserIds: { $nin: [userId] } },
       { $push: { deletedUserIds: userId } },
@@ -238,7 +252,7 @@ export class MessagesRepository {
     userId: string,
     skip: number,
     limit: number,
-  ) {
+  ): Promise<IMessagesResponse[]> {
     return await this.messageModel.aggregate([
       {
         $match: {
@@ -380,7 +394,7 @@ export class MessagesRepository {
     userId: string,
     skip: number,
     limit: number,
-  ) {
+  ): Promise<IMessagesResponse[]> {
     return await this.messageModel.aggregate([
       {
         $match: {
@@ -460,5 +474,33 @@ export class MessagesRepository {
         },
       },
     ]);
+  }
+
+  public async getListFilesByTypeAndConversationId(
+    type,
+    conversationId,
+    userId,
+    skip,
+    limit,
+  ): Promise<Message[]> {
+    const files = await this.messageModel
+      .find(
+        {
+          conversationId,
+          type,
+          isDeleted: false,
+          deletedUserIds: { $nin: [userId] },
+        },
+        {
+          userId: 1,
+          content: 1,
+          type: 1,
+          createdAt: 1,
+        },
+      )
+      .skip(skip)
+      .limit(limit);
+
+    return files;
   }
 }

@@ -1,9 +1,19 @@
+import { type } from 'os';
+import { typeMessage } from 'src/messages/messages.enum';
 import { IMessagesResponse } from 'src/messages/messages.type';
 
 export class messageUtils {
   public static convertMessageOfGroup(message): IMessagesResponse {
-    const { _id, isDeleted, replyMessage, replyUser, reactUsers, reacts } =
-      message;
+    const {
+      _id,
+      isDeleted,
+      replyMessage,
+      replyUser,
+      reactUsers,
+      reacts,
+      type,
+      content,
+    } = message;
 
     if (isDeleted)
       return {
@@ -59,6 +69,9 @@ export class messageUtils {
     delete message.isDeleted;
     delete message.reactUsers;
     delete message.replyUser;
+
+    if (type === typeMessage.FILE) message.content = content.split(',,');
+
     return {
       ...message,
       replyMessage: replyMessageResult,

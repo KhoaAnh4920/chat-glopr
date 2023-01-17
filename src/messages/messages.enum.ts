@@ -8,3 +8,10 @@ export enum typeMessage {
   NOTIFY = 'NOTIFY',
   VOTE = 'VOTE',
 }
+
+export enum TypeGetListAttachments {
+  ALL = 'ALL',
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
+  FILE = 'FILE',
+}

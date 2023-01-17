@@ -34,7 +34,7 @@ export interface IMessagesResponse {
 
 export interface IMessagesModel {
   readonly userId: string;
-  readonly content: string;
+  readonly content: string | object;
   readonly tags?: ObjectId[];
   readonly replyMessageId?: ObjectId;
   readonly manipulatedUserIds?: string[];
@@ -55,7 +55,7 @@ export interface IMessagesModel {
 export class MessagesModel implements IMessagesModel {
   constructor(
     readonly userId: string,
-    readonly content: string,
+    readonly content: string | object,
     readonly type: string,
     readonly conversationId?: string,
     readonly channelId?: string,
@@ -77,14 +77,14 @@ export class MessagesModel implements IMessagesModel {
 export interface ICreateTextMessageViewReq {
   readonly userId?: string;
   readonly manipulatedUserIds?: string[];
-  readonly content: string;
+  readonly content: string | object;
   readonly type: typeMessage;
   conversationId?: string;
   channelId?: string;
 }
 export class CreateTextMessageViewReq implements ICreateTextMessageViewReq {
   constructor(
-    readonly content: string,
+    readonly content: string | object,
     readonly type: typeMessage,
     readonly conversationId?: string,
     readonly channelId?: string,

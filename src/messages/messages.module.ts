@@ -8,6 +8,7 @@ import { GatewayModule } from 'src/gateway/gateway.module';
 import { MessagesRepository } from './message.repository';
 import { ConversationModule } from 'src/conversation/conversation.module';
 import { ParticipantsModule } from 'src/participants/participants.module';
+import { UploadModule } from 'src/upload/upload.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ParticipantsModule } from 'src/participants/participants.module';
     GatewayModule,
     forwardRef(() => ConversationModule),
     ParticipantsModule,
+    UploadModule,
   ],
   controllers: [MessagesController],
   providers: [MessagesService, MessagesRepository],

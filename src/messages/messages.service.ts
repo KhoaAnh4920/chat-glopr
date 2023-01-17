@@ -9,6 +9,9 @@ import {
 } from './messages.type';
 import { messageUtils } from '../shared/common/messageUtils';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
+import { UploadService } from 'src/upload/upload.service';
+import { Message } from 'src/_schemas/message.schema';
+import { ObjectId } from 'mongoose';
 
 @Injectable()
 export class MessagesService {
@@ -18,17 +21,54 @@ export class MessagesService {
     private readonly conversationService: ConversationService,
     private readonly participantsService: ParticipantsService,
     private readonly conversationRepository: ConversationRepository,
+    private readonly uploadService: UploadService,
   ) {}
 
-  public async getById(_id, type): Promise<IMessagesResponse> {
+  public async getById(
+    _id: ObjectId | string,
+    type: boolean,
+  ): Promise<IMessagesResponse> {
     if (type) {
       const message = await this.messagesRepository.getByIdOfGroup(_id);
-      messageUtils;
+      console.log('message: ', message);
       return messageUtils.convertMessageOfGroup(message);
     }
 
     const message = await this.messagesRepository.getByIdOfIndividual(_id);
     return messageUtils.convertMessageOfIndividual(message);
+  }
+
+  public async getAllFiles(converId: string, userId: string): Promise<any> {
+    const images =
+      await this.messagesRepository.getListFilesByTypeAndConversationId(
+        'IMAGE',
+        converId,
+        userId,
+        0,
+        8,
+      );
+
+    const videos =
+      await this.messagesRepository.getListFilesByTypeAndConversationId(
+        'VIDEO',
+        converId,
+        userId,
+        0,
+        8,
+      );
+    const files =
+      await this.messagesRepository.getListFilesByTypeAndConversationId(
+        'FILE',
+        converId,
+        userId,
+        0,
+        8,
+      );
+    return {
+      images,
+      videos,
+      files,
+    };
   }
 
   public async getList(
@@ -97,10 +137,48 @@ export class MessagesService {
     return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
   }
 
+  public async addFiles(
+    files: any,
+    userId: string,
+    type: any,
+    channelId?: string,
+    conversationId?: string,
+  ): Promise<IMessagesResponse> {
+    // validate //
+    const content = await this.uploadService.uploadMultiImageToCloudinary(
+      files,
+      'attachments',
+    );
+
+    const tempStringFile = content.join(',,');
+
+    const newMessageTempt: ICreateTextMessageViewReq = {
+      userId,
+      content: tempStringFile,
+      type,
+    };
+
+    if (channelId) newMessageTempt.channelId = channelId;
+    else newMessageTempt.conversationId = conversationId;
+
+    await this.conversationRepository.resetUserDeleteConversation(
+      conversationId,
+    );
+
+    const saveMessage = await this.messagesRepository.addText({
+      userId: userId,
+      content: newMessageTempt.content,
+      type: newMessageTempt.type,
+      conversationId: newMessageTempt.conversationId,
+    });
+
+    return this.updateWhenHasNewMessage(saveMessage, conversationId, userId);
+  }
+
   public async updateWhenHasNewMessage(
-    saveMessage,
-    conversationId,
-    userId,
+    saveMessage: Message,
+    conversationId: string,
+    userId: string,
   ): Promise<IMessagesResponse> {
     const { _id, channelId } = saveMessage;
 
@@ -110,7 +188,7 @@ export class MessagesService {
       // Update last messages of conversation //
       await this.conversationService.updateConversation({
         id: conversationId,
-        lastMessageId: _id,
+        lastMessageId: _id + '',
       });
       // Update last view in conversation for member
       await this.participantsService.updateLastViewOfConversation(

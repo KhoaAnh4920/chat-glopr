@@ -24,7 +24,7 @@ import { MaxSizeFileValidator, TypeFileValidator } from './constants';
 
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly appService: UploadService) {}
+  constructor(private readonly uploadService: UploadService) {}
 
   @ApiTags('Upload')
   @Post('/avatar')
@@ -54,8 +54,10 @@ export class UploadController {
     file: Express.Multer.File,
     @Res() res: Response,
   ) {
-    //return this.appService.uploadImageToCloudinary(file);
-    const result = await this.appService.uploadImageToCloudinary(file);
+    const result = await this.uploadService.uploadImageToCloudinary(
+      file,
+      'avatar',
+    );
     const resBody: ISingleRes<IResponseUpload> = {
       success: true,
       statusCode: 201,
