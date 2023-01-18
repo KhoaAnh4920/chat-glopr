@@ -99,6 +99,17 @@ export interface IGetListMessageSlot {
   readonly pageSize: number;
 }
 
+export interface IResPinMessageSlot {
+  readonly conversationId: string;
+  readonly message: IMessagesResponse;
+}
+
+export interface IDeleteMessageRes {
+  readonly _id: string;
+  readonly conversationId?: string;
+  readonly channelId?: string;
+}
+
 export class GetListMessageSlot implements IGetListMessageSlot {
   constructor(
     readonly conversationId: string,

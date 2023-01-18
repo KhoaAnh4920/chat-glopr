@@ -4,14 +4,18 @@ import { ParticipantsService } from 'src/participants/participants.service';
 import { MessagesRepository } from './message.repository';
 import {
   ICreateTextMessageViewReq,
+  IDeleteMessageRes,
   IGetListMessageSlot,
   IMessagesResponse,
+  IResPinMessageSlot,
 } from './messages.type';
 import { messageUtils } from '../shared/common/messageUtils';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
 import { UploadService } from 'src/upload/upload.service';
 import { Message } from 'src/_schemas/message.schema';
 import { ObjectId } from 'mongoose';
+import { AppError, ERROR_CODE } from 'src/shared/error';
+import { typeMessage } from './messages.enum';
 
 @Injectable()
 export class MessagesService {
@@ -198,5 +202,115 @@ export class MessagesService {
     }
     const { type } = await this.conversationService.findOne(conversationId);
     return await this.getById(_id, type);
+  }
+
+  public async deleteById(
+    _id: string,
+    senderId: string,
+  ): Promise<IDeleteMessageRes> {
+    // validate //
+    const message = await this.messagesRepository.getById(_id);
+    const { userId, conversationId, channelId } = message;
+
+    if (userId != senderId) throw new AppError(ERROR_CODE.PERMISSION_DENIED);
+
+    await this.messagesRepository.deleteById(_id);
+
+    await this.conversationRepository.resetUserDeleteConversation(
+      conversationId,
+    );
+
+    return {
+      _id,
+      conversationId,
+      channelId,
+    };
+  }
+
+  public async addPinMessage(
+    messId: string,
+    userId: string,
+  ): Promise<IResPinMessageSlot> {
+    // validate //
+    const message = await this.messagesRepository.getById(messId);
+    const { conversationId } = message;
+
+    console.log('conversationId: ', conversationId);
+
+    const conversation = await this.conversationRepository.getByIdAndUserId(
+      conversationId,
+      userId,
+    );
+
+    const { _id, type, pinMessageIds } = conversation;
+
+    if (pinMessageIds.includes(messId) || pinMessageIds.length >= 3)
+      throw new AppError(ERROR_CODE.MAX_PIN_MESSAGE);
+
+    await this.conversationRepository.addPinMessage(_id, messId);
+
+    const newMessage = await this.messagesRepository.addText({
+      userId: userId,
+      content: 'PIN_MESSAGE',
+      type: typeMessage.NOTIFY,
+      conversationId: _id,
+    });
+
+    return {
+      conversationId: _id,
+      message: await this.updateWhenHasNewMessage(newMessage, _id, userId),
+    };
+  }
+
+  public async getAllPinMessages(
+    converId: string,
+    userId: string,
+  ): Promise<IMessagesResponse[]> {
+    // validate //
+
+    const conversation = await this.conversationRepository.getByIdAndUserId(
+      converId,
+      userId,
+    );
+    const { type, pinMessageIds } = conversation;
+
+    const pinMessagesResult: IMessagesResponse[] = [];
+    await Promise.all(
+      pinMessageIds.map(async (messageId) => {
+        pinMessagesResult.push(await this.getById(messageId, type));
+      }),
+    );
+
+    return pinMessagesResult;
+  }
+
+  public async deletePinMessage(
+    messId: string,
+    userId: string,
+  ): Promise<IResPinMessageSlot> {
+    // validate //
+    const message = await this.messagesRepository.getById(messId);
+    const { conversationId } = message;
+
+    const conversation = await this.conversationRepository.getByIdAndUserId(
+      conversationId,
+      userId,
+    );
+
+    const { _id } = conversation;
+
+    await this.conversationRepository.deletePinMessage(_id, messId);
+
+    const newMessage = await this.messagesRepository.addText({
+      userId: userId,
+      content: 'REMOVE_PIN_MESSAGE',
+      type: typeMessage.NOTIFY,
+      conversationId: _id,
+    });
+
+    return {
+      conversationId: conversationId,
+      message: await this.updateWhenHasNewMessage(newMessage, _id, userId),
+    };
   }
 }

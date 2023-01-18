@@ -24,6 +24,7 @@ export class MessagesRepository {
       conversationId: payload.conversationId,
       manipulatedUserIds: payload.manipulatedUserIds || [],
     };
+    console.log('Check dataMessages: ', dataMessages);
     return await this.messageModel.create(dataMessages);
   }
 
@@ -477,11 +478,11 @@ export class MessagesRepository {
   }
 
   public async getListFilesByTypeAndConversationId(
-    type,
-    conversationId,
-    userId,
-    skip,
-    limit,
+    type: string,
+    conversationId: string,
+    userId: string,
+    skip: number,
+    limit: number,
   ): Promise<Message[]> {
     const files = await this.messageModel
       .find(
@@ -502,5 +503,21 @@ export class MessagesRepository {
       .limit(limit);
 
     return files;
+  }
+
+  public async getById(_id: string): Promise<Message> {
+    const messageResult = await this.messageModel.findById(_id);
+    if (!messageResult) throw new AppError(ERROR_CODE.NOT_FOUND_MESSAGE);
+
+    return messageResult;
+  }
+
+  public async deleteById(_id: string): Promise<boolean> {
+    try {
+      await this.messageModel.updateOne({ _id }, { isDeleted: true });
+      return true;
+    } catch (error) {
+      throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+    }
   }
 }

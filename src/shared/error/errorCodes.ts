@@ -32,6 +32,7 @@ enum ERROR_CODE {
   PHONE_INVALID = 'PHONE_INVALID',
   NOT_FOUND_CONSERVATION = 'NOT_FOUND_CONSERVATION',
   USER_IDS_INVALID = 'USER_IDS_INVALID',
+  MAX_PIN_MESSAGE = 'MAX_PIN_MESSAGE',
 }
 
 const ErrorList = {
@@ -135,6 +136,10 @@ const ErrorList = {
   [ERROR_CODE.USER_IDS_INVALID]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'UserId invalid',
+  },
+  [ERROR_CODE.MAX_PIN_MESSAGE]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'You can only pin up to 3 messages',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

@@ -35,11 +35,13 @@ import {
   PayloadSendTextMessageDto,
   PayloadSendFileMessageDto,
   ParamsGetListFileConversationDto,
+  ParamsIdMessageDto,
 } from './messages.dto';
 import {
   CreateTextMessageViewReq,
   GetListMessageSlot,
   IMessagesResponse,
+  IResPinMessageSlot,
 } from './messages.type';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { filesOptions } from 'src/upload/constants';
@@ -220,6 +222,133 @@ export class MessagesController {
       statusCode: 201,
       message: ResponseMessage.CREATE_SUCCESS,
       data: files,
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('Messages')
+  @Delete('/:id')
+  @ApiBearerAuth()
+  @SetScopes('user.messages.delete')
+  @ApiOperation({ summary: 'Remove message' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Remove message',
+  })
+  public async deleteById(
+    @Param() params: ParamsIdMessageDto,
+    @CurrentUser() currentUser: ICurrentUser,
+    @Res() res: Response,
+  ) {
+    const { conversationId, channelId } = await this.messagesService.deleteById(
+      params.id,
+      currentUser.userId,
+    );
+
+    this.messagingGateway.server
+      .to(conversationId + '')
+      .emit('delete-message', { conversationId, channelId, id: params.id });
+
+    return res.status(HttpStatus.NO_CONTENT).send();
+  }
+
+  @ApiTags('Messages')
+  @Post('/pin/:id')
+  @ApiBearerAuth()
+  @SetScopes('user.messages.pin')
+  @ApiOperation({ summary: 'Pin message' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Pin message',
+  })
+  public async addPinMessage(
+    @Param() params: ParamsIdMessageDto,
+    @CurrentUser() currentUser: ICurrentUser,
+    @Res() res: Response,
+  ) {
+    const { conversationId, message } =
+      await this.messagesService.addPinMessage(params.id, currentUser.userId);
+
+    this.messagingGateway.server
+      .to(conversationId + '')
+      .emit('new-message', conversationId, message);
+
+    this.messagingGateway.server
+      .to(conversationId + '')
+      .emit('action-pin-message', conversationId);
+
+    const singleRes: ISingleRes<IResPinMessageSlot> = {
+      success: true,
+      statusCode: 201,
+      message: ResponseMessage.CREATE_SUCCESS,
+      data: { conversationId, message },
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('Messages')
+  @Get('/pin/:converId')
+  @ApiBearerAuth()
+  @SetScopes('user.messages.pin.get')
+  @ApiOperation({ summary: 'Get list pin message' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Get list pin message',
+  })
+  public async getAllPinMessages(
+    @Param() params: ParamsGetConversationDto,
+    @CurrentUser() currentUser: ICurrentUser,
+    @Res() res: Response,
+  ) {
+    console.log(params);
+    const pinMessages = await this.messagesService.getAllPinMessages(
+      params.converId,
+      currentUser.userId,
+    );
+    // IMessagesResponse[]
+
+    const singleRes: ISingleRes<IMessagesResponse[]> = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
+      data: pinMessages,
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('Messages')
+  @Delete('/pin/:id')
+  @ApiBearerAuth()
+  @SetScopes('user.messages.pin.delete')
+  @ApiOperation({ summary: 'Remove pin message' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Remove pin message',
+  })
+  public async deletePinMessage(
+    @Param() params: ParamsIdMessageDto,
+    @CurrentUser() currentUser: ICurrentUser,
+    @Res() res: Response,
+  ) {
+    const { conversationId, message } =
+      await this.messagesService.deletePinMessage(
+        params.id,
+        currentUser.userId,
+      );
+
+    this.messagingGateway.server
+      .to(conversationId + '')
+      .emit('new-message', conversationId, message);
+
+    this.messagingGateway.server
+      .to(conversationId + '')
+      .emit('action-pin-message', conversationId);
+
+    const singleRes: ISingleRes<IResPinMessageSlot> = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.DELETE_DATA_SUCCEEDED,
+      data: { conversationId, message },
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }

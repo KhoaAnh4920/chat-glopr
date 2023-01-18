@@ -7,6 +7,7 @@ import {
 } from 'src/_schemas/conversation.schema';
 import { ConversationModel, IConversationModel } from './consersation.type';
 const ObjectId = require('mongoose').Types.ObjectId;
+import { UpdateResult } from 'mongodb';
 
 export class ConversationRepository {
   constructor(
@@ -193,7 +194,10 @@ export class ConversationRepository {
     return true;
   }
 
-  public async getByIdAndUserId(_id: string, userId: string) {
+  public async getByIdAndUserId(
+    _id: string,
+    userId: string,
+  ): Promise<Conversation> {
     const conversation = await this.conversationModel.findOne({
       _id,
       members: { $in: [userId] },
@@ -202,5 +206,25 @@ export class ConversationRepository {
     if (!conversation) throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
 
     return conversation;
+  }
+
+  public async addPinMessage(
+    _id: string,
+    messageId: string,
+  ): Promise<UpdateResult> {
+    return this.conversationModel.updateOne(
+      { _id },
+      { $push: { pinMessageIds: messageId } },
+    );
+  }
+
+  public async deletePinMessage(
+    _id: string,
+    messageId: string,
+  ): Promise<UpdateResult> {
+    return this.conversationModel.updateOne(
+      { _id },
+      { $pull: { pinMessageIds: messageId } },
+    );
   }
 }

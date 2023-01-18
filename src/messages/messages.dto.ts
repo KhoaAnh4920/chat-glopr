@@ -58,6 +58,13 @@ export class ParamsGetConversationDto {
   readonly converId!: string;
 }
 
+export class ParamsIdMessageDto {
+  @ApiProperty({ required: true, example: '63c24cf68aaec72d38f15eac' })
+  @IsDefined()
+  @IsString()
+  readonly id!: string;
+}
+
 export class ParamsGetListFileConversationDto {
   @ApiProperty({
     required: false,
