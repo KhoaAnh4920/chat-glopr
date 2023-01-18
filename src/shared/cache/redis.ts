@@ -7,4 +7,4 @@ export const redisClient = new Redis({
   password: 'l8l0w0sjzEqmLQw5vleR',
 });
 
-// export const redisClient = new Redis(6379);
+// export const redisClient = new Redis({ host: 'redis' });

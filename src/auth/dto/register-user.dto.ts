@@ -53,3 +53,38 @@ export class RegisterUserDto {
   // @Type(() => Date)
   // dob?: Date;
 }
+
+export class ResponseRegisterUserDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 201 })
+  statusCode: number;
+
+  @ApiProperty({ example: 'REGISTRATION_SUCCESS' })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      _id: '63b27f12b7aa9e3ac3a71a7e',
+      email: 'khoaanh4920@gmail.com',
+      phoneNumber: '0968617132',
+      fullName: 'Nguyễn Anh Khoa',
+      username: 'khoaanh4920',
+      gender: 'MALE',
+      avatar:
+        'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+      isDelete: false,
+    },
+  })
+  data: {
+    _id: string;
+    email: string;
+    phoneNumber: string;
+    fullName: string;
+    username: string;
+    gender: string;
+    avatar: string;
+    isDelete: boolean;
+  };
+}

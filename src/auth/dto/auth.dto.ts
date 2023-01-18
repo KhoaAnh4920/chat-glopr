@@ -23,3 +23,17 @@ export class TokenRefreshDto {
   @IsString()
   readonly refreshToken!: string;
 }
+
+export class NewTokenResponseDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 200 })
+  statusCode: number;
+
+  @ApiProperty({ example: 'CREATE_SUCCESS' })
+  message: string;
+
+  @ApiProperty({ example: 'BBB' })
+  newToken: string;
+}

@@ -1,4 +1,5 @@
 import { ObjectId, Types } from 'mongoose';
+import { Message } from 'src/_schemas/message.schema';
 import { typeMessage } from './messages.enum';
 
 export interface IMessagesResponse {
@@ -102,6 +103,12 @@ export interface IGetListMessageSlot {
 export interface IResPinMessageSlot {
   readonly conversationId: string;
   readonly message: IMessagesResponse;
+}
+
+export interface IGetListFileMessageSlot {
+  readonly images?: Message[];
+  readonly videos?: Message[];
+  readonly files?: Message[];
 }
 
 export interface IDeleteMessageRes {

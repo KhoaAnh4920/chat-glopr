@@ -16,8 +16,13 @@ import {
   ApiOperation,
   ApiResponse,
   ApiOkResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import {
+  GetInfoSummaryUserResponse,
+  GetInfoUserResponse,
+  GetSearchUserSummaryUserResponse,
+  OtpResponse,
   PayloadGetDetailUserDto,
   PayloadGetSummaryUserDto,
   RequestSendOTPDto,
@@ -50,7 +55,11 @@ export class UsersController {
   @ApiOperation({ summary: 'Send OTP' })
   @ApiOkResponse({
     status: HttpStatus.OK,
-    description: 'Request send OTP',
+    type: OtpResponse,
+  })
+  @ApiOkResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input',
   })
   public async requestSendOTP(
     @Body() payload: RequestSendOTPDto,
@@ -101,12 +110,18 @@ export class UsersController {
   @ApiBearerAuth()
   @SetScopes('user.get.me')
   @ApiOperation({ summary: 'Get user own info' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetInfoUserResponse,
+  })
   public async getMe(
     @CurrentUser() currentUser: ICurrentUser,
     @Res() res: Response,
   ) {
     const user = await this.usersService.findOne(currentUser.userId);
-    const resBody: ISingleRes<IUserInfo> = {
+    user.password = undefined;
+    user.refreshToken = undefined;
+    const resBody: ISingleRes<UserDocument> = {
       success: true,
       statusCode: 200,
       message: ResponseMessage.GET_DATA_SUCCEEDED,
@@ -121,6 +136,14 @@ export class UsersController {
   @SetScopes('user.update.me')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user info' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetInfoUserResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input',
+  })
   public async updateCustomer(
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: ICurrentUser,
@@ -142,7 +165,7 @@ export class UsersController {
     const resBody: ISingleRes<UserDocument> = {
       success: true,
       statusCode: 200,
-      message: 'GET_DATA_SUCCEEDED',
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
       data: updatedCustomer,
     };
 
@@ -153,6 +176,12 @@ export class UsersController {
   @Patch('retrive-password')
   @ApiOperation({ summary: 'User reset password' })
   @ApiOkResponse({ status: HttpStatus.OK, description: 'Reset password' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    schema: {
+      example: { success: true },
+    },
+  })
   public async resetPassword(@Body() resetPasswordDto: ResetPasswordOtpDto) {
     const viewRequest = new ResetPasswordViewReq(
       resetPasswordDto.identity,
@@ -168,7 +197,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Get a summary of information about user' })
   @ApiOkResponse({
     status: HttpStatus.OK,
-    description: 'Get a summary of information about user',
+    type: GetInfoSummaryUserResponse,
   })
   public async getUserSummaryInfo(
     @Param() params: PayloadGetSummaryUserDto,
@@ -178,7 +207,7 @@ export class UsersController {
     const resBody: ISingleRes<UserDocument> = {
       success: true,
       statusCode: 200,
-      message: 'GET_DATA_SUCCEEDED',
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
       data: user,
     };
 
@@ -188,19 +217,23 @@ export class UsersController {
   @ApiTags('users')
   @Get('detail/:key')
   @ApiOperation({ summary: 'Get detail user by id or username' })
-  @ApiOkResponse({
+  @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Get detail user by id or username',
+    type: GetInfoUserResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input',
   })
   public async getUserByIdentity(
     @Param() params: PayloadGetDetailUserDto,
     @Res() res: Response,
   ) {
     const user = await this.usersService.getUserByIdentity(params.key);
-    const resBody: ISingleRes<IUser> = {
+    const resBody: ISingleRes<UserDocument> = {
       success: true,
       statusCode: 200,
-      message: 'GET_DATA_SUCCEEDED',
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
       data: user,
     };
 
@@ -212,18 +245,17 @@ export class UsersController {
   @ApiOperation({ summary: 'Search user' })
   @ApiOkResponse({
     status: HttpStatus.OK,
-    description: 'Get list user',
+    type: GetSearchUserSummaryUserResponse,
   })
   public async getlistUser(
     @Query() query: SearchUserDto,
     @Res() res: Response,
   ) {
-    console.log('query: ', query);
     const data = await this.usersService.getlistUser(query.key);
     const resBody: ISingleRes<UserDocument[]> = {
       success: true,
       statusCode: 200,
-      message: 'GET_DATA_SUCCEEDED',
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
       data: data,
     };
 

@@ -5,6 +5,7 @@ import { MessagesRepository } from './message.repository';
 import {
   ICreateTextMessageViewReq,
   IDeleteMessageRes,
+  IGetListFileMessageSlot,
   IGetListMessageSlot,
   IMessagesResponse,
   IResPinMessageSlot,
@@ -15,7 +16,7 @@ import { UploadService } from 'src/upload/upload.service';
 import { Message } from 'src/_schemas/message.schema';
 import { ObjectId } from 'mongoose';
 import { AppError, ERROR_CODE } from 'src/shared/error';
-import { typeMessage } from './messages.enum';
+import { TypeGetListAttachments, typeMessage } from './messages.enum';
 
 @Injectable()
 export class MessagesService {
@@ -34,7 +35,6 @@ export class MessagesService {
   ): Promise<IMessagesResponse> {
     if (type) {
       const message = await this.messagesRepository.getByIdOfGroup(_id);
-      console.log('message: ', message);
       return messageUtils.convertMessageOfGroup(message);
     }
 
@@ -42,37 +42,55 @@ export class MessagesService {
     return messageUtils.convertMessageOfIndividual(message);
   }
 
-  public async getAllFiles(converId: string, userId: string): Promise<any> {
-    const images =
-      await this.messagesRepository.getListFilesByTypeAndConversationId(
-        'IMAGE',
-        converId,
-        userId,
-        0,
-        8,
-      );
+  public async getAllFiles(
+    converId: string,
+    userId: string,
+    type: TypeGetListAttachments,
+  ): Promise<IGetListFileMessageSlot> {
+    if (type === TypeGetListAttachments.ALL) {
+      const images =
+        await this.messagesRepository.getListFilesByTypeAndConversationId(
+          'IMAGE',
+          converId,
+          userId,
+          0,
+          8,
+        );
 
-    const videos =
-      await this.messagesRepository.getListFilesByTypeAndConversationId(
-        'VIDEO',
-        converId,
-        userId,
-        0,
-        8,
-      );
-    const files =
-      await this.messagesRepository.getListFilesByTypeAndConversationId(
-        'FILE',
-        converId,
-        userId,
-        0,
-        8,
-      );
-    return {
-      images,
-      videos,
-      files,
-    };
+      const videos =
+        await this.messagesRepository.getListFilesByTypeAndConversationId(
+          'VIDEO',
+          converId,
+          userId,
+          0,
+          8,
+        );
+      const files =
+        await this.messagesRepository.getListFilesByTypeAndConversationId(
+          'FILE',
+          converId,
+          userId,
+          0,
+          8,
+        );
+      return {
+        images,
+        videos,
+        files,
+      };
+    } else {
+      const files =
+        await this.messagesRepository.getListFilesByTypeAndConversationId(
+          type,
+          converId,
+          userId,
+          0,
+          8,
+        );
+      return {
+        files,
+      };
+    }
   }
 
   public async getList(
@@ -235,14 +253,12 @@ export class MessagesService {
     const message = await this.messagesRepository.getById(messId);
     const { conversationId } = message;
 
-    console.log('conversationId: ', conversationId);
-
     const conversation = await this.conversationRepository.getByIdAndUserId(
       conversationId,
       userId,
     );
 
-    const { _id, type, pinMessageIds } = conversation;
+    const { _id, pinMessageIds } = conversation;
 
     if (pinMessageIds.includes(messId) || pinMessageIds.length >= 3)
       throw new AppError(ERROR_CODE.MAX_PIN_MESSAGE);

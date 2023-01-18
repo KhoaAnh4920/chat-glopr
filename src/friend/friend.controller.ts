@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { IEmptyDataRes, ISingleRes } from 'src/shared/response';
-import { PayloadSendRequestDto } from './friend.dto';
+import { ListInviteResponeDto, PayloadSendRequestDto } from './friend.dto';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 import { IDeleteFriendRequestViewReq } from './friend.type';
 import { ResponseMessage } from 'src/shared/response';
@@ -34,9 +34,16 @@ export class FriendController {
   @ApiOperation({ summary: 'Send friend request' })
   @ApiBearerAuth()
   @SetScopes('user.friend.request')
-  @ApiOkResponse({
-    status: HttpStatus.OK,
-    description: 'Send friend request',
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    schema: {
+      example: {
+        success: true,
+        statusCode: 201,
+        message: ResponseMessage.CREATE_SUCCESS,
+        data: [],
+      },
+    },
   })
   public async sendFriendInvite(
     @Body() payload: PayloadSendRequestDto,
@@ -90,9 +97,16 @@ export class FriendController {
   @ApiOperation({ summary: 'Delete friend request' })
   @ApiBearerAuth()
   @SetScopes('user.friend.request')
-  @ApiOkResponse({
+  @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Delete friend request',
+    schema: {
+      example: {
+        success: true,
+        statusCode: 201,
+        message: ResponseMessage.DELETE_DATA_SUCCEEDED,
+        data: [],
+      },
+    },
   })
   public async deleteFriendRequest(
     @Param() params: PayloadSendRequestDto,
@@ -121,7 +135,7 @@ export class FriendController {
   @SetScopes('user.friend.request')
   @ApiOkResponse({
     status: HttpStatus.OK,
-    description: 'The list of friend requests sent by yourself',
+    type: ListInviteResponeDto,
   })
   public async getListInvitesWasSend(
     @Res() res: Response,
@@ -147,7 +161,7 @@ export class FriendController {
   @SetScopes('user.friend.request')
   @ApiOkResponse({
     status: HttpStatus.OK,
-    description: 'My friend request list',
+    type: ListInviteResponeDto,
   })
   public async getListFriendInvites(
     @Res() res: Response,
@@ -170,7 +184,7 @@ export class FriendController {
   @SetScopes('user.friend.get')
   @ApiOkResponse({
     status: HttpStatus.OK,
-    description: 'Get list friend',
+    type: ListInviteResponeDto,
   })
   public async getListFriends(
     @Res() res: Response,
@@ -180,7 +194,6 @@ export class FriendController {
       '',
       currentUser.userId,
     );
-    // console.log('user: ', users);
 
     const singleRes = {
       success: true,

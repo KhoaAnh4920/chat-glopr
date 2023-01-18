@@ -18,6 +18,7 @@ import { RandomTypes } from '../../shared/common/stringUtils';
 import { OTP_LENGTH } from '../../otp/otp.constant';
 import { Type } from 'class-transformer';
 import { UserGender } from '../users.enum';
+import { ResponseMessage } from 'src/shared/response';
 
 export class RequestSendOTPDto {
   @ApiProperty({
@@ -140,4 +141,122 @@ export class PayloadGetDetailUserDto {
   @IsOptional()
   @IsString()
   readonly key?: string;
+}
+
+export class OtpResponse {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 200 })
+  statusCode: number;
+
+  @ApiProperty({ example: 'CREATE_SUCCESS' })
+  message: string;
+
+  @ApiProperty({ example: { otpCode: '1234' } })
+  data: {
+    otpCode: string;
+  };
+}
+
+export class GetInfoUserResponse {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 200 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.GET_DATA_SUCCEEDED })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      id: '63b27f12b7aa9e3ac3a71a7e',
+      email: 'khoaanh4920@gmail.com',
+      phoneNumber: '123456789',
+      fullName: 'Nguyễn Anh Khoa',
+      userName: 'khoaanh4920',
+      dob: '2000-09-04T09:16:27.574Z',
+      avatar:
+        'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+      gender: 'MALE',
+      isActived: false,
+      isDeleted: false,
+      createdAt: '2023-01-02T06:52:02.305Z',
+      updatedAt: '2023-01-02T06:52:02.305Z',
+    },
+  })
+  data: {
+    _id: string;
+    email: string;
+    phoneNumber: string;
+    fullName: string;
+    userName: string;
+    dob: Date;
+    avatar: string;
+    gender: string;
+    isActived: boolean;
+    isDeleted: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+}
+
+export class GetInfoSummaryUserResponse {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 200 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.GET_DATA_SUCCEEDED })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      fullName: 'Nguyễn Anh Khoa',
+      userName: 'khoaanh4920',
+      avatar:
+        'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+      isActived: false,
+    },
+  })
+  data: {
+    fullName: string;
+    userName: string;
+    avatar: string;
+    isActived: boolean;
+  };
+}
+
+export class GetSearchUserSummaryUserResponse {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 200 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.GET_DATA_SUCCEEDED })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      fullName: 'Nguyễn Anh Khoa',
+      userName: 'khoaanh4920',
+      dob: null,
+      avatar:
+        'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+      gender: 'FEMALE',
+      isActived: false,
+    },
+  })
+  data: {
+    fullName: string;
+    userName: string;
+    email: string;
+    dob: Date;
+    avatar: string;
+    gender: string;
+    isActived: boolean;
+  };
 }

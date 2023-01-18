@@ -13,7 +13,7 @@ export class UsersRepository {
     private userModel: Model<UserDocument>,
   ) {}
 
-  async findOne(indentity: string): Promise<IUser | undefined> {
+  async findOne(indentity: string): Promise<UserDocument | undefined> {
     const idParam = ObjectId.isValid(indentity);
     let user = null;
     if (idParam) {

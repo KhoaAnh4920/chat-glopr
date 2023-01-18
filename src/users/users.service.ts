@@ -28,7 +28,7 @@ export class UsersService {
     private readonly mailService: MailService,
   ) {}
 
-  async findOne(indentity: string): Promise<IUser> {
+  async findOne(indentity: string): Promise<UserDocument> {
     return this.usersRepository.findOne(indentity);
   }
 
@@ -146,10 +146,11 @@ export class UsersService {
     return user;
   }
 
-  public async getUserByIdentity(key: string): Promise<IUser> {
+  public async getUserByIdentity(key: string): Promise<UserDocument> {
     const user = await this.usersRepository.findOne(key);
     if (!user) throw new AppError(ERROR_CODE.USER_NOT_FOUND);
-    // user.password = undefined;
+    user.password = undefined;
+    user.refreshToken = undefined;
     return user;
   }
 

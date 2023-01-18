@@ -15,7 +15,7 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISingleRes, ResponseMessage } from 'src/shared/response';
 import { UploadService } from './upload.service';
 import { Response } from 'express';
@@ -29,6 +29,21 @@ export class UploadController {
   @ApiTags('Upload')
   @Post('/avatar')
   @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    schema: {
+      example: {
+        success: true,
+        statusCode: 201,
+        message: ResponseMessage.CREATE_SUCCESS,
+        data: {
+          secure_url:
+            'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+          created_at: '2023-01-02T06:52:02.305Z',
+        },
+      },
+    },
+  })
   @ApiBody({
     schema: {
       type: 'object',

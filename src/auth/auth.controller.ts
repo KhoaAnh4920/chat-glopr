@@ -15,10 +15,14 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOperation,
+  getSchemaPath,
 } from '@nestjs/swagger';
-import { RegisterUserDto } from '../auth/dto/register-user.dto';
+import {
+  RegisterUserDto,
+  ResponseRegisterUserDto,
+} from '../auth/dto/register-user.dto';
 import { LocalAuthGuard } from './common/guards/local-auth.guard';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { ISingleRes } from '../shared/response';
@@ -30,7 +34,11 @@ import {
   IRefreshTokenReq,
   IUserCreated,
 } from './auth.type';
-import { ChangePasswordDto, TokenRefreshDto } from './dto/auth.dto';
+import {
+  ChangePasswordDto,
+  NewTokenResponseDto,
+  TokenRefreshDto,
+} from './dto/auth.dto';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 
 @ApiTags('auth')
@@ -40,8 +48,12 @@ export class AuthController {
 
   @Post('register')
   @ApiResponse({
-    status: 201,
-    description: 'The user has been successfully created.',
+    status: HttpStatus.CREATED,
+    type: ResponseRegisterUserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input',
   })
   async register(
     @Body() registerUserDto: RegisterUserDto,
@@ -59,11 +71,19 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard) // Check user request is valid //
   @Post('login')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: ResponseLoginUserDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized || Invalid email or password',
+  })
   async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
     const authRes = await this.authService.login(loginUserDto);
     const bodyResponse: ISingleRes<IAuthResponse> = {
       success: true,
-      statusCode: 201,
+      statusCode: 200,
       message: 'SIGN_IN_SUCCESSFULLY',
       data: authRes,
     };
@@ -90,6 +110,8 @@ export class AuthController {
 
   @Patch('/token/refresh')
   @ApiOperation({ summary: 'Get new token' })
+  @ApiResponse({ status: HttpStatus.OK, type: NewTokenResponseDto })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid token' })
   public async getNewToken(
     @Body() tokenRefreshDto: TokenRefreshDto,
     @Res() res: Response,

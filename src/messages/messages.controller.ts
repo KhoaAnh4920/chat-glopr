@@ -40,6 +40,7 @@ import {
 import {
   CreateTextMessageViewReq,
   GetListMessageSlot,
+  IGetListFileMessageSlot,
   IMessagesResponse,
   IResPinMessageSlot,
 } from './messages.type';
@@ -51,6 +52,7 @@ import {
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import { TypeGetListAttachments, typeMessage } from './messages.enum';
+import { AppError, ERROR_CODE } from 'src/shared/error';
 
 @Controller('messages')
 export class MessagesController {
@@ -205,23 +207,19 @@ export class MessagesController {
     @Res() res: Response,
   ) {
     // Check is exists conversation //
-    console.log(query);
-    let files = null;
-    // if (query.type === TypeGetListAttachments.ALL)
-    //   files = await this.messagesService.getAllFiles(
-    //     params.converId,
-    //     currentUser.userId,
-    //   );
-    files = await this.messagesService.getAllFiles(
+    const value = TypeGetListAttachments[query.type];
+    if (!!!value) throw new AppError(ERROR_CODE.PARAM_INVALID);
+    const data = await this.messagesService.getAllFiles(
       params.converId,
       currentUser.userId,
+      query.type,
     );
 
-    const singleRes: ISingleRes<any> = {
+    const singleRes: ISingleRes<IGetListFileMessageSlot> = {
       success: true,
       statusCode: 201,
       message: ResponseMessage.CREATE_SUCCESS,
-      data: files,
+      data: data,
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }

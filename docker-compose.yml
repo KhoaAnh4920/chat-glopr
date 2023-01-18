@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: 'mongo'
+    env_file:
+      - .env
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+  
+  redis:
+    restart: always
+    image: redis
+    container_name: redis_local
+    volumes:
+      - ./redis_data:/data/db/redis
+    env_file:
+      - ./.env
+    ports:
+      - '6379:6379'
+
+  api: 
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - ${PORT}:${PORT}
+    command: npm run start:dev
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+      - redis
+    links:
+      - mongodb
+      - redis
+    container_name: chatGlopr_api
+
+volumes:
+  mongodb_data_container:
