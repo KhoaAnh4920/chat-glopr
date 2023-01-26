@@ -202,7 +202,7 @@ export class ConversationController {
     const resBody: ISingleRes<ParticipantsDocument[]> = {
       success: true,
       statusCode: 200,
-      message: ResponseMessage.CREATE_SUCCESS,
+      message: ResponseMessage.GET_DATA_SUCCEEDED,
       data: users,
     };
 
