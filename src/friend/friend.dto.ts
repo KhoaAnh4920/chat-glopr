@@ -7,7 +7,6 @@ import {
   IsEmail,
   IsNotEmpty,
 } from 'class-validator';
-import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/shared/response';
 
 export class PayloadSendRequestDto {

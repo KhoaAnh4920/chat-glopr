@@ -51,9 +51,19 @@ export class ConversationController {
   @ApiOperation({ summary: 'Create a personal conversation' })
   @ApiBearerAuth()
   @SetScopes('user.conversation.create')
-  @ApiOkResponse({
-    status: HttpStatus.OK,
-    description: 'Create a personal conversation',
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    schema: {
+      example: {
+        success: true,
+        statusCode: 201,
+        message: ResponseMessage.CREATE_SUCCESS,
+        data: {
+          _id: '63cccb485efe7d670dfa3c0f',
+          isExists: false,
+        },
+      },
+    },
   })
   public async createIndividualConversation(
     @Body() payload: PayloadCreateIndividualDto,
