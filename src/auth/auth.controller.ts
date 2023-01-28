@@ -24,6 +24,7 @@ import {
 import { LocalAuthGuard } from './common/guards/local-auth.guard';
 import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { GoogleAuthGuard } from './common/guards/google-auth.guard';
 import { Request } from 'express';
 import { ISingleRes } from '../shared/response';
 import { Response } from 'express';
@@ -40,6 +41,7 @@ import {
   TokenRefreshDto,
 } from './dto/auth.dto';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -135,4 +137,15 @@ export class AuthController {
   // logout(@Req() req: Request) {
   //   this.authService.logout(req.user['sub']);
   // }
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async googleAuth(@Req() req) {}
+
+  @Get('/google/redirect')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() req) {
+    return this.authService.googleLogin(req);
+  }
 }

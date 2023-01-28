@@ -1,7 +1,5 @@
 import Redis from 'ioredis';
 
-console.log('Check: ', process.env.REDIS_HOST);
-console.log('Check: ', process.env.REDIS_PASSWORD);
 export const redisClient = new Redis({
   host: process.env.REDIS_HOST,
   port: +process.env.REDIS_PORT,
