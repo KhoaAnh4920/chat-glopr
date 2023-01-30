@@ -33,6 +33,7 @@ enum ERROR_CODE {
   NOT_FOUND_CONSERVATION = 'NOT_FOUND_CONSERVATION',
   USER_IDS_INVALID = 'USER_IDS_INVALID',
   MAX_PIN_MESSAGE = 'MAX_PIN_MESSAGE',
+  EMAIL_HAS_BEEN_REGISTERED = 'EMAIL_HAS_BEEN_REGISTERED',
 }
 
 const ErrorList = {
@@ -140,6 +141,10 @@ const ErrorList = {
   [ERROR_CODE.MAX_PIN_MESSAGE]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'You can only pin up to 3 messages',
+  },
+  [ERROR_CODE.EMAIL_HAS_BEEN_REGISTERED]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Your email has already been registered',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

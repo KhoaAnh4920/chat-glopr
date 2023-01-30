@@ -4,7 +4,11 @@ import { identity } from 'rxjs';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ICreateUserViewReq, IUser } from './user.type';
+import {
+  ICreateUserFromSocialViewReq,
+  ICreateUserViewReq,
+  IUser,
+} from './user.type';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 export class UsersRepository {
@@ -32,7 +36,9 @@ export class UsersRepository {
     return user;
   }
 
-  async createOne(user: ICreateUserViewReq): Promise<User> {
+  async createOne(
+    user: ICreateUserViewReq | ICreateUserFromSocialViewReq,
+  ): Promise<User> {
     const createOne = await this.userModel.create(user);
     return createOne;
   }

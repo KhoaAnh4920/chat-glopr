@@ -26,8 +26,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     console.log('profile: ', profile);
     // 100024842504226222045 //
     // 110283775736130116971 //
-    const { name, emails, photos } = profile;
+    const { name, emails, photos, id, displayName } = profile;
     const user = {
+      id: id,
+      displayName: displayName,
       email: emails[0].value,
       firstName: name.givenName,
       lastName: name.familyName,

@@ -19,8 +19,12 @@ import {
   INewTokenResponse,
   IRefreshTokenReq,
 } from './auth.type';
-import { IUpdateUserViewReq } from '../users/user.type';
+import {
+  ICreateUserFromSocialViewReq,
+  IUpdateUserViewReq,
+} from '../users/user.type';
 import { Types } from 'mongoose';
+import { TypeTokenLogin } from './constants';
 @Injectable()
 export class AuthService {
   constructor(
@@ -62,7 +66,11 @@ export class AuthService {
       isActived: true,
     });
     if (newUser) {
-      const tokens = await this.getTokens(newUser._id, newUser.email);
+      const tokens = await this.getTokens(
+        newUser._id,
+        newUser.email,
+        TypeTokenLogin.REGISTER,
+      );
       await this.updateRefreshToken(newUser._id, tokens.refreshToken);
       return {
         _id: newUser._id,
@@ -92,6 +100,7 @@ export class AuthService {
       const { accessToken, refreshToken } = await this.getTokens(
         payload.id,
         payload.email,
+        TypeTokenLogin.REGISTER,
       );
       return {
         access_token: accessToken,
@@ -101,12 +110,13 @@ export class AuthService {
     }
   }
 
-  async getTokens(userId: string, email: string) {
+  async getTokens(userId: string, email: string, type: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           userId,
           email,
+          type,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
@@ -117,6 +127,7 @@ export class AuthService {
         {
           userId,
           email,
+          type,
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
@@ -175,7 +186,11 @@ export class AuthService {
     if (!tokenDecoded) throw new AppError(ERROR_CODE.INVALID_TOKEN);
     const user = await this.usersService.findOne(tokenDecoded.userId);
     if (!user) throw new AppError(ERROR_CODE.UNAUTHORIZED);
-    const { accessToken } = await this.getTokens(user.id, user.email);
+    const { accessToken } = await this.getTokens(
+      user.id,
+      user.email,
+      TypeTokenLogin.REGISTER,
+    );
     return { newToken: accessToken };
 
     // const compareResult = await bcrypt.compare(
@@ -194,9 +209,41 @@ export class AuthService {
     // await this.usersService.updateUser(updateUserViewReq);
   }
 
-  googleLogin(req) {
+  public async googleLogin(req): Promise<any> {
     if (!req.user) {
       return 'No user from google';
+    }
+    // Check if user exists //
+    const user = await this.usersService.findOne(req.user.email);
+    if (user && user.password)
+      throw new AppError(ERROR_CODE.EMAIL_HAS_BEEN_REGISTERED);
+    if (!user) {
+      const newUser: ICreateUserFromSocialViewReq = {
+        fullName: req.user.displayName,
+        avatar: req.user.picture,
+        email: req.user.email,
+        isActived: true,
+      };
+      try {
+        const result = await this.usersService.createOne(newUser);
+        // generate new token //
+        const { accessToken } = await this.getTokens(
+          result._id,
+          req.user.email,
+          TypeTokenLogin.GOOGLE,
+        );
+        req.user.accessToken = accessToken;
+      } catch (error) {
+        console.log('error: ', error);
+        throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+      }
+    } else {
+      const { accessToken } = await this.getTokens(
+        user._id,
+        req.user.email,
+        TypeTokenLogin.GOOGLE,
+      );
+      req.user.accessToken = accessToken;
     }
 
     return {

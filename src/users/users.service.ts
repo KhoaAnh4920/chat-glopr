@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
+  ICreateUserFromSocialViewReq,
   ICreateUserViewReq,
   IResetPasswordViewReq,
   ISendOtpViewReq,
@@ -42,7 +43,9 @@ export class UsersService {
     ));
   }
 
-  async createOne(user: ICreateUserViewReq): Promise<User> {
+  async createOne(
+    user: ICreateUserViewReq | ICreateUserFromSocialViewReq,
+  ): Promise<User> {
     const createOne = await this.usersRepository.createOne(user);
     return createOne;
   }
