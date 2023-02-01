@@ -134,3 +134,20 @@ export class CreateCustomerFromSocialViewReq
     readonly avatar?: string,
   ) {}
 }
+
+export interface ICreateSocialTokenViewReq {
+  readonly socialId: string;
+  readonly type: string;
+  readonly userId: string;
+  readonly accessToken: string;
+  readonly refreshToken?: string;
+}
+export class CreateSocialTokenViewReq implements ICreateSocialTokenViewReq {
+  constructor(
+    readonly socialId: string,
+    readonly type: string,
+    readonly userId: string,
+    readonly accessToken: string,
+    readonly refreshToken?: string,
+  ) {}
+}

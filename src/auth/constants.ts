@@ -2,7 +2,7 @@ export const jwtConstants = {
   secret: `${process.env.CHAT_JWTSECRET}`,
 };
 
-export enum TypeTokenLogin {
+export enum SocialAuthType {
   REGISTER = 'REGISTER',
   GOOGLE = 'GOOGLE',
   FACEBOOK = 'FACEBOOK',
