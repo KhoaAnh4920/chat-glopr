@@ -19,8 +19,13 @@ import {
   INewTokenResponse,
   IRefreshTokenReq,
 } from './auth.type';
-import { IUpdateUserViewReq } from '../users/user.type';
+import {
+  ICreateSocialTokenViewReq,
+  ICreateUserFromSocialViewReq,
+  IUpdateUserViewReq,
+} from '../users/user.type';
 import { Types } from 'mongoose';
+import { SocialAuthType } from './constants';
 @Injectable()
 export class AuthService {
   constructor(
@@ -62,7 +67,11 @@ export class AuthService {
       isActived: true,
     });
     if (newUser) {
-      const tokens = await this.getTokens(newUser._id, newUser.email);
+      const tokens = await this.getTokens(
+        newUser._id,
+        newUser.email,
+        SocialAuthType.REGISTER,
+      );
       await this.updateRefreshToken(newUser._id, tokens.refreshToken);
       return {
         _id: newUser._id,
@@ -92,6 +101,7 @@ export class AuthService {
       const { accessToken, refreshToken } = await this.getTokens(
         payload.id,
         payload.email,
+        SocialAuthType.REGISTER,
       );
       return {
         access_token: accessToken,
@@ -101,12 +111,13 @@ export class AuthService {
     }
   }
 
-  async getTokens(userId: string, email: string) {
+  async getTokens(userId: string, email: string, type: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           userId,
           email,
+          type,
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
@@ -117,6 +128,7 @@ export class AuthService {
         {
           userId,
           email,
+          type,
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
@@ -175,7 +187,11 @@ export class AuthService {
     if (!tokenDecoded) throw new AppError(ERROR_CODE.INVALID_TOKEN);
     const user = await this.usersService.findOne(tokenDecoded.userId);
     if (!user) throw new AppError(ERROR_CODE.UNAUTHORIZED);
-    const { accessToken } = await this.getTokens(user.id, user.email);
+    const { accessToken } = await this.getTokens(
+      user.id,
+      user.email,
+      SocialAuthType.REGISTER,
+    );
     return { newToken: accessToken };
 
     // const compareResult = await bcrypt.compare(
@@ -192,5 +208,71 @@ export class AuthService {
     //   password: changePasswordReq.newPassword,
     // };
     // await this.usersService.updateUser(updateUserViewReq);
+  }
+
+  public async googleLogin(req): Promise<any> {
+    if (!req.user) {
+      return 'No user from google';
+    }
+    // Check if user exists //
+    const social_token = await this.usersService.findOneSocialToken(
+      `G-${req.user.id}`,
+      SocialAuthType.GOOGLE,
+    );
+    if (!social_token) {
+      const user = await this.usersService.findOne(req.user.email);
+      if (user && user.password)
+        throw new AppError(ERROR_CODE.EMAIL_HAS_BEEN_REGISTERED);
+      const newUser: ICreateUserFromSocialViewReq = {
+        fullName: req.user.displayName,
+        avatar: req.user.picture,
+        email: req.user.email,
+        isActived: true,
+      };
+      try {
+        // Create new user //
+        const result = await this.usersService.createOne(newUser);
+        // generate new token //
+        const { accessToken } = await this.getTokens(
+          result._id,
+          req.user.email,
+          SocialAuthType.GOOGLE,
+        );
+        req.user.accessToken = accessToken;
+        // Create new social token //
+        console.log('refreshToken: ', req.user.refreshToken);
+        console.log('req.user: ', req.user);
+        const newSocialToken: ICreateSocialTokenViewReq = {
+          socialId: `G-${req.user.id}`,
+          type: SocialAuthType.GOOGLE,
+          userId: result._id,
+          accessToken: accessToken,
+          refreshToken: req.user.refreshToken,
+        };
+        await this.usersService.createOneSocialToken(newSocialToken);
+      } catch (error) {
+        console.log('error: ', error);
+        throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+      }
+    } else {
+      const { accessToken } = await this.getTokens(
+        social_token.userId,
+        req.user.email,
+        SocialAuthType.GOOGLE,
+      );
+      req.user.accessToken = accessToken;
+      await this.usersService.updateSocialToken(
+        social_token._id,
+        accessToken,
+        req.user.refreshToken,
+      );
+    }
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'User information from google',
+      data: req.user,
+    };
   }
 }

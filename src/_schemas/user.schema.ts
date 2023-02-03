@@ -11,16 +11,16 @@ export class User {
   @Prop({ required: true })
   fullName: string;
 
-  @Prop({ required: true, unique: true, lowercase: true })
+  @Prop({ required: false, unique: true, lowercase: true })
   userName: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: false, unique: true })
   phoneNumber: string;
 
   @Prop({ required: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false, default: null })
   password: string;
 
   @Prop({ default: null })

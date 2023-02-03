@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
+  ICreateSocialTokenViewReq,
+  ICreateUserFromSocialViewReq,
   ICreateUserViewReq,
   IResetPasswordViewReq,
   ISendOtpViewReq,
@@ -20,6 +22,11 @@ import { IUpdateUserViewReq } from '../users/user.type';
 import { UserUtil } from './user.util';
 import { Types } from 'mongoose';
 import { ValidateOTPViewReq } from 'src/otp/otp.type';
+import {
+  UserSocialToken,
+  UserSocialTokenDocument,
+} from 'src/_schemas/user_socialtoken';
+import { UpdateResult } from 'mongodb';
 @Injectable()
 export class UsersService {
   constructor(
@@ -32,6 +39,10 @@ export class UsersService {
     return this.usersRepository.findOne(indentity);
   }
 
+  async findOneSocialToken(socialId: string, type: string): Promise<any> {
+    return this.usersRepository.findOneSocialToken(socialId, type);
+  }
+
   public async checkUserExist(
     email: string,
     phoneNumber: string,
@@ -42,9 +53,31 @@ export class UsersService {
     ));
   }
 
-  async createOne(user: ICreateUserViewReq): Promise<User> {
+  async createOne(
+    user: ICreateUserViewReq | ICreateUserFromSocialViewReq,
+  ): Promise<User> {
     const createOne = await this.usersRepository.createOne(user);
     return createOne;
+  }
+  async createOneSocialToken(
+    newSocialToken: ICreateSocialTokenViewReq,
+  ): Promise<UserSocialToken> {
+    const createOne = await this.usersRepository.createOneSocialToken(
+      newSocialToken,
+    );
+    return createOne;
+  }
+
+  async updateSocialToken(
+    id: string,
+    accessToken: string,
+    refresh_token?: string,
+  ): Promise<UpdateResult> {
+    return this.usersRepository.updateSocialToken(
+      id,
+      accessToken,
+      refresh_token,
+    );
   }
 
   async update(

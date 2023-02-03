@@ -113,3 +113,41 @@ export class CreateCustomerViewReq implements ICreateUserViewReq {
     readonly userName?: string,
   ) {}
 }
+
+export interface ICreateUserFromSocialViewReq {
+  readonly fullName?: string;
+  readonly userName?: string;
+  readonly avatar?: string;
+  readonly phoneNumber?: string;
+  readonly email: string;
+  readonly isActived: boolean;
+}
+export class CreateCustomerFromSocialViewReq
+  implements ICreateUserFromSocialViewReq
+{
+  constructor(
+    readonly email: string,
+    readonly isActived: boolean,
+    readonly fullName?: string,
+    readonly userName?: string,
+    readonly phoneNumber?: string,
+    readonly avatar?: string,
+  ) {}
+}
+
+export interface ICreateSocialTokenViewReq {
+  readonly socialId: string;
+  readonly type: string;
+  readonly userId: string;
+  readonly accessToken: string;
+  readonly refreshToken?: string;
+}
+export class CreateSocialTokenViewReq implements ICreateSocialTokenViewReq {
+  constructor(
+    readonly socialId: string,
+    readonly type: string,
+    readonly userId: string,
+    readonly accessToken: string,
+    readonly refreshToken?: string,
+  ) {}
+}

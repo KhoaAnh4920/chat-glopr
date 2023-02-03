@@ -1,16 +1,28 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { identity } from 'rxjs';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { User, UserDocument } from 'src/_schemas/user.schema';
+import {
+  UserSocialToken,
+  UserSocialTokenDocument,
+} from 'src/_schemas/user_socialtoken';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ICreateUserViewReq, IUser } from './user.type';
+import {
+  ICreateSocialTokenViewReq,
+  ICreateUserFromSocialViewReq,
+  ICreateUserViewReq,
+  IUser,
+} from './user.type';
 const ObjectId = require('mongoose').Types.ObjectId;
+import { UpdateResult } from 'mongodb';
 
 export class UsersRepository {
   constructor(
     @InjectModel('User')
     private userModel: Model<UserDocument>,
+
+    @InjectModel('UserSocialToken')
+    private userSocialTokenModel: Model<UserSocialTokenDocument>,
   ) {}
 
   async findOne(indentity: string): Promise<UserDocument | undefined> {
@@ -32,8 +44,27 @@ export class UsersRepository {
     return user;
   }
 
-  async createOne(user: ICreateUserViewReq): Promise<User> {
+  public async findOneSocialToken(
+    socialId: string,
+    type: string,
+  ): Promise<any> {
+    return this.userSocialTokenModel.findOne({
+      socialId: socialId,
+      type: type,
+    });
+  }
+
+  async createOne(
+    user: ICreateUserViewReq | ICreateUserFromSocialViewReq,
+  ): Promise<User> {
     const createOne = await this.userModel.create(user);
+    return createOne;
+  }
+
+  async createOneSocialToken(
+    newSocialToken: ICreateSocialTokenViewReq,
+  ): Promise<UserSocialToken> {
+    const createOne = await this.userSocialTokenModel.create(newSocialToken);
     return createOne;
   }
   async updateUser(
@@ -42,6 +73,19 @@ export class UsersRepository {
   ): Promise<UserDocument> {
     return this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .exec();
+  }
+
+  async updateSocialToken(
+    id: string,
+    accessToken: string,
+    refresh_token: string,
+  ): Promise<UpdateResult> {
+    return this.userSocialTokenModel
+      .updateOne(
+        { _id: id },
+        { $set: { accessToken: accessToken, refreshToken: refresh_token } },
+      )
       .exec();
   }
 
