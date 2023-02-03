@@ -26,6 +26,7 @@ import {
   UserSocialToken,
   UserSocialTokenDocument,
 } from 'src/_schemas/user_socialtoken';
+import { UpdateResult } from 'mongodb';
 @Injectable()
 export class UsersService {
   constructor(
@@ -71,7 +72,7 @@ export class UsersService {
     id: string,
     accessToken: string,
     refresh_token?: string,
-  ): Promise<UserSocialTokenDocument> {
+  ): Promise<UpdateResult> {
     return this.usersRepository.updateSocialToken(
       id,
       accessToken,

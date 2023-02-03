@@ -46,11 +46,11 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
-  matchScopes(allowedScopes: string[], tokenScopes: string[]): boolean {
-    const scopes = allowedScopes.filter((scope) => tokenScopes.includes(scope));
-    if (scopes.length > 0) {
-      return true;
-    }
-    return false;
-  }
+  // matchScopes(allowedScopes: string[], tokenScopes: string[]): boolean {
+  //   const scopes = allowedScopes.filter((scope) => tokenScopes.includes(scope));
+  //   if (scopes.length > 0) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 }

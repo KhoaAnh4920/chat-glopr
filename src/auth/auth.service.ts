@@ -269,8 +269,10 @@ export class AuthService {
     }
 
     return {
+      success: true,
+      statusCode: 200,
       message: 'User information from google',
-      user: req.user,
+      data: req.user,
     };
   }
 }

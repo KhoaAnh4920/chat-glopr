@@ -23,7 +23,7 @@ export class UserSocialToken {
   @Prop({ default: 0 })
   isDeleted: boolean;
 
-  @Prop({ ref: 'User', type: [SchemaTypes.ObjectId], default: '' })
+  @Prop({ ref: 'User', type: SchemaTypes.ObjectId, default: '' })
   userId: string;
 }
 

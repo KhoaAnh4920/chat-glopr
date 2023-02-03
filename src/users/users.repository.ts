@@ -6,7 +6,6 @@ import {
   UserSocialToken,
   UserSocialTokenDocument,
 } from 'src/_schemas/user_socialtoken';
-import { string } from 'yargs';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ICreateSocialTokenViewReq,
@@ -15,6 +14,7 @@ import {
   IUser,
 } from './user.type';
 const ObjectId = require('mongoose').Types.ObjectId;
+import { UpdateResult } from 'mongodb';
 
 export class UsersRepository {
   constructor(
@@ -49,7 +49,7 @@ export class UsersRepository {
     type: string,
   ): Promise<any> {
     return this.userSocialTokenModel.findOne({
-      socialId: `A-${socialId}`,
+      socialId: socialId,
       type: type,
     });
   }
@@ -80,7 +80,7 @@ export class UsersRepository {
     id: string,
     accessToken: string,
     refresh_token: string,
-  ): Promise<any> {
+  ): Promise<UpdateResult> {
     return this.userSocialTokenModel
       .updateOne(
         { _id: id },
