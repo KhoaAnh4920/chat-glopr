@@ -7,6 +7,7 @@ export enum typeMessage {
   HTML = 'HTML',
   NOTIFY = 'NOTIFY',
   VOTE = 'VOTE',
+  LINK = 'LINK',
 }
 
 export enum TypeGetListAttachments {
@@ -14,4 +15,5 @@ export enum TypeGetListAttachments {
   IMAGE = 'IMAGE',
   VIDEO = 'VIDEO',
   FILE = 'FILE',
+  LINK = 'LINK',
 }

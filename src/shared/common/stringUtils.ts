@@ -53,4 +53,24 @@ export class StringUtils {
     }
     return rand;
   }
+
+  public static containsUrl(message2: string): boolean {
+    // const urlRegex =
+    //   /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+
+    // return urlRegex.test(message);
+    console.log('message2: ', message2);
+    const urlRegex =
+      /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+
+    const message = 'aaa bbb https://tinhte.vn/';
+
+    if (urlRegex.test(message)) {
+      console.log('The message contains a URL.');
+      return true;
+    } else {
+      console.log('The message does not contain a URL.');
+      return false;
+    }
+  }
 }

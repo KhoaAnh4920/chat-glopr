@@ -73,10 +73,19 @@ export class MessagesService {
           0,
           8,
         );
+      const links =
+        await this.messagesRepository.getListFilesByTypeAndConversationId(
+          'LINK',
+          converId,
+          userId,
+          0,
+          8,
+        );
       return {
         images,
         videos,
         files,
+        links,
       };
     } else {
       const files =

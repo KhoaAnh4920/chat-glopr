@@ -33,6 +33,7 @@ export class Message {
       'HTML',
       'NOTIFY',
       'VOTE',
+      'LINK',
     ],
   })
   type: string;

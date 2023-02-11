@@ -20,10 +20,10 @@ export class PayloadSendTextMessageDto {
   @IsString()
   readonly content: string;
 
-  @ApiProperty({ required: true, example: typeMessage.TEXT })
-  @IsDefined()
-  @IsString()
-  readonly type: typeMessage;
+  // @ApiProperty({ required: true, example: typeMessage.TEXT })
+  // @IsDefined()
+  // @IsString()
+  // readonly type: typeMessage;
 
   @ApiProperty({
     required: true,
@@ -68,7 +68,7 @@ export class ParamsIdMessageDto {
 export class ParamsGetListFileConversationDto {
   @ApiProperty({
     required: false,
-    example: TypeGetListAttachments.ALL,
+    example: 'ALL | IMAGE | VIDEO | FILES | LINK',
     default: TypeGetListAttachments.ALL,
   })
   @IsDefined()

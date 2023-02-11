@@ -109,6 +109,7 @@ export interface IGetListFileMessageSlot {
   readonly images?: Message[];
   readonly videos?: Message[];
   readonly files?: Message[];
+  readonly links?: Message[];
 }
 
 export interface IDeleteMessageRes {

@@ -53,6 +53,8 @@ import {
 } from '@nestjs/platform-express';
 import { TypeGetListAttachments, typeMessage } from './messages.enum';
 import { AppError, ERROR_CODE } from 'src/shared/error';
+import { StringUtils } from 'src/shared/common/stringUtils';
+const urlRegex = require('url-regex');
 
 @Controller('messages')
 export class MessagesController {
@@ -76,6 +78,11 @@ export class MessagesController {
     @Res() res: Response,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
+    //console.log('Check url: ', StringUtils.containsUrl(payload.content));
+    const isExistsUrl = urlRegex().test(payload.content);
+    const typeMess = isExistsUrl ? typeMessage.LINK : typeMessage.TEXT;
+    // const url = payload.content.match(urlRegex());
+    // console.log('Test 2: ', url);
     // Check is exists conversation //
     let conversationId = payload.desId;
     const isExists = await this.conversationService.findOne(conversationId);
@@ -90,7 +97,7 @@ export class MessagesController {
 
     const payloadSendMess: CreateTextMessageViewReq = {
       content: payload.content,
-      type: payload.type,
+      type: typeMess,
       conversationId: conversationId,
     };
     const dataMess = await this.messagesService.addText(
@@ -206,7 +213,7 @@ export class MessagesController {
     @CurrentUser() currentUser: ICurrentUser,
     @Res() res: Response,
   ) {
-    // Check is exists conversation //
+    // Check is valid type //
     const value = TypeGetListAttachments[query.type];
     if (!!!value) throw new AppError(ERROR_CODE.PARAM_INVALID);
     const data = await this.messagesService.getAllFiles(
