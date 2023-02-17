@@ -40,6 +40,9 @@ export class MessagingGateway
 
   handleDisconnect(socket: AuthenticatedSocket) {
     console.log('handleDisconnect');
+    const userId = socket.user._id;
+    console.log('userId:', userId);
+    if (userId) this.cacheRepository.handleLeave(userId);
   }
 
   @SubscribeMessage('join')

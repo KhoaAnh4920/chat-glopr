@@ -34,6 +34,16 @@ export class CacheRepository {
     }
   }
 
+  public async handleLeave(userId): Promise<void> {
+    const cachedUser = await this.getUserInCache(userId);
+    if (cachedUser)
+      await this.setUserCache(userId, {
+        ...cachedUser,
+        isOnline: false,
+        lastLogin: new Date(),
+      });
+  }
+
   public async del(key: string): Promise<number> {
     return this.redisClient.del(key);
   }

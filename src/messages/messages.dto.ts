@@ -12,6 +12,7 @@ import {
   Max,
 } from 'class-validator';
 import { Types } from 'mongoose';
+import { ResponseMessage } from 'src/shared/response';
 import { TypeGetListAttachments, typeMessage } from './messages.enum';
 
 export class PayloadSendTextMessageDto {
@@ -109,4 +110,121 @@ export class PayloadSendFileMessageDto {
       'Type: .png, .jpeg, .jpg, .gif, .mp3, .mp4, .pdf, .doc, .docx, .ppt, .pptx, .rar, .zip \n\n Max size: 20 MB',
   })
   files: Express.Multer.File;
+}
+
+export class ListMessageOfConversationResponeDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 201 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.CREATE_SUCCESS })
+  message: string;
+
+  @ApiProperty({
+    example: [
+      {
+        _id: 0,
+        content: 'https://tinhte.vn/',
+        type: 'LINK',
+        reacts: [],
+        options: [],
+        createdAt: '2023-02-11T09:05:27.283Z',
+        user: {
+          _id: 0,
+          fullName: 'Nguyễn Anh Khoa',
+          avatar:
+            'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+        },
+        manipulatedUsers: [],
+        userOptions: [],
+        replyMessage: null,
+        tagUsers: [],
+      },
+      {
+        _id: 0,
+        content: '👉👈',
+        type: 'TEXT',
+        reacts: [],
+        options: [],
+        createdAt: '2023-02-12T08:27:12.985Z',
+        user: {
+          _id: 0,
+          fullName: 'Nguyễn Anh Khoa',
+          avatar:
+            'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+        },
+        manipulatedUsers: [],
+        userOptions: [],
+        replyMessage: null,
+        tagUsers: [],
+      },
+    ],
+  })
+  data: [
+    {
+      _id: string;
+      content: string;
+      type: string;
+      conversationId: string;
+      reacts: any;
+      options: any;
+      createdAt: Date;
+      user: any;
+      manipulatedUsers: any;
+      userOptions: any;
+      replyMessage: any;
+      tagUsers: any;
+    },
+  ];
+}
+
+export class SendTextMessageResponeDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 201 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.CREATE_SUCCESS })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      _id: 1,
+      content: '👉👈',
+      type: 'TEXT',
+      conversationId: 0,
+      reacts: [],
+      options: [],
+      createdAt: '2023-02-12T08:27:12.985Z',
+      user: {
+        _id: 0,
+        fullName: 'Nguyễn Anh Khoa',
+        avatar:
+          'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+      },
+      manipulatedUsers: [],
+      userOptions: [],
+      replyMessage: null,
+      tagUsers: [],
+    },
+  })
+  data: [
+    {
+      _id: string;
+      content: string;
+      type: string;
+      conversationId: string;
+      reacts: any;
+      options: any;
+      createdAt: Date;
+      user: any;
+      manipulatedUsers: any;
+      userOptions: any;
+      replyMessage: any;
+      tagUsers: any;
+    },
+  ];
 }

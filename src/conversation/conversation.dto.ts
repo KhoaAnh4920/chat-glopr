@@ -9,7 +9,11 @@ import {
   IsNotEmpty,
   IsNumber,
   IsEnum,
+  IsPositive,
+  Min,
+  Max,
 } from 'class-validator';
+import { ResponseMessage } from 'src/shared/response';
 import { typeSearchConversation } from './conversation.enum';
 
 export class PayloadCreateIndividualDto {
@@ -95,6 +99,20 @@ export class GetListConversationDto {
   @IsEnum(typeSearchConversation)
   @Type(() => Number)
   readonly type?: typeSearchConversation;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsPositive()
+  @Min(1)
+  @Type(() => Number)
+  page?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsPositive()
+  @Max(50)
+  @Type(() => Number)
+  pageSize?: number;
 }
 
 export class PayloadGetOneDto {
@@ -109,4 +127,237 @@ export class PayloadGetMemberDto {
   @IsDefined()
   @IsString()
   readonly id!: string;
+}
+
+export class ListConversationResponeDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 200 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.GET_DATA_SUCCEEDED })
+  message: string;
+
+  @ApiProperty({
+    example: [
+      {
+        _id: 0,
+        name: 'Ăn chơi lành mạnh',
+        image: [
+          {
+            avatar:
+              'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+          },
+          {
+            avatar:
+              'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+          },
+          {
+            avatar:
+              'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+          },
+        ],
+        type: true,
+        totalMembers: 3,
+        numberUnread: 0,
+        lastMessage: {
+          _id: 0,
+          content: 'https://tinhte.vn/',
+          type: 'LINK',
+          conversationId: 0,
+          reacts: [],
+          options: [],
+          createdAt: '21 giờ',
+          user: {
+            _id: 0,
+            fullName: 'Nguyễn Anh Khoa',
+            avatar:
+              'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+          },
+          manipulatedUsers: [],
+          userOptions: [],
+          replyMessage: null,
+          tagUsers: [],
+        },
+        isNotify: true,
+        isJoinFromLink: false,
+      },
+      {
+        _id: 0,
+        name: 'Nguyen Nhat Huy',
+        avatar:
+          'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+        userId: 0,
+        friendStatus: 'FOLLOWER',
+        isOnline: false,
+        lastLogin: null,
+        type: false,
+        totalMembers: 2,
+        numberUnread: 0,
+        lastMessage: {
+          _id: 0,
+          content: 'betis',
+          type: 'TEXT',
+          conversationId: 0,
+          createdAt: '22/1',
+          replyMessage: {},
+          participants: [
+            {
+              userId: 0,
+            },
+            {
+              userId: 0,
+            },
+          ],
+          user: {
+            _id: 0,
+            avatar:
+              'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+          },
+          reacts: [],
+        },
+        isNotify: true,
+        isJoinFromLink: false,
+      },
+    ],
+  })
+  data: [
+    {
+      _id: string;
+      name: string;
+      image: any;
+      type: boolean;
+      totalMembers: number;
+      numberUnread: number;
+      lastMessage: any;
+      isNotify: boolean;
+      isJoinFromLink: boolean;
+    },
+  ];
+}
+
+export class GetOneConversationResponeDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 200 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.GET_DATA_SUCCEEDED })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      _id: 0,
+      name: 'Ăn chơi lành mạnh',
+      image: [
+        {
+          avatar:
+            'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+        },
+        {
+          avatar:
+            'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+        },
+        {
+          avatar:
+            'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+        },
+      ],
+      type: true,
+      totalMembers: 3,
+      numberUnread: 0,
+      lastMessage: {
+        _id: 0,
+        content: 'https://tinhte.vn/',
+        type: 'LINK',
+        conversationId: 0,
+        reacts: [],
+        options: [],
+        createdAt: '21 giờ',
+        user: {
+          _id: 0,
+          fullName: 'Nguyễn Anh Khoa',
+          avatar:
+            'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+        },
+        manipulatedUsers: [],
+        userOptions: [],
+        replyMessage: null,
+        tagUsers: [],
+      },
+      isNotify: true,
+      isJoinFromLink: false,
+    },
+  })
+  data: {
+    _id: string;
+    name: string;
+    image: any;
+    type: boolean;
+    totalMembers: number;
+    numberUnread: number;
+    lastMessage: any;
+    isNotify: boolean;
+    isJoinFromLink: boolean;
+  };
+}
+
+export class CreateConversationResponeDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 201 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.CREATE_SUCCESS })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      conversationId: 0,
+    },
+  })
+  data: {
+    conversationId: string;
+  };
+}
+
+export class GetLinkConversationResponeDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 201 })
+  statusCode: number;
+
+  @ApiProperty({ example: ResponseMessage.CREATE_SUCCESS })
+  message: string;
+
+  @ApiProperty({
+    example: [
+      {
+        _id: 0,
+        fullName: 'Phan Chau Duc',
+        userName: 'duckphan1811',
+        avatar:
+          'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+      },
+      {
+        _id: 0,
+        fullName: 'Nguyễn Anh Khoa',
+        userName: 'khoaanh4920',
+        avatar:
+          'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
+      },
+    ],
+  })
+  data: [
+    {
+      _id: string;
+      fullName: string;
+      userName: string;
+      avatar: string;
+    },
+  ];
 }

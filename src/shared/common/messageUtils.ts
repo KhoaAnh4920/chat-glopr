@@ -181,4 +181,8 @@ export class messageUtils {
       avatar: userInfoSearch.avatar ? userInfoSearch.avatar : '',
     };
   }
+
+  public static convertImageStringToArray(message) {
+    console.log('message: ', message);
+  }
 }

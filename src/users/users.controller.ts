@@ -175,8 +175,8 @@ export class UsersController {
   @ApiTags('users')
   @Patch('retrive-password')
   @ApiOperation({ summary: 'User reset password' })
-  @ApiOkResponse({ status: HttpStatus.OK, description: 'Reset password' })
   @ApiResponse({
+    description: 'Reset password',
     status: HttpStatus.OK,
     schema: {
       example: { success: true },

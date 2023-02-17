@@ -203,9 +203,16 @@ export class ConversationService {
     return updateConversation as IConversationModel;
   }
 
-  public async getList(userId: string): Promise<ISummaryConversation[]> {
+  public async getList(
+    userId: string,
+    page: number,
+    pageSize: number,
+  ): Promise<ISummaryConversation[]> {
+    const skip = (page - 1) * pageSize;
     const conversations = await this.conversationRepository.getListByUserId(
       userId,
+      skip,
+      pageSize,
     );
     const conversationIds = conversations.map(
       (conversationEle) => conversationEle._id,
@@ -216,11 +223,16 @@ export class ConversationService {
   public async getListIndividual(
     name: string,
     userId: string,
+    page: number,
+    pageSize: number,
   ): Promise<ISummaryConversation[]> {
+    const skip = (page - 1) * pageSize;
     const conversations =
       await this.conversationRepository.getListIndividualByNameContainAndUserId(
         name,
         userId,
+        skip,
+        pageSize,
       );
     const conversationIds = conversations.map(
       (conversationEle) => conversationEle._id,
@@ -231,11 +243,16 @@ export class ConversationService {
   public async getListGroup(
     name: string,
     userId: string,
+    page: number,
+    pageSize: number,
   ): Promise<ISummaryConversation[]> {
+    const skip = (page - 1) * pageSize;
     const conversations =
       await this.conversationRepository.getListGroupByNameContainAndUserId(
         name,
         userId,
+        skip,
+        pageSize,
       );
     const conversationIds = conversations.map(
       (conversationEle) => conversationEle._id,

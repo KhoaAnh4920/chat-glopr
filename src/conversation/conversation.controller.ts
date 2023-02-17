@@ -23,7 +23,11 @@ import { IEmptyDataRes, ISingleRes } from 'src/shared/response';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 import { ResponseMessage } from 'src/shared/response';
 import {
+  CreateConversationResponeDto,
+  GetLinkConversationResponeDto,
   GetListConversationDto,
+  GetOneConversationResponeDto,
+  ListConversationResponeDto,
   ParamsDeleteConversationGroupDto,
   ParamsLeaveGroupGroupDto,
   PayloadAddMemberGroupDto,
@@ -93,8 +97,9 @@ export class ConversationController {
   @SetScopes('user.conversation.get')
   @ApiOperation({ summary: 'Get list conversation' })
   @ApiOkResponse({
+    description: 'Successful operation',
     status: HttpStatus.OK,
-    description: 'Get list conversation',
+    type: ListConversationResponeDto,
   })
   public async getList(
     @Query() query: GetListConversationDto,
@@ -103,16 +108,24 @@ export class ConversationController {
   ) {
     let data = null;
     if (+query.type === 0)
-      data = await this.conversationService.getList(currentUser.userId);
+      data = await this.conversationService.getList(
+        currentUser.userId,
+        query.page || 1,
+        query.pageSize || 20,
+      );
     if (+query.type == 1)
       data = await this.conversationService.getListIndividual(
         query.name || '',
         currentUser.userId,
+        query.page || 1,
+        query.pageSize || 20,
       );
     if (+query.type == 2)
       data = await this.conversationService.getListGroup(
         query.name || '',
         currentUser.userId,
+        query.page || 1,
+        query.pageSize || 20,
       );
     const resBody: ISingleRes<ISummaryConversation[]> = {
       success: true,
@@ -130,8 +143,9 @@ export class ConversationController {
   @SetScopes('user.conversation.get')
   @ApiOperation({ summary: 'Get one conversation' })
   @ApiOkResponse({
+    description: 'Successful operation',
     status: HttpStatus.OK,
-    description: 'Get one conversation',
+    type: GetOneConversationResponeDto,
   })
   public async getOneConversation(
     @Param() params: PayloadGetOneDto,
@@ -158,8 +172,9 @@ export class ConversationController {
   @ApiBearerAuth()
   @SetScopes('user.conversation.create')
   @ApiOkResponse({
+    description: 'Successful operation',
     status: HttpStatus.OK,
-    description: 'Create a group conversation',
+    type: CreateConversationResponeDto,
   })
   public async createGroupConversation(
     @Body() payload: PayloadCreateGroupDto,
@@ -173,11 +188,11 @@ export class ConversationController {
         payload.userIds,
       );
     // Fire socket //
-    const resBody: ISingleRes<string> = {
+    const resBody: ISingleRes<{ conversationId: string }> = {
       success: true,
       statusCode: 200,
       message: ResponseMessage.CREATE_SUCCESS,
-      data: conversationId,
+      data: { conversationId: conversationId },
     };
 
     return res.status(HttpStatus.OK).send(resBody);
@@ -189,8 +204,9 @@ export class ConversationController {
   @SetScopes('user.conversation.get')
   @ApiOperation({ summary: 'Get member of conversation' })
   @ApiOkResponse({
+    description: 'Successful operation',
     status: HttpStatus.OK,
-    description: 'Get member of conversation',
+    type: GetLinkConversationResponeDto,
   })
   public async getListMembers(
     @Param() params: PayloadGetMemberDto,
@@ -215,8 +231,16 @@ export class ConversationController {
   @ApiBearerAuth()
   @SetScopes('user.conversation.create')
   @ApiOkResponse({
-    status: HttpStatus.OK,
     description: 'Add member to conversation',
+    status: HttpStatus.OK,
+    schema: {
+      example: {
+        success: true,
+        statusCode: 200,
+        message: 'CREATE_SUCCESS',
+        data: [],
+      },
+    },
   })
   public async addMemberToConversation(
     @Body() payload: PayloadAddMemberGroupDto,

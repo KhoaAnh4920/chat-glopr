@@ -60,20 +60,32 @@ export class ConversationRepository {
 
   public async getListByUserId(
     userId: string,
+    skip: number,
+    limit: number,
   ): Promise<ConversationDocument[]> {
     return this.conversationModel
-      .find({
-        members: { $in: [userId] },
-        deletedUserIds: {
-          $nin: [userId],
+      .find(
+        {
+          members: { $in: [userId] },
+          deletedUserIds: {
+            $nin: [userId],
+          },
         },
-      })
+        {
+          skip: +skip,
+        },
+        {
+          limit: +limit,
+        },
+      )
       .sort({ updatedAt: -1 });
   }
 
   public async getListIndividualByNameContainAndUserId(
     name: string,
     userId: string,
+    skip: number,
+    limit: number,
   ): Promise<ConversationDocument[]> {
     return this.conversationModel.aggregate([
       {
@@ -103,6 +115,12 @@ export class ConversationRepository {
         },
       },
       {
+        $skip: +skip,
+      },
+      {
+        $limit: +limit,
+      },
+      {
         $sort: { updatedAt: -1 },
       },
       {
@@ -114,16 +132,26 @@ export class ConversationRepository {
   public async getListGroupByNameContainAndUserId(
     name: string,
     userId: string,
+    skip: number,
+    limit: number,
   ): Promise<ConversationDocument[]> {
     return this.conversationModel
-      .find({
-        members: { $in: [userId] },
-        type: true,
-        name: { $regex: name, $options: 'i' },
-        deletedUserIds: {
-          $nin: [userId],
+      .find(
+        {
+          members: { $in: [userId] },
+          type: true,
+          name: { $regex: name, $options: 'i' },
+          deletedUserIds: {
+            $nin: [userId],
+          },
         },
-      })
+        {
+          skip: +skip,
+        },
+        {
+          limit: +limit,
+        },
+      )
       .sort({ updatedAt: -1 });
   }
 

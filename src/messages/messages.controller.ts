@@ -36,6 +36,7 @@ import {
   PayloadSendFileMessageDto,
   ParamsGetListFileConversationDto,
   ParamsIdMessageDto,
+  SendTextMessageResponeDto,
 } from './messages.dto';
 import {
   CreateTextMessageViewReq,
@@ -72,13 +73,13 @@ export class MessagesController {
   @ApiOkResponse({
     status: HttpStatus.OK,
     description: `socket: firing emit('new-message', conversationId, message)`,
+    type: SendTextMessageResponeDto,
   })
   public async addText(
     @Body() payload: PayloadSendTextMessageDto,
     @Res() res: Response,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
-    //console.log('Check url: ', StringUtils.containsUrl(payload.content));
     const isExistsUrl = urlRegex().test(payload.content);
     const typeMess = isExistsUrl ? typeMessage.LINK : typeMessage.TEXT;
     // const url = payload.content.match(urlRegex());

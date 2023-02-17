@@ -73,6 +73,7 @@ export class MessagesService {
           0,
           8,
         );
+      messageUtils.convertImageStringToArray(files);
       const links =
         await this.messagesRepository.getListFilesByTypeAndConversationId(
           'LINK',
@@ -140,7 +141,6 @@ export class MessagesService {
       payload.conversationId,
       userId,
     );
-    // console.log('messages: ', messages);
 
     return messages;
   }
