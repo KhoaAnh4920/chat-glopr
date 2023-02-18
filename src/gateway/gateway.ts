@@ -52,4 +52,45 @@ export class MessagingGateway
     client.join(userId.toString());
     this.cacheRepository.handleJoin(userId.toString());
   }
+
+  @SubscribeMessage('join-conversation')
+  handleJoinConversations(
+    @ConnectedSocket() client: Socket,
+    conversationId: string,
+  ) {
+    console.log('conversationId: ', conversationId);
+    client.join(conversationId);
+  }
+
+  @SubscribeMessage('leave-conversation')
+  handleLeaveConversations(
+    @ConnectedSocket() client: Socket,
+    conversationId: string,
+  ) {
+    console.log('conversationId: ', conversationId);
+    client.leave(conversationId);
+  }
+
+  @SubscribeMessage('typing')
+  handleOnTypingMessage(
+    conversationId: string,
+    userId: string,
+    @ConnectedSocket() client: Socket,
+    isTyping: boolean,
+  ) {
+    console.log('isTyping: ', isTyping);
+    client.broadcast
+      .to(conversationId)
+      .emit('typing', conversationId, userId, isTyping);
+  }
+
+  @SubscribeMessage('get-user-online')
+  handleGetUserOnline(userId: string, cb: (isOnline, lastLogin) => void) {
+    const cachedUser = this.cacheRepository.getUserInCache(userId);
+
+    if (cachedUser) {
+      const { isOnline, lastLogin }: any = cachedUser;
+      cb(isOnline, lastLogin);
+    }
+  }
 }

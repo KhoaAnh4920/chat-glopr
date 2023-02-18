@@ -326,11 +326,13 @@ export class ConversationService {
     const numberOfDeletedMessages =
       await this.messagesRepository.numberOfDeletedMessages(_id, userId);
     if (!lastMessage || numberOfDeletedMessages === 0) lastMessageTempt = null;
-    else
+    else {
       lastMessageTempt = {
         ...lastMessage,
-        createdAt: DateUtils.toTime(lastMessage.createdAt),
+        createdAt: DateUtils.formatAMPM(lastMessage.createdAt),
       };
+    }
+
     return {
       _id,
       ...nameAndAvatarInfo,
