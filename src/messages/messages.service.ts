@@ -126,6 +126,7 @@ export class MessagesService {
         messageUtils.convertMessageOfGroup(messageEle),
       );
     } else {
+      console.log('BBB');
       const messagesTempt =
         await this.messagesRepository.getListByConversationIdAndUserIdOfIndividual(
           payload.conversationId,
@@ -136,6 +137,7 @@ export class MessagesService {
       messages = messagesTempt.map((messageEle) =>
         messageUtils.convertMessageOfIndividual(messageEle),
       );
+      console.log('messages: ', messages);
     }
     await this.participantsService.updateLastViewOfConversation(
       payload.conversationId,

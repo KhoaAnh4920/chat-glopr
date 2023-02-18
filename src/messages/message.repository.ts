@@ -424,7 +424,7 @@ export class MessagesRepository {
       {
         $lookup: {
           from: 'users',
-          localField: 'members.userId',
+          localField: 'participants.userId',
           foreignField: '_id',
           as: 'userInfos',
         },

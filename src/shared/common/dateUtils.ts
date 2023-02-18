@@ -67,8 +67,12 @@ export class DateUtils {
   }
 
   public static formatAMPM(date: Date) {
-    let hours = date.getHours();
-    let minutes: any = date.getMinutes();
+    const localDate = date.toLocaleString('en-US', {
+      timeZone: 'Asia/Ho_Chi_Minh',
+    });
+    const localCreatedAtDate = new Date(localDate);
+    let hours = localCreatedAtDate.getHours();
+    let minutes: any = localCreatedAtDate.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'

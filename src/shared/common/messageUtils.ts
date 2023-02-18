@@ -1,6 +1,7 @@
 import { type } from 'os';
 import { typeMessage } from 'src/messages/messages.enum';
 import { IMessagesResponse } from 'src/messages/messages.type';
+import { DateUtils } from 'src/shared/common/dateUtils';
 
 export class messageUtils {
   public static convertMessageOfGroup(message): IMessagesResponse {
@@ -153,6 +154,8 @@ export class messageUtils {
     delete message.members;
     delete message.userInfos;
     delete message.userId;
+
+    message.createdAt = DateUtils.formatAMPM(message.createdAt);
 
     return {
       ...message,
