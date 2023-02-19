@@ -97,6 +97,7 @@ export class AuthService {
         fullName: user.fullName,
         username: user.userName,
         phoneNumber: user.phoneNumber,
+        avatar: user.avatar || '',
       };
       const { accessToken, refreshToken } = await this.getTokens(
         payload.id,
