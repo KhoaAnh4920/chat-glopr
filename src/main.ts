@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from './shared/auth';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { WebsocketAdapter } from './gateway/gateway.adapter';
+// import { PeerServer } from 'peer';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +26,11 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // const peerServer = PeerServer({ port: 9000, path: '/peer' });
+  // peerServer.on('connection', (client) => {
+  //   console.log(`New client connected: ${client.getId()}`);
+  // });
 
   await app.listen(process.env.PORT);
   console.log(`Application is running on: ${await app.getUrl()}`);

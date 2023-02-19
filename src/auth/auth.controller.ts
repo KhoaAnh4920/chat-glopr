@@ -25,7 +25,6 @@ import { LocalAuthGuard } from './common/guards/local-auth.guard';
 import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './common/guards/google-auth.guard';
-import { Request } from 'express';
 import { ISingleRes } from '../shared/response';
 import { Response } from 'express';
 import {

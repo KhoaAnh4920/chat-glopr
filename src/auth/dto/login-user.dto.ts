@@ -39,7 +39,7 @@ export class ResponseLoginUserDto {
         id: '63b27f12b7aa9e3ac3a71a7e',
         email: 'khoaanh4920@gmail.com',
         fullName: 'Nguyễn Anh Khoa',
-        username: 'khoaanh4920',
+        userName: 'khoaanh4920',
         phoneNumber: '0968617132',
       },
     },
@@ -51,7 +51,7 @@ export class ResponseLoginUserDto {
       id: string;
       email: string;
       fullName: string;
-      username: string;
+      userName: string;
       phoneNumber: string;
     };
   };

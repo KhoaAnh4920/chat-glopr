@@ -70,7 +70,7 @@ export class ResponseRegisterUserDto {
       email: 'khoaanh4920@gmail.com',
       phoneNumber: '0968617132',
       fullName: 'Nguyễn Anh Khoa',
-      username: 'khoaanh4920',
+      userName: 'khoaanh4920',
       gender: 'MALE',
       avatar:
         'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
@@ -82,7 +82,7 @@ export class ResponseRegisterUserDto {
     email: string;
     phoneNumber: string;
     fullName: string;
-    username: string;
+    userName: string;
     gender: string;
     avatar: string;
     isDelete: boolean;

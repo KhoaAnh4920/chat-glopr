@@ -329,7 +329,8 @@ export class ConversationService {
     else {
       lastMessageTempt = {
         ...lastMessage,
-        createdAt: DateUtils.formatAMPM(lastMessage.createdAt),
+        createdAt: lastMessage.createdAt,
+        //createdAt: DateUtils.formatAMPM(lastMessage.createdAt),
       };
     }
 

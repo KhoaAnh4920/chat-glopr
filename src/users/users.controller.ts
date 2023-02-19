@@ -216,7 +216,7 @@ export class UsersController {
 
   @ApiTags('users')
   @Get('detail/:key')
-  @ApiOperation({ summary: 'Get detail user by id or username' })
+  @ApiOperation({ summary: 'Get detail user by id or userName' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: GetInfoUserResponse,

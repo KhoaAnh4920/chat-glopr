@@ -30,11 +30,11 @@ export class ListInviteResponeDto {
     example: [
       {
         _id: '63b27f12b7aa9e3ac3a71a7e',
-        username: 'khoaanh4920',
+        userName: 'khoaanh4920',
         avatar:
           'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
       },
     ],
   })
-  data: [{ _id: string; username: string; avatar: string }];
+  data: [{ _id: string; userName: string; avatar: string }];
 }

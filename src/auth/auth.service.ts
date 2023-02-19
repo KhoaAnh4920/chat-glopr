@@ -95,7 +95,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
-        username: user.userName,
+        userName: user.userName,
         phoneNumber: user.phoneNumber,
         avatar: user.avatar || '',
       };

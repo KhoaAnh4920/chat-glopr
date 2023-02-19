@@ -19,7 +19,7 @@ export class CacheModule {
             // const redisClient = new Redis({
             //   host: config.host,
             //   port: config.port,
-            //   username: config.user,
+            //   userName: config.user,
             //   password: config.password,
             //   db: config.db,
             // });

@@ -16,6 +16,7 @@ import { FriendModule } from './friend/friend.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessagesModule } from './messages/messages.module';
 import { ParticipantsModule } from './participants/participants.module';
+import { PeerjsModule } from './peerjs/peerjs.module';
 @Module({
   imports: [
     MorganModule,
@@ -41,6 +42,7 @@ import { ParticipantsModule } from './participants/participants.module';
     ConversationModule,
     MessagesModule,
     ParticipantsModule,
+    PeerjsModule,
   ],
   controllers: [AppController],
   providers: [
