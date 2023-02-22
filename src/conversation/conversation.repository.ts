@@ -62,7 +62,7 @@ export class ConversationRepository {
     userId: string,
     skip: number,
     limit: number,
-  ): Promise<ConversationDocument[]> {
+  ): Promise<ConversationDocument[] | any> {
     return this.conversationModel
       .find(
         {
@@ -123,9 +123,9 @@ export class ConversationRepository {
       {
         $sort: { updatedAt: -1 },
       },
-      {
-        $project: { _id: 1 },
-      },
+      // {
+      //   $project: { _id: 1 },
+      // },
     ]);
   }
 

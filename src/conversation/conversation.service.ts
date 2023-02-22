@@ -24,6 +24,7 @@ import {
 } from 'src/messages/messages.type';
 import { UsersRepository } from 'src/users/users.repository';
 import { CacheRepository } from 'src/shared/cache/cache.repository';
+import { ConversationDocument } from 'src/_schemas/conversation.schema';
 
 @Injectable()
 export class ConversationService {
@@ -214,10 +215,11 @@ export class ConversationService {
       skip,
       pageSize,
     );
-    const conversationIds = conversations.map(
-      (conversationEle) => conversationEle._id,
-    );
-    return this.getListSummaryByIds(conversationIds, userId);
+    // const conversationIds = conversations.map(
+    //   (conversationEle) => conversationEle._id,
+    // );
+    // return this.getListSummaryByIds(conversationIds, userId);
+    return this.getListSummaryByIds(conversations, userId);
   }
 
   public async getListIndividual(
@@ -234,10 +236,10 @@ export class ConversationService {
         skip,
         pageSize,
       );
-    const conversationIds = conversations.map(
-      (conversationEle) => conversationEle._id,
-    );
-    return this.getListSummaryByIds(conversationIds, userId);
+    // const conversationIds = conversations.map(
+    //   (conversationEle) => conversationEle._id,
+    // );
+    return this.getListSummaryByIds(conversations, userId);
   }
 
   public async getListGroup(
@@ -254,19 +256,19 @@ export class ConversationService {
         skip,
         pageSize,
       );
-    const conversationIds = conversations.map(
-      (conversationEle) => conversationEle._id,
-    );
-    return this.getListSummaryByIds(conversationIds, userId);
+    // const conversationIds = conversations.map(
+    //   (conversationEle) => conversationEle._id,
+    // );
+    return this.getListSummaryByIds(conversations, userId);
   }
 
   public async getListSummaryByIds(
-    ids: string[],
+    conversations: ConversationDocument[],
     userId: string,
   ): Promise<ISummaryConversation[]> {
     const conversationsResult = [];
-    for (const id of ids) {
-      const conversation = await this.getSummaryByIdAndUserId(id, userId);
+    for (const conver of conversations) {
+      const conversation = await this.getSummaryByIdAndUserId(conver, userId);
       conversationsResult.push(conversation);
     }
 
@@ -275,34 +277,34 @@ export class ConversationService {
 
   // get thông tin tóm tắt của 1 cuộc hộp thoại.
   public async getSummaryByIdAndUserId(
-    _id: string,
+    conver: ConversationDocument | IConversationModel,
     userId: string,
   ): Promise<ISummaryConversation> {
     const member =
       await this.participantsRepository.getByConversationIdAndUserId(
-        _id,
+        conver._id,
         userId,
       );
     const { lastView, isNotify } = member;
-    const conversation = await this.conversationRepository.findOne(_id);
-    const { lastMessageId, type, members, isJoinFromLink } = conversation;
+    // const conversation = await this.conversationRepository.findOne(_id);
+    const { lastMessageId, type, members, isJoinFromLink } = conver;
     const lastMessage = lastMessageId
       ? await this.messagesService.getById(lastMessageId, type)
       : null;
     const numberUnread = await this.messagesRepository.countUnread(
       lastView,
-      _id,
+      conver._id,
     );
     let nameAndAvatarInfo;
-    if (type) nameAndAvatarInfo = await this.getGroupConversation(conversation);
+    if (type) nameAndAvatarInfo = await this.getGroupConversation(conver);
     else {
       nameAndAvatarInfo =
         await this.participantsRepository.getIndividualConversation(
-          _id,
+          conver._id,
           userId,
         );
 
-      const { members } = conversation;
+      const { members } = conver;
       const index = members.findIndex((ele) => ele + '' != userId);
       nameAndAvatarInfo.userId = members[index];
       nameAndAvatarInfo.friendStatus = await this.friendService.getFriendStatus(
@@ -324,7 +326,7 @@ export class ConversationService {
     let lastMessageTempt = {};
 
     const numberOfDeletedMessages =
-      await this.messagesRepository.numberOfDeletedMessages(_id, userId);
+      await this.messagesRepository.numberOfDeletedMessages(conver._id, userId);
     if (!lastMessage || numberOfDeletedMessages === 0) lastMessageTempt = null;
     else {
       lastMessageTempt = {
@@ -335,7 +337,7 @@ export class ConversationService {
     }
 
     return {
-      _id,
+      _id: conver._id,
       ...nameAndAvatarInfo,
       type,
       totalMembers: members.length,
@@ -372,7 +374,6 @@ export class ConversationService {
       name,
       image,
     };
-
     if (!name) result.name = groupName.slice(2);
     if (!image) result.image = groupAvatar;
 

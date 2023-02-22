@@ -5,15 +5,18 @@ import {
   IsDefined,
   IsOptional,
   IsString,
-  IsEmail,
-  IsNotEmpty,
   IsPositive,
   Min,
   Max,
+  IsNumber,
 } from 'class-validator';
 import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/shared/response';
-import { TypeGetListAttachments, typeMessage } from './messages.enum';
+import {
+  TypeGetListAttachments,
+  typeMessage,
+  TypeReactMessage,
+} from './messages.enum';
 
 export class PayloadSendTextMessageDto {
   @ApiProperty({ required: true, example: 'Phu noi nhieu' })
@@ -227,4 +230,18 @@ export class SendTextMessageResponeDto {
       tagUsers: any;
     },
   ];
+}
+
+export class ParamsReactionMessageDto {
+  @ApiProperty({ required: true, example: '63c24cf68aaec72d38f15eac' })
+  @IsDefined()
+  @IsString()
+  readonly id!: string;
+
+  @ApiProperty({
+    required: true,
+    example: TypeReactMessage.LIKE,
+  })
+  @IsDefined()
+  readonly type!: TypeReactMessage;
 }

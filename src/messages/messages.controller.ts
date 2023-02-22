@@ -37,6 +37,7 @@ import {
   ParamsGetListFileConversationDto,
   ParamsIdMessageDto,
   SendTextMessageResponeDto,
+  ParamsReactionMessageDto,
 } from './messages.dto';
 import {
   CreateTextMessageViewReq,
@@ -355,6 +356,41 @@ export class MessagesController {
       statusCode: 200,
       message: ResponseMessage.DELETE_DATA_SUCCEEDED,
       data: { conversationId, message },
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('Messages')
+  @Post('/:id/reacts/:type')
+  @ApiBearerAuth()
+  @SetScopes('user.messages.reacts')
+  @ApiOperation({ summary: 'Add reaction for message' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Add reaction for message',
+  })
+  public async addReaction(
+    @Param() params: ParamsReactionMessageDto,
+    @CurrentUser() currentUser: ICurrentUser,
+    @Res() res: Response,
+  ) {
+    console.log('Check params: ', params);
+    // const { conversationId, message } =
+    //   await this.messagesService.addPinMessage(params.id, currentUser.userId);
+
+    // this.messagingGateway.server
+    //   .to(conversationId + '')
+    //   .emit('new-message', conversationId, message);
+
+    // this.messagingGateway.server
+    //   .to(conversationId + '')
+    //   .emit('action-pin-message', conversationId);
+
+    const singleRes: ISingleRes<any> = {
+      success: true,
+      statusCode: 201,
+      message: ResponseMessage.CREATE_SUCCESS,
+      data: [],
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }

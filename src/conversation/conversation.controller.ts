@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -41,6 +42,7 @@ import { MessagingGateway } from 'src/gateway/gateway';
 import { ICreateIndividual, ISummaryConversation } from './consersation.type';
 import { ParticipantsService } from 'src/participants/participants.service';
 import { ParticipantsDocument } from 'src/_schemas/participants.schema';
+import { LoggingInterceptor } from '../shared/common/logging.interceptor';
 
 @Controller('conversation')
 export class ConversationController {
@@ -95,6 +97,7 @@ export class ConversationController {
   @Get()
   @ApiBearerAuth()
   @SetScopes('user.conversation.get')
+  // @UseInterceptors(LoggingInterceptor)
   @ApiOperation({ summary: 'Get list conversation' })
   @ApiOkResponse({
     description: 'Successful operation',
@@ -152,8 +155,11 @@ export class ConversationController {
     @Res() res: Response,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
-    const dataRes = await this.conversationService.getSummaryByIdAndUserId(
+    const conversation = await this.conversationService.findOne(
       params.converId,
+    );
+    const dataRes = await this.conversationService.getSummaryByIdAndUserId(
+      conversation,
       currentUser.userId,
     );
     const resBody: ISingleRes<ISummaryConversation> = {
