@@ -35,9 +35,6 @@ export class User {
   @Prop({ default: UserGender.FEMALE, enum: UserGender })
   gender: UserGender;
 
-  @Prop()
-  type: boolean;
-
   @Prop({ default: 0 })
   isActived: boolean;
 

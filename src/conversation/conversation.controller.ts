@@ -97,7 +97,6 @@ export class ConversationController {
   @Get()
   @ApiBearerAuth()
   @SetScopes('user.conversation.get')
-  // @UseInterceptors(LoggingInterceptor)
   @ApiOperation({ summary: 'Get list conversation' })
   @ApiOkResponse({
     description: 'Successful operation',

@@ -67,6 +67,8 @@ export class messageUtils {
       });
     }
 
+    message.createdAt = DateUtils.formatAMPM(message.createdAt);
+
     delete message.isDeleted;
     delete message.reactUsers;
     delete message.replyUser;

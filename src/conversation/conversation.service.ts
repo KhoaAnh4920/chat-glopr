@@ -191,7 +191,7 @@ export class ConversationService {
       conver._id,
       viewReq.name || conver.name,
       viewReq.image || conver.image,
-      viewReq.creatorid || conver.creatorId,
+      viewReq.creatorId || conver.creatorId,
       viewReq.lastMessageId || conver.lastMessageId,
       viewReq.pinMessageIds || conver.pinMessageIds,
       viewReq.members || conver.members,

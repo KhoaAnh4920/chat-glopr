@@ -42,7 +42,7 @@ export interface IUpdateConversationViewReq {
   readonly id: string;
   readonly name?: string;
   readonly image?: string;
-  readonly creatorid?: string;
+  readonly creatorId?: string;
   readonly lastMessageId?: string;
   readonly pinMessageIds?: string[];
   readonly members?: string[];
@@ -55,7 +55,7 @@ export class UpdateConversationViewReq implements IUpdateConversationViewReq {
     readonly id: string,
     readonly name?: string,
     readonly image?: string,
-    readonly creatorid?: string,
+    readonly creatorId?: string,
     readonly lastMessageId?: string,
     readonly pinMessageIds?: string[],
     readonly members?: string[],
@@ -68,7 +68,7 @@ export interface IUpdateConversationModel {
   readonly id: string;
   readonly name?: string;
   readonly image?: string;
-  readonly creatorid?: string;
+  readonly creatorId?: string;
   readonly lastMessageId?: string;
   readonly pinMessageIds?: string[];
   readonly members?: string[];
@@ -81,7 +81,7 @@ export class UpdateConversationModel implements IUpdateConversationModel {
     readonly id: string,
     readonly name?: string,
     readonly image?: string,
-    readonly creatorid?: string,
+    readonly creatorId?: string,
     readonly lastMessageId?: string,
     readonly pinMessageIds?: string[],
     readonly members?: string[],

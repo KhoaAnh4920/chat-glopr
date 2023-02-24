@@ -14,7 +14,7 @@ export class Conversation {
   image: string;
 
   @Prop({ ref: 'User', type: SchemaTypes.ObjectId, default: null })
-  creatorid: string;
+  creatorId: string;
 
   @Prop({ ref: 'Message', type: SchemaTypes.ObjectId })
   lastMessageId: string;
@@ -25,7 +25,7 @@ export class Conversation {
   @Prop({ ref: 'User', type: [SchemaTypes.ObjectId] })
   members: string[];
 
-  @Prop()
+  @Prop({ default: 0, type: Boolean })
   type: boolean;
 
   @Prop({ default: 0, type: Boolean })
