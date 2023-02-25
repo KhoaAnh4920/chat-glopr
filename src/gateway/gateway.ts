@@ -90,17 +90,17 @@ export class MessagingGateway
   }
 
   @SubscribeMessage('get-user-online')
-  handleGetUserOnline(
+  async handleGetUserOnline(
     @MessageBody()
     userId: string,
-    @MessageBody()
-    cb: (isOnline, lastLogin) => void,
+    @ConnectedSocket() client: Socket,
   ) {
-    const cachedUser = this.cacheRepository.getUserInCache(userId);
+    const cachedUser = await this.cacheRepository.getUserInCache(userId);
+    console.log('cachedUser: ', cachedUser);
 
     if (cachedUser) {
       const { isOnline, lastLogin }: any = cachedUser;
-      cb(isOnline, lastLogin);
+      client.emit('userOnlineStatus', { isOnline, lastLogin });
     }
   }
 }
