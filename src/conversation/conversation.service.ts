@@ -271,7 +271,6 @@ export class ConversationService {
       const conversation = await this.getSummaryByIdAndUserId(conver, userId);
       conversationsResult.push(conversation);
     }
-
     return conversationsResult;
   }
 
@@ -491,6 +490,16 @@ export class ConversationService {
     await this.conversationRepository.deleteConversation(converId, userId);
     // delete message //
     await this.messagesRepository.deleteAll(converId, userId);
+    return true;
+  }
+
+  public async createNewRoleConversation(
+    name: string,
+    converId: string,
+  ): Promise<boolean> {
+    console.log('name: ', name);
+    console.log('converId: ', converId);
+    //await this.conversationRepository.createNewRoleConversation(name, converId);
     return true;
   }
 }

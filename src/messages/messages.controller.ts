@@ -374,19 +374,20 @@ export class MessagesController {
     @CurrentUser() currentUser: ICurrentUser,
     @Res() res: Response,
   ) {
-    console.log('Check params: ', params);
-    // const { conversationId, message } =
-    //   await this.messagesService.addPinMessage(params.id, currentUser.userId);
+    const { user, conversationId } = await this.messagesService.addReaction(
+      params.id,
+      params.type,
+      currentUser.userId,
+    );
 
-    // this.messagingGateway.server
-    //   .to(conversationId + '')
-    //   .emit('new-message', conversationId, message);
+    this.messagingGateway.server.to(conversationId + '').emit('add-reaction', {
+      conversationId,
+      messageId: params.id,
+      user,
+      type: params.type,
+    });
 
-    // this.messagingGateway.server
-    //   .to(conversationId + '')
-    //   .emit('action-pin-message', conversationId);
-
-    const singleRes: ISingleRes<any> = {
+    const singleRes: IEmptyDataRes = {
       success: true,
       statusCode: 201,
       message: ResponseMessage.CREATE_SUCCESS,

@@ -361,3 +361,24 @@ export class GetLinkConversationResponeDto {
     },
   ];
 }
+
+export class PayloadCreateRolesDto {
+  @ApiProperty({ required: true, example: 'Mobile team', default: '' })
+  @IsDefined()
+  @IsString()
+  readonly name!: string;
+
+  @ApiProperty({ required: true, example: '63bbb7750f7ee98af3cc67f9' })
+  @IsDefined()
+  @IsString()
+  readonly converId!: string;
+
+  // @ApiProperty({
+  //   required: true,
+  //   type: [String],
+  //   example: ['63b52af3ca78739b1c94eb52'],
+  //   default: [],
+  // })
+  // @IsDefined()
+  // readonly userIds!: string[];
+}

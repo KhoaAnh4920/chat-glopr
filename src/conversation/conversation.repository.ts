@@ -8,11 +8,15 @@ import {
 import { ConversationModel, IConversationModel } from './consersation.type';
 const ObjectId = require('mongoose').Types.ObjectId;
 import { UpdateResult } from 'mongodb';
+import { RolesDocument } from 'src/_schemas/roles.schema';
 
 export class ConversationRepository {
   constructor(
     @InjectModel('Conversation')
     private conversationModel: Model<ConversationDocument>,
+
+    @InjectModel('Roles')
+    private rolesModel: Model<RolesDocument>,
   ) {}
 
   public async findOne(indentity): Promise<IConversationModel | undefined> {
@@ -254,5 +258,15 @@ export class ConversationRepository {
       { _id },
       { $pull: { pinMessageIds: messageId } },
     );
+  }
+
+  public async createNewRoleConversation(
+    name: string,
+    converId: string,
+  ): Promise<any> {
+    return this.rolesModel.create({
+      name,
+      converId,
+    });
   }
 }

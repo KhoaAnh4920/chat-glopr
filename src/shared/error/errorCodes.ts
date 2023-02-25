@@ -34,6 +34,7 @@ enum ERROR_CODE {
   USER_IDS_INVALID = 'USER_IDS_INVALID',
   MAX_PIN_MESSAGE = 'MAX_PIN_MESSAGE',
   EMAIL_HAS_BEEN_REGISTERED = 'EMAIL_HAS_BEEN_REGISTERED',
+  MESSAGE_WAS_DELETED = 'MESSAGE_WAS_DELETED',
 }
 
 const ErrorList = {
@@ -145,6 +146,10 @@ const ErrorList = {
   [ERROR_CODE.EMAIL_HAS_BEEN_REGISTERED]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Your email has already been registered',
+  },
+  [ERROR_CODE.MESSAGE_WAS_DELETED]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Message was deleted',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

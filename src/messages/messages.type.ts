@@ -118,6 +118,11 @@ export interface IDeleteMessageRes {
   readonly channelId?: string;
 }
 
+export interface IReactTempt {
+  readonly userId: string;
+  readonly typeReaction: number;
+}
+
 export class GetListMessageSlot implements IGetListMessageSlot {
   constructor(
     readonly conversationId: string,

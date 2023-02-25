@@ -5,6 +5,7 @@ import { Message, MessageDocument } from 'src/_schemas/message.schema';
 import {
   IMessagesModel,
   IMessagesResponse,
+  IReactTempt,
   MessagesModel,
 } from './messages.type';
 import { UpdateResult } from 'mongodb';
@@ -24,7 +25,6 @@ export class MessagesRepository {
       conversationId: payload.conversationId,
       manipulatedUserIds: payload.manipulatedUserIds || [],
     };
-    console.log('Check dataMessages: ', dataMessages);
     return await this.messageModel.create(dataMessages);
   }
 
@@ -515,6 +515,25 @@ export class MessagesRepository {
   public async deleteById(_id: string): Promise<boolean> {
     try {
       await this.messageModel.updateOne({ _id }, { isDeleted: true });
+      return true;
+    } catch (error) {
+      throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+    }
+  }
+
+  public async updateReaction(
+    _id: string,
+    reactTempt: IReactTempt[],
+  ): Promise<boolean> {
+    try {
+      await this.messageModel.updateOne(
+        { _id },
+        {
+          $set: {
+            reacts: reactTempt,
+          },
+        },
+      );
       return true;
     } catch (error) {
       throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);

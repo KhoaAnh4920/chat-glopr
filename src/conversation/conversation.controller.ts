@@ -34,6 +34,7 @@ import {
   PayloadAddMemberGroupDto,
   PayloadCreateGroupDto,
   PayloadCreateIndividualDto,
+  PayloadCreateRolesDto,
   PayloadDeleteMemberGroupDto,
   PayloadGetMemberDto,
   PayloadGetOneDto,
@@ -367,7 +368,6 @@ export class ConversationController {
     @Res() res: Response,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
-    console.log('params: ', params);
     await this.conversationService.deleteConversation(
       params.converId,
       currentUser.userId,
@@ -380,5 +380,38 @@ export class ConversationController {
     };
 
     return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('Conversation')
+  @Post('/roles')
+  @ApiOperation({ summary: 'Create new role of conversation' })
+  @ApiBearerAuth()
+  @SetScopes('user.conversation.create')
+  // @ApiOkResponse({
+  //   description: 'Successful operation',
+  //   status: HttpStatus.OK,
+  //   type: CreateConversationResponeDto,
+  // })
+  public async createRolesOfConversation(
+    @Body() payload: PayloadCreateRolesDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    console.log('payload: ', payload);
+    // const conversationId =
+    //   await this.conversationService.createGroupConversation(
+    //     currentUser.userId,
+    //     payload.name,
+    //     payload.userIds,
+    //   );
+
+    // const resBody: ISingleRes<{ conversationId: string }> = {
+    //   success: true,
+    //   statusCode: 200,
+    //   message: ResponseMessage.CREATE_SUCCESS,
+    //   data: { conversationId: conversationId },
+    // };
+
+    return res.status(HttpStatus.OK).send('OK');
   }
 }

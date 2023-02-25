@@ -12,11 +12,13 @@ import { ConversationRepository } from './conversation.repository';
 import { ParticipantsModule } from 'src/participants/participants.module';
 import { MessagesModule } from 'src/messages/messages.module';
 import { FriendModule } from 'src/friend/friend.module';
+import { Roles, RolesSchema } from 'src/_schemas/roles.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Conversation.name, schema: ConversationSchema },
+      { name: Roles.name, schema: RolesSchema },
     ]),
     UsersModule,
     GatewayModule,

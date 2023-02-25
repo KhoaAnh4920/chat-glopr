@@ -9,6 +9,7 @@ import { MessagesRepository } from './message.repository';
 import { ConversationModule } from 'src/conversation/conversation.module';
 import { ParticipantsModule } from 'src/participants/participants.module';
 import { UploadModule } from 'src/upload/upload.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UploadModule } from 'src/upload/upload.module';
     forwardRef(() => ConversationModule),
     ParticipantsModule,
     UploadModule,
+    UsersModule,
   ],
   controllers: [MessagesController],
   providers: [MessagesService, MessagesRepository],

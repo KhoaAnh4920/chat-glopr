@@ -16,7 +16,12 @@ import { UploadService } from 'src/upload/upload.service';
 import { Message } from 'src/_schemas/message.schema';
 import { ObjectId } from 'mongoose';
 import { AppError, ERROR_CODE } from 'src/shared/error';
-import { TypeGetListAttachments, typeMessage } from './messages.enum';
+import {
+  TypeGetListAttachments,
+  typeMessage,
+  TypeReactMessage,
+} from './messages.enum';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class MessagesService {
@@ -27,6 +32,7 @@ export class MessagesService {
     private readonly participantsService: ParticipantsService,
     private readonly conversationRepository: ConversationRepository,
     private readonly uploadService: UploadService,
+    private readonly usersService: UsersService,
   ) {}
 
   public async getById(
@@ -337,6 +343,38 @@ export class MessagesService {
     return {
       conversationId: conversationId,
       message: await this.updateWhenHasNewMessage(newMessage, _id, userId),
+    };
+  }
+
+  public async addReaction(id: string, type: TypeReactMessage, userId: string) {
+    const message = await this.messagesRepository.getById(id);
+    console.log('Check message: ', message);
+    const { isDeleted, deletedUserIds, reacts, conversationId } = message;
+    if (isDeleted || deletedUserIds.includes(userId))
+      throw new AppError(ERROR_CODE.MESSAGE_WAS_DELETED);
+    const reactIndex = reacts.findIndex(
+      (reactEle) => reactEle.userId == userId,
+    );
+    const reactTempt = [...reacts];
+    // không tìm thấy
+    // if (reactIndex === -1) {
+    //   reactTempt.push({ userId, typeReaction: type });
+    // } else {
+    //   reactTempt[reactIndex] = { userId, typeReaction: type };
+    // }
+    // await this.messagesRepository.updateReaction(id, reactTempt);
+
+    const user = await this.usersService.findOne(userId);
+    const objUser = {
+      _id: user._id,
+      fullName: user.fullName,
+      avatar: user.avatar,
+    };
+    return {
+      id,
+      conversationId,
+      user: objUser,
+      type,
     };
   }
 }

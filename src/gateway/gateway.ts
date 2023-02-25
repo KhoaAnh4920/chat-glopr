@@ -10,7 +10,7 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { AuthenticatedSocket } from './gateway.type';
+import { AuthenticatedSocket, PayloadTyping } from './gateway.type';
 import { CacheRepository } from '../shared/cache/cache.repository';
 import { SchemaTypes, Types } from 'mongoose';
 
@@ -40,23 +40,27 @@ export class MessagingGateway
 
   handleDisconnect(socket: AuthenticatedSocket) {
     console.log('handleDisconnect');
-    const userId = socket.user._id;
-    console.log('userId:', userId);
-    if (userId) this.cacheRepository.handleLeave(userId);
+    const userId = socket.data.userId;
+    if (userId) {
+      this.cacheRepository.handleLeave(userId);
+    }
   }
 
   @SubscribeMessage('join')
   handleJoin(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
     // add user to redis //
     console.log('userId join: ', userId);
+    client.data.userId = userId;
+    console.log('client.user.userId: ', client.data.userId);
     client.join(userId.toString());
     this.cacheRepository.handleJoin(userId.toString());
   }
 
   @SubscribeMessage('join-conversation')
   handleJoinConversations(
-    @ConnectedSocket() client: Socket,
+    @MessageBody()
     conversationId: string,
+    @ConnectedSocket() client: Socket,
   ) {
     console.log('conversationId: ', conversationId);
     client.join(conversationId);
@@ -64,8 +68,9 @@ export class MessagingGateway
 
   @SubscribeMessage('leave-conversation')
   handleLeaveConversations(
-    @ConnectedSocket() client: Socket,
+    @MessageBody()
     conversationId: string,
+    @ConnectedSocket() client: Socket,
   ) {
     console.log('conversationId: ', conversationId);
     client.leave(conversationId);
@@ -73,19 +78,24 @@ export class MessagingGateway
 
   @SubscribeMessage('typing')
   handleOnTypingMessage(
-    conversationId: string,
-    userId: string,
+    @MessageBody()
+    data: PayloadTyping,
     @ConnectedSocket() client: Socket,
-    isTyping: boolean,
   ) {
-    console.log('isTyping: ', isTyping);
+    console.log('check data: ', data);
+    const { conversationId, userId, isTyping } = data;
     client.broadcast
       .to(conversationId)
       .emit('typing', conversationId, userId, isTyping);
   }
 
   @SubscribeMessage('get-user-online')
-  handleGetUserOnline(userId: string, cb: (isOnline, lastLogin) => void) {
+  handleGetUserOnline(
+    @MessageBody()
+    userId: string,
+    @MessageBody()
+    cb: (isOnline, lastLogin) => void,
+  ) {
     const cachedUser = this.cacheRepository.getUserInCache(userId);
 
     if (cachedUser) {
