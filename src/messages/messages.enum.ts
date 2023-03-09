@@ -18,10 +18,10 @@ export enum TypeGetListAttachments {
   LINK = 'LINK',
 }
 
-export enum TypeReactMessage {
-  'LIKE' = 0,
-  'DISLIKE' = 1,
-  'HAHA' = 2,
-  'SAD' = 3,
-  'ANGRY' = 4,
-}
+// export enum TypeReactMessage {
+//   'LIKE' = 0,
+//   'DISLIKE' = 1,
+//   'HAHA' = 2,
+//   'SAD' = 3,
+//   'ANGRY' = 4,
+// }

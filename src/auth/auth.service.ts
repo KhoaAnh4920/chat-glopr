@@ -35,7 +35,7 @@ export class AuthService {
     private readonly otpService: OtpService,
   ) {}
 
-  async validateUser(identity, password) {
+  public async validateUser(identity, password) {
     const user = await this.usersService.findOne(identity);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -46,7 +46,7 @@ export class AuthService {
     }
   }
 
-  async register(registerUserDto: RegisterUserDto) {
+  public async register(registerUserDto: RegisterUserDto) {
     const user = await this.usersService.checkUserExist(
       registerUserDto.email,
       registerUserDto.phoneNumber,
@@ -84,7 +84,7 @@ export class AuthService {
     }
   }
 
-  async login(loginUserDto: LoginUserDto) {
+  public async login(loginUserDto: LoginUserDto) {
     const user = await this.validateUser(
       loginUserDto.identity,
       loginUserDto.password,
@@ -112,7 +112,7 @@ export class AuthService {
     }
   }
 
-  async getTokens(userId: string, email: string, type: string) {
+  public async getTokens(userId: string, email: string, type: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -149,7 +149,7 @@ export class AuthService {
     return bcrypt.hash(data, saltOrRounds);
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string) {
+  public async updateRefreshToken(userId: string, refreshToken: string) {
     const hashedRefreshToken = await this.hashData(refreshToken);
     await this.usersService.update(userId, {
       refreshToken: hashedRefreshToken,

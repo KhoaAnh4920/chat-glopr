@@ -21,7 +21,7 @@ export interface IMessagesResponse {
   };
   readonly reacts?: {
     userId: ObjectId;
-    typeReaction: number;
+    typeReaction: string;
   }[];
   readonly tags?: ObjectId[];
   readonly manipulatedUserIds?: string[];
@@ -42,7 +42,7 @@ export interface IMessagesModel {
   readonly type: string;
   readonly reacts?: {
     userId: ObjectId;
-    typeReaction: number;
+    typeReaction: string;
   }[];
   readonly options?: {
     userIds: ObjectId[];
@@ -65,7 +65,7 @@ export class MessagesModel implements IMessagesModel {
     readonly manipulatedUserIds?: string[],
     readonly reacts?: {
       userId: ObjectId;
-      typeReaction: number;
+      typeReaction: string;
     }[],
     readonly options?: {
       userIds: ObjectId[];
@@ -120,7 +120,7 @@ export interface IDeleteMessageRes {
 
 export interface IReactTempt {
   readonly userId: string;
-  readonly typeReaction: number;
+  readonly typeReaction: string;
 }
 
 export class GetListMessageSlot implements IGetListMessageSlot {

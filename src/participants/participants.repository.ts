@@ -91,6 +91,13 @@ export class ParticipantsRepository {
         },
       },
       {
+        $project: {
+          // name: 1,
+          userId: 1,
+          nickName: '$name',
+        },
+      },
+      {
         $lookup: {
           from: 'users',
           localField: 'userId',
@@ -104,6 +111,7 @@ export class ParticipantsRepository {
       {
         $project: {
           _id: 0,
+          nickName: 1,
           user: {
             _id: 1,
             fullName: 1,
@@ -113,9 +121,21 @@ export class ParticipantsRepository {
         },
       },
       {
-        $replaceWith: '$user',
+        $replaceWith: {
+          $mergeObjects: [
+            {
+              _id: 1,
+              nickName: '$nickName',
+              fullName: 1,
+              userName: 1,
+              avatar: 1,
+            },
+            '$user',
+          ],
+        },
       },
     ]);
+    console.log('Check data: ', data);
     return data;
   }
 

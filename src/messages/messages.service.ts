@@ -19,7 +19,7 @@ import { AppError, ERROR_CODE } from 'src/shared/error';
 import {
   TypeGetListAttachments,
   typeMessage,
-  TypeReactMessage,
+  // TypeReactMessage,
 } from './messages.enum';
 import { UsersService } from 'src/users/users.service';
 
@@ -346,23 +346,28 @@ export class MessagesService {
     };
   }
 
-  public async addReaction(id: string, type: TypeReactMessage, userId: string) {
+  public async addReaction(id: string, type: string, userId: string) {
     const message = await this.messagesRepository.getById(id);
-    console.log('Check message: ', message);
+    // console.log('Check message: ', message);
+    //console.log('type: ', type);
     const { isDeleted, deletedUserIds, reacts, conversationId } = message;
+    // Check user is member of conversation //
+    await this.conversationRepository.getByIdAndUserId(conversationId, userId);
     if (isDeleted || deletedUserIds.includes(userId))
       throw new AppError(ERROR_CODE.MESSAGE_WAS_DELETED);
     const reactIndex = reacts.findIndex(
       (reactEle) => reactEle.userId == userId,
     );
     const reactTempt = [...reacts];
+    // console.log('Check reactIndex: ', reactIndex);
     // không tìm thấy
-    // if (reactIndex === -1) {
-    //   reactTempt.push({ userId, typeReaction: type });
-    // } else {
-    //   reactTempt[reactIndex] = { userId, typeReaction: type };
-    // }
-    // await this.messagesRepository.updateReaction(id, reactTempt);
+    if (reactIndex === -1) {
+      reactTempt.push({ userId, typeReaction: type });
+    } else {
+      reactTempt[reactIndex] = { userId, typeReaction: type };
+    }
+    //console.log('Check reactTempt: ', reactTempt);
+    await this.messagesRepository.updateReaction(id, reactTempt);
 
     const user = await this.usersService.findOne(userId);
     const objUser = {

@@ -15,7 +15,7 @@ import { ResponseMessage } from 'src/shared/response';
 import {
   TypeGetListAttachments,
   typeMessage,
-  TypeReactMessage,
+  // TypeReactMessage,
 } from './messages.enum';
 
 export class PayloadSendTextMessageDto {
@@ -240,8 +240,8 @@ export class ParamsReactionMessageDto {
 
   @ApiProperty({
     required: true,
-    example: TypeReactMessage.LIKE,
+    example: ':thumbs_up:',
   })
   @IsDefined()
-  readonly type!: TypeReactMessage;
+  readonly type!: string;
 }

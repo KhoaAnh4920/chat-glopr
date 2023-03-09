@@ -42,14 +42,14 @@ export class Message {
     type: [
       {
         userId: { type: SchemaTypes.ObjectId },
-        typeReaction: { type: Number, enum: [0, 1, 2, 3, 4, 5, 6] },
+        typeReaction: { type: String },
       },
     ],
     default: [],
   })
   reacts: {
     userId: string;
-    typeReaction: number;
+    typeReaction: string;
   }[];
 
   @Prop({

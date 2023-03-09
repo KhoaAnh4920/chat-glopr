@@ -62,7 +62,7 @@ export class messageUtils {
           user: reactUsers.find(
             (userEle) => userEle._id + '' == reactEle.userId + '',
           ),
-          type: reactEle.type,
+          type: reactEle.typeReaction,
         };
       });
     }
