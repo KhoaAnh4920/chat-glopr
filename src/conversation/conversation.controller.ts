@@ -34,13 +34,18 @@ import {
   PayloadAddMemberGroupDto,
   PayloadCreateGroupDto,
   PayloadCreateIndividualDto,
+  PayloadCreateNicknameDto,
   PayloadCreateRolesDto,
   PayloadDeleteMemberGroupDto,
   PayloadGetMemberDto,
   PayloadGetOneDto,
 } from './conversation.dto';
 import { MessagingGateway } from 'src/gateway/gateway';
-import { ICreateIndividual, ISummaryConversation } from './consersation.type';
+import {
+  ICreateIndividual,
+  ISummaryConversation,
+  IUserNickNameRes,
+} from './consersation.type';
 import { ParticipantsService } from 'src/participants/participants.service';
 import { ParticipantsDocument } from 'src/_schemas/participants.schema';
 import { LoggingInterceptor } from '../shared/common/logging.interceptor';
@@ -382,6 +387,43 @@ export class ConversationController {
     return res.status(HttpStatus.OK).send(resBody);
   }
 
+  @ApiTags('Conversation')
+  @Post('members/nickname')
+  @ApiOperation({ summary: 'Add nickname for member of conversation' })
+  @ApiBearerAuth()
+  @SetScopes('user.conversation.create')
+  @ApiOkResponse({
+    description: 'Add nickname for member of conversation',
+    status: HttpStatus.OK,
+    schema: {
+      example: {
+        success: true,
+        statusCode: 200,
+        message: 'CREATE_SUCCESS',
+        data: [],
+      },
+    },
+  })
+  public async addNicknameMemberOfConversation(
+    @Body() payload: PayloadCreateNicknameDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    const user = await this.conversationService.changeNicknameMember(
+      payload.name,
+      payload.converId,
+      payload.userId,
+    );
+
+    const resBody: ISingleRes<IUserNickNameRes> = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.CREATE_SUCCESS,
+      data: user,
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
   @ApiTags('Conversation')
   @Post('/roles')
   @ApiOperation({ summary: 'Create new role of conversation' })

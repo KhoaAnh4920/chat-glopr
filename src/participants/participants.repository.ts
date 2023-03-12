@@ -1,5 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
+import { IUserNickNameRes } from 'src/conversation/consersation.type';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import {
   Participants,
@@ -135,8 +136,42 @@ export class ParticipantsRepository {
         },
       },
     ]);
-    console.log('Check data: ', data);
+    //console.log('Check data: ', data);
     return data;
+  }
+
+  public async getMemberOfConversation(
+    conversationId: string,
+    userId: string,
+  ): Promise<IUserNickNameRes> {
+    const data = await this.participantsModel.aggregate([
+      {
+        $match: {
+          conversationId: ObjectId(conversationId),
+          userId: ObjectId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $project: {
+          _id: userId,
+          nickName: '$name',
+          fullName: '$user.fullName',
+          avatar: '$user.avatar',
+        },
+      },
+    ]);
+    return data[0];
   }
 
   public async deleteMember(

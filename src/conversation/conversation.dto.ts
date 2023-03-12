@@ -382,3 +382,23 @@ export class PayloadCreateRolesDto {
   // @IsDefined()
   // readonly userIds!: string[];
 }
+
+export class PayloadCreateNicknameDto {
+  @ApiProperty({ required: true, example: 'Cam on vi da den', default: '' })
+  @IsDefined()
+  @IsString()
+  readonly name!: string;
+
+  @ApiProperty({ required: true, example: '63be4eb7051727fa65feaaf4' })
+  @IsDefined()
+  @IsString()
+  readonly converId!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+    example: '63b52af3ca78739b1c94eb52',
+  })
+  @IsDefined()
+  readonly userId!: string;
+}

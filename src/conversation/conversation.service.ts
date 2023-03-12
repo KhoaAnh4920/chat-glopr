@@ -7,6 +7,7 @@ import {
   ICreateIndividual,
   ISummaryConversation,
   IUpdateConversationViewReq,
+  IUserNickNameRes,
   IValidateIndividual,
   ResConverObjLayout,
   UpdateConversationModel,
@@ -501,5 +502,29 @@ export class ConversationService {
     console.log('converId: ', converId);
     //await this.conversationRepository.createNewRoleConversation(name, converId);
     return true;
+  }
+
+  public async changeNicknameMember(
+    name: string,
+    converId: string,
+    userId: string,
+  ): Promise<IUserNickNameRes> {
+    // Check userId is member of conversation //
+    await this.conversationRepository.getByIdAndUserId(converId, userId);
+
+    try {
+      await this.conversationRepository.changeNicknameMember(
+        name,
+        converId,
+        userId,
+      );
+      return this.participantsRepository.getMemberOfConversation(
+        converId,
+        userId,
+      );
+    } catch (error) {
+      console.log('error: ', error);
+      throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+    }
   }
 }

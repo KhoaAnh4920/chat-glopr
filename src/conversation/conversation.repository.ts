@@ -9,6 +9,7 @@ import { ConversationModel, IConversationModel } from './consersation.type';
 const ObjectId = require('mongoose').Types.ObjectId;
 import { UpdateResult } from 'mongodb';
 import { RolesDocument } from 'src/_schemas/roles.schema';
+import { ParticipantsDocument } from 'src/_schemas/participants.schema';
 
 export class ConversationRepository {
   constructor(
@@ -17,6 +18,9 @@ export class ConversationRepository {
 
     @InjectModel('Roles')
     private rolesModel: Model<RolesDocument>,
+
+    @InjectModel('Participants')
+    private participantsModel: Model<ParticipantsDocument>,
   ) {}
 
   public async findOne(indentity): Promise<IConversationModel | undefined> {
@@ -268,5 +272,16 @@ export class ConversationRepository {
       name,
       converId,
     });
+  }
+
+  public async changeNicknameMember(
+    name: string,
+    converId: string,
+    userId: string,
+  ): Promise<UpdateResult> {
+    return this.participantsModel.updateOne(
+      { userId: userId, conversationId: converId },
+      { name: name },
+    );
   }
 }

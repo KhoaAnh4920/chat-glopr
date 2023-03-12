@@ -107,3 +107,10 @@ export interface ISummaryConversation {
   isNotify: boolean;
   isJoinFromLink: false;
 }
+
+export interface IUserNickNameRes {
+  _id: string;
+  nickName: string;
+  fullName: string;
+  avatar: string;
+}

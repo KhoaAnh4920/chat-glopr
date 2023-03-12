@@ -13,12 +13,17 @@ import { ParticipantsModule } from 'src/participants/participants.module';
 import { MessagesModule } from 'src/messages/messages.module';
 import { FriendModule } from 'src/friend/friend.module';
 import { Roles, RolesSchema } from 'src/_schemas/roles.schema';
+import {
+  Participants,
+  ParticipantsSchema,
+} from 'src/_schemas/participants.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Conversation.name, schema: ConversationSchema },
       { name: Roles.name, schema: RolesSchema },
+      { name: Participants.name, schema: ParticipantsSchema },
     ]),
     UsersModule,
     GatewayModule,
