@@ -35,6 +35,7 @@ enum ERROR_CODE {
   MAX_PIN_MESSAGE = 'MAX_PIN_MESSAGE',
   EMAIL_HAS_BEEN_REGISTERED = 'EMAIL_HAS_BEEN_REGISTERED',
   MESSAGE_WAS_DELETED = 'MESSAGE_WAS_DELETED',
+  GOOGLE_SERVICE_ACCOUNT_CREDS_NOT_FOUND = 'GOOGLE_SERVICE_ACCOUNT_CREDS_NOT_FOUND',
 }
 
 const ErrorList = {
@@ -150,6 +151,11 @@ const ErrorList = {
   [ERROR_CODE.MESSAGE_WAS_DELETED]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Message was deleted',
+  },
+  [ERROR_CODE.GOOGLE_SERVICE_ACCOUNT_CREDS_NOT_FOUND]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message:
+      'The $GOOGLE_SERVICE_ACCOUNT_CREDS environment variable was not found!',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };
