@@ -39,12 +39,12 @@ export class AuthService {
   public async validateUser(identity, password) {
     const user = await this.usersService.findOne(identity);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new AppError(ERROR_CODE.UNAUTHORIZED);
     }
     const isMatch =
       password === user.password ||
       (await bcrypt.compare(password, user.password));
-    console.log('isMatch: ', isMatch);
+    // console.log('isMatch: ', isMatch);
     if (isMatch) {
       return user;
     }
@@ -57,13 +57,13 @@ export class AuthService {
 
     if (user) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
     // console.log('otpCode: ', registerUserDto.otpCode);
-    const payload = new ValidateEmailOrPhoneOTPViewReq(
-      ContentRequestOTP.CREATE_USERS,
-      registerUserDto.identity,
-      registerUserDto.identity,
-      registerUserDto.otpCode,
-    );
-    await this.otpService.validateOTP(payload);
+    // const payload = new ValidateEmailOrPhoneOTPViewReq(
+    //   ContentRequestOTP.CREATE_USERS,
+    //   registerUserDto.identity,
+    //   registerUserDto.identity,
+    //   registerUserDto.otpCode,
+    // );
+    // await this.otpService.validateOTP(payload);
     //const hash = await this.hashData(registerUserDto.password);
     const isEmail = StringUtils.validateEmail(registerUserDto.identity);
     let newUser = null;

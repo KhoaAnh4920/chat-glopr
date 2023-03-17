@@ -56,7 +56,7 @@ const ErrorList = {
   },
   [ERROR_CODE.UNAUTHORIZED]: {
     statusCode: HttpStatus.UNAUTHORIZED,
-    message: 'Invalid email or password',
+    message: 'Invalid identity or password',
   },
   [ERROR_CODE.INVALID_OTP]: {
     statusCode: HttpStatus.BAD_REQUEST,
