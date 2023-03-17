@@ -43,14 +43,8 @@ export class UsersService {
     return this.usersRepository.findOneSocialToken(socialId, type);
   }
 
-  public async checkUserExist(
-    email: string,
-    phoneNumber: string,
-  ): Promise<boolean> {
-    return !!(await this.usersRepository.findUserWithEmailOrPhone(
-      email,
-      phoneNumber,
-    ));
+  public async checkUserExist(identity: string): Promise<boolean> {
+    return !!(await this.usersRepository.findUserWithEmailOrPhone(identity));
   }
 
   async createOne(

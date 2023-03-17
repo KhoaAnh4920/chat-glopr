@@ -90,11 +90,12 @@ export class UsersRepository {
   }
 
   public async findUserWithEmailOrPhone(
-    email: string,
-    phoneNumber: string,
+    identity: string,
+    // email: string,
+    // phoneNumber: string,
   ): Promise<User | undefined> {
     return this.userModel.findOne({
-      $or: [{ email: email }, { phoneNumber: phoneNumber }],
+      $or: [{ email: identity }, { phoneNumber: identity }],
     });
   }
 

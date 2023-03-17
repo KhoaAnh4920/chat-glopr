@@ -36,3 +36,6 @@ lerna-debug.log*
 
 #env
 .env
+
+# serviceAccountKey
+notification-chatglopr-firebase-adminsdk-9d2kh-96377844cc.json

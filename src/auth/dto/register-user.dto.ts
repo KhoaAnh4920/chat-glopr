@@ -11,6 +11,7 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { UserGender } from 'src/users/users.enum';
 export class RegisterUserDto {
   @ApiProperty({
     example: 'Pham Xuan Dinh',
@@ -22,30 +23,40 @@ export class RegisterUserDto {
 
   @ApiProperty({
     example: 'khoaanh4920',
-    required: true,
+    required: false,
   })
   @IsString()
   @Type(() => String)
   userName?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // @IsEmail()
+  // email: string;
+
+  @ApiProperty({ required: true, example: 'khoaanh4920@gmail.com' })
+  @IsDefined()
+  @IsString()
+  readonly identity!: string;
 
   @ApiProperty()
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty({ example: '0901234567', description: 'Phone number' })
-  @IsDefined()
-  @MinLength(10)
-  @MaxLength(15)
-  phoneNumber!: string;
+  // @ApiProperty({ example: '0901234567', description: 'Phone number' })
+  // @IsDefined()
+  // @MinLength(10)
+  // @MaxLength(15)
+  // phoneNumber!: string;
 
   @ApiProperty()
   @IsDefined()
   otpCode!: string;
+
+  @ApiProperty({ enum: UserGender, required: false })
+  @IsOptional()
+  @IsString()
+  readonly gender?: UserGender;
 
   // @ApiProperty({ example: 1607335220000 })
   // @IsOptional()

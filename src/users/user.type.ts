@@ -96,10 +96,10 @@ export class ResetPasswordViewReq implements IResetPasswordViewReq {
 export interface ICreateUserViewReq {
   readonly fullName?: string;
   readonly userName?: string;
-  readonly email: string;
+  readonly email?: string;
   readonly password: string;
   readonly isActived: boolean;
-  readonly phoneNumber: string;
+  readonly phoneNumber?: string;
   readonly otpCode: string;
 }
 export class CreateCustomerViewReq implements ICreateUserViewReq {
@@ -119,7 +119,7 @@ export interface ICreateUserFromSocialViewReq {
   readonly userName?: string;
   readonly avatar?: string;
   readonly phoneNumber?: string;
-  readonly email: string;
+  readonly email?: string;
   readonly isActived: boolean;
 }
 export class CreateCustomerFromSocialViewReq

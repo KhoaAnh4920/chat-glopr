@@ -55,7 +55,6 @@ import {
 } from '@nestjs/platform-express';
 import { TypeGetListAttachments, typeMessage } from './messages.enum';
 import { AppError, ERROR_CODE } from 'src/shared/error';
-import { StringUtils } from 'src/shared/common/stringUtils';
 const urlRegex = require('url-regex');
 
 @Controller('messages')

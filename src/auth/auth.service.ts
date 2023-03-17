@@ -26,6 +26,7 @@ import {
 } from '../users/user.type';
 import { Types } from 'mongoose';
 import { SocialAuthType } from './constants';
+import { StringUtils } from 'src/shared/common/stringUtils';
 @Injectable()
 export class AuthService {
   constructor(
@@ -48,24 +49,37 @@ export class AuthService {
 
   public async register(registerUserDto: RegisterUserDto) {
     const user = await this.usersService.checkUserExist(
-      registerUserDto.email,
-      registerUserDto.phoneNumber,
+      registerUserDto.identity,
     );
+
     if (user) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
     // console.log('otpCode: ', registerUserDto.otpCode);
     const payload = new ValidateEmailOrPhoneOTPViewReq(
       ContentRequestOTP.CREATE_USERS,
-      registerUserDto.phoneNumber,
-      registerUserDto.email,
+      registerUserDto.identity,
+      registerUserDto.identity,
       registerUserDto.otpCode,
     );
     await this.otpService.validateOTP(payload);
     const hash = await this.hashData(registerUserDto.password);
-    const newUser = await this.usersService.createOne({
-      ...registerUserDto,
-      password: hash,
-      isActived: true,
-    });
+    const isEmail = StringUtils.validateEmail(registerUserDto.identity);
+    let newUser = null;
+    if (isEmail) {
+      newUser = await this.usersService.createOne({
+        ...registerUserDto,
+        password: hash,
+        email: registerUserDto.identity,
+        isActived: true,
+      });
+    } else {
+      newUser = await this.usersService.createOne({
+        ...registerUserDto,
+        password: hash,
+        phoneNumber: registerUserDto.identity,
+        isActived: true,
+      });
+    }
+
     if (newUser) {
       const tokens = await this.getTokens(
         newUser._id,
@@ -82,6 +96,7 @@ export class AuthService {
         gender: newUser.gender,
       };
     }
+    // return user;
   }
 
   public async login(loginUserDto: LoginUserDto) {

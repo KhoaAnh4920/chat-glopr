@@ -25,7 +25,7 @@ import { LocalAuthGuard } from './common/guards/local-auth.guard';
 import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './common/guards/google-auth.guard';
-import { ISingleRes } from '../shared/response';
+import { IEmptyRes, ISingleRes } from '../shared/response';
 import { Response } from 'express';
 import {
   IAuthResponse,
@@ -68,6 +68,14 @@ export class AuthController {
       data: created,
     };
     return res.status(HttpStatus.OK).send(bodyResponse);
+
+    // console.log('registerUserDto: ', registerUserDto);
+    // console.log('created: ', created);
+
+    // const bodyResponse: IEmptyRes = {
+    //   success: true,
+    // };
+    // return res.status(HttpStatus.OK).send(bodyResponse);
   }
 
   @UseGuards(LocalAuthGuard) // Check user request is valid //

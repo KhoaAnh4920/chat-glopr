@@ -14,10 +14,10 @@ export class User {
   @Prop({ required: false, unique: true, lowercase: true })
   userName: string;
 
-  @Prop({ required: false, unique: true })
+  @Prop({ required: false, unique: true, sparse: true })
   phoneNumber: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   email: string;
 
   @Prop({ required: false, default: null })
