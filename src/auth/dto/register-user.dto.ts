@@ -34,7 +34,10 @@ export class RegisterUserDto {
   // @IsEmail()
   // email: string;
 
-  @ApiProperty({ required: true, example: 'khoaanh4920@gmail.com' })
+  @ApiProperty({
+    required: true,
+    example: 'khoaanh4920@gmail.com | 0968617132',
+  })
   @IsDefined()
   @IsString()
   readonly identity!: string;
