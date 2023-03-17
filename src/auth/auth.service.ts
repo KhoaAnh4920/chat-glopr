@@ -53,14 +53,14 @@ export class AuthService {
     );
 
     if (user) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
-    // console.log('otpCode: ', registerUserDto.otpCode);
-    // const payload = new ValidateEmailOrPhoneOTPViewReq(
-    //   ContentRequestOTP.CREATE_USERS,
-    //   registerUserDto.identity,
-    //   registerUserDto.identity,
-    //   registerUserDto.otpCode,
-    // );
-    // await this.otpService.validateOTP(payload);
+    console.log('otpCode: ', registerUserDto.otpCode);
+    const payload = new ValidateEmailOrPhoneOTPViewReq(
+      ContentRequestOTP.CREATE_USERS,
+      registerUserDto.identity,
+      registerUserDto.identity,
+      registerUserDto.otpCode,
+    );
+    await this.otpService.validateOTP(payload);
     const hash = await this.hashData(registerUserDto.password);
     const isEmail = StringUtils.validateEmail(registerUserDto.identity);
     let newUser = null;
