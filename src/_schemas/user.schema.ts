@@ -11,13 +11,13 @@ export class User {
   @Prop({ required: true })
   fullName: string;
 
-  @Prop({ required: false, unique: true, lowercase: true })
+  @Prop({ required: false, unique: true, sparse: true })
   userName: string;
 
   @Prop({ required: false, unique: true, sparse: true })
   phoneNumber: string;
 
-  @Prop({ required: false })
+  @Prop({ required: false, unique: true, sparse: true })
   email: string;
 
   @Prop({ required: false, default: null })

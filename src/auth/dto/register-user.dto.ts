@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UserGender } from 'src/users/users.enum';
+import { Matches } from 'class-validator';
 export class RegisterUserDto {
   @ApiProperty({
     example: 'Pham Xuan Dinh',
@@ -39,7 +40,9 @@ export class RegisterUserDto {
     example: 'khoaanh4920@gmail.com | 0968617132',
   })
   @IsDefined()
-  @IsString()
+  @Matches(/^([0-9]+|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,})$/, {
+    message: 'Identity must be email address or phone number',
+  })
   readonly identity!: string;
 
   @ApiProperty()
