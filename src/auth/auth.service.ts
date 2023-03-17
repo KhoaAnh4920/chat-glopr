@@ -41,10 +41,7 @@ export class AuthService {
     if (!user) {
       throw new AppError(ERROR_CODE.UNAUTHORIZED);
     }
-    const isMatch =
-      password === user.password ||
-      (await bcrypt.compare(password, user.password));
-    // console.log('isMatch: ', isMatch);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       return user;
     }
@@ -64,20 +61,20 @@ export class AuthService {
     //   registerUserDto.otpCode,
     // );
     // await this.otpService.validateOTP(payload);
-    //const hash = await this.hashData(registerUserDto.password);
+    const hash = await this.hashData(registerUserDto.password);
     const isEmail = StringUtils.validateEmail(registerUserDto.identity);
     let newUser = null;
     if (isEmail) {
       newUser = await this.usersService.createOne({
         ...registerUserDto,
-        password: registerUserDto.password,
+        password: hash,
         email: registerUserDto.identity,
         isActived: true,
       });
     } else {
       newUser = await this.usersService.createOne({
         ...registerUserDto,
-        password: registerUserDto.password,
+        password: hash,
         phoneNumber: registerUserDto.identity,
         isActived: true,
       });
