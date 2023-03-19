@@ -35,11 +35,14 @@ export class UsersService {
     private readonly mailService: MailService,
   ) {}
 
-  async findOne(indentity: string): Promise<UserDocument> {
+  public async findOne(indentity: string): Promise<UserDocument> {
     return this.usersRepository.findOne(indentity);
   }
 
-  async findOneSocialToken(socialId: string, type: string): Promise<any> {
+  public async findOneSocialToken(
+    socialId: string,
+    type: string,
+  ): Promise<any> {
     return this.usersRepository.findOneSocialToken(socialId, type);
   }
 
@@ -47,13 +50,13 @@ export class UsersService {
     return !!(await this.usersRepository.findUserWithEmailOrPhone(identity));
   }
 
-  async createOne(
+  public async createOne(
     user: ICreateUserViewReq | ICreateUserFromSocialViewReq,
   ): Promise<User> {
     const createOne = await this.usersRepository.createOne(user);
     return createOne;
   }
-  async createOneSocialToken(
+  public async createOneSocialToken(
     newSocialToken: ICreateSocialTokenViewReq,
   ): Promise<UserSocialToken> {
     const createOne = await this.usersRepository.createOneSocialToken(
@@ -62,7 +65,7 @@ export class UsersService {
     return createOne;
   }
 
-  async updateSocialToken(
+  public async updateSocialToken(
     id: string,
     accessToken: string,
     refresh_token?: string,
@@ -74,7 +77,7 @@ export class UsersService {
     );
   }
 
-  async update(
+  public async update(
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserDocument> {

@@ -38,6 +38,7 @@ import {
   ParamsIdMessageDto,
   SendTextMessageResponeDto,
   ParamsReactionMessageDto,
+  PayloadSearchMessageDto,
 } from './messages.dto';
 import {
   CreateTextMessageViewReq,
@@ -55,6 +56,7 @@ import {
 } from '@nestjs/platform-express';
 import { TypeGetListAttachments, typeMessage } from './messages.enum';
 import { AppError, ERROR_CODE } from 'src/shared/error';
+import { Message } from 'src/_schemas/message.schema';
 const urlRegex = require('url-regex');
 
 @Controller('messages')
@@ -391,6 +393,34 @@ export class MessagesController {
       statusCode: 201,
       message: ResponseMessage.CREATE_SUCCESS,
       data: [],
+    };
+    return res.status(HttpStatus.OK).send(singleRes);
+  }
+
+  @ApiTags('Messages')
+  @Post('/search')
+  @ApiBearerAuth()
+  @SetScopes('user.messages.search')
+  @ApiOperation({ summary: 'Search message' })
+  @ApiOkResponse({
+    status: HttpStatus.OK,
+    description: 'Search message',
+  })
+  public async searchMessage(
+    @Body() payload: PayloadSearchMessageDto,
+    @CurrentUser() currentUser: ICurrentUser,
+    @Res() res: Response,
+  ) {
+    const dataMess = await this.messagesService.searchMessage({
+      ...payload,
+      userId: currentUser.userId,
+    });
+
+    const singleRes: ISingleRes<Message[]> = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.DELETE_DATA_SUCCEEDED,
+      data: dataMess,
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }

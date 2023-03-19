@@ -245,3 +245,15 @@ export class ParamsReactionMessageDto {
   @IsDefined()
   readonly type!: string;
 }
+
+export class PayloadSearchMessageDto {
+  @ApiProperty({ required: true, example: '63be4eb7051727fa65feaaf4' })
+  @IsDefined()
+  @IsString()
+  readonly converId!: string;
+
+  @ApiProperty({ required: true, example: 'THUY' })
+  @IsDefined()
+  @IsString()
+  readonly content!: string;
+}

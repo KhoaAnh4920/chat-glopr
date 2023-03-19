@@ -130,3 +130,9 @@ export class GetListMessageSlot implements IGetListMessageSlot {
     readonly pageSize: number = 10,
   ) {}
 }
+
+export interface IPayloadSearch {
+  readonly converId: string;
+  readonly content: string;
+  readonly userId: string;
+}

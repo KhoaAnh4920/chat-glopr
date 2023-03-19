@@ -8,6 +8,7 @@ import {
   IGetListFileMessageSlot,
   IGetListMessageSlot,
   IMessagesResponse,
+  IPayloadSearch,
   IResPinMessageSlot,
 } from './messages.type';
 import { messageUtils } from '../shared/common/messageUtils';
@@ -381,5 +382,14 @@ export class MessagesService {
       user: objUser,
       type,
     };
+  }
+
+  public async searchMessage(payload: IPayloadSearch): Promise<Message[]> {
+    // Check conversation //
+    await this.conversationRepository.getByIdAndUserId(
+      payload.converId,
+      payload.userId,
+    );
+    return this.messagesRepository.searchMessage(payload);
   }
 }

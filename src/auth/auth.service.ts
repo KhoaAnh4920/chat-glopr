@@ -53,7 +53,6 @@ export class AuthService {
     );
 
     if (user) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
-    console.log('otpCode: ', registerUserDto.otpCode);
     const payload = new ValidateEmailOrPhoneOTPViewReq(
       ContentRequestOTP.CREATE_USERS,
       registerUserDto.identity,

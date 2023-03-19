@@ -5,6 +5,7 @@ import { Message, MessageDocument } from 'src/_schemas/message.schema';
 import {
   IMessagesModel,
   IMessagesResponse,
+  IPayloadSearch,
   IReactTempt,
   MessagesModel,
 } from './messages.type';
@@ -535,6 +536,46 @@ export class MessagesRepository {
         },
       );
       return true;
+    } catch (error) {
+      throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+    }
+  }
+  public async searchMessage(payload: IPayloadSearch): Promise<Message[]> {
+    try {
+      const messages = await this.messageModel.aggregate([
+        {
+          $match: {
+            content: { $regex: payload.content, $options: 'i' },
+            type: 'TEXT',
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        {
+          $project: {
+            options: 1,
+            content: 1,
+            type: 1,
+            reacts: 1,
+            isDeleted: 1,
+            createdAt: 1,
+            conversationId: 1,
+            channelId: 1,
+            user: {
+              _id: 1,
+              fullName: 1,
+              avatar: 1,
+            },
+          },
+        },
+      ]);
+      return messages;
     } catch (error) {
       throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
     }
