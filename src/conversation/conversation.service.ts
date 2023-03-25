@@ -5,6 +5,7 @@ import { UsersService } from 'src/users/users.service';
 import {
   IConversationModel,
   ICreateIndividual,
+  IPayloadRole,
   ISummaryConversation,
   IUpdateConversationViewReq,
   IUserNickNameRes,
@@ -26,6 +27,7 @@ import {
 import { UsersRepository } from 'src/users/users.repository';
 import { CacheRepository } from 'src/shared/cache/cache.repository';
 import { ConversationDocument } from 'src/_schemas/conversation.schema';
+import { Roles } from 'src/_schemas/roles.schema';
 
 @Injectable()
 export class ConversationService {
@@ -522,6 +524,29 @@ export class ConversationService {
         converId,
         userId,
       );
+    } catch (error) {
+      console.log('error: ', error);
+      throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
+    }
+  }
+
+  public async createRolesOfConversation(
+    userId: string,
+    payload: IPayloadRole,
+  ): Promise<Roles> {
+    // Check userId is member of conversation //
+    const conver = await this.conversationRepository.getByIdAndUserId(
+      payload.converId,
+      userId,
+    );
+    if (conver.creatorId != userId)
+      throw new AppError(ERROR_CODE.PERMISSION_DENIED);
+
+    // Check roles already exists //
+
+    try {
+      console.log('payload: ', payload);
+      return this.conversationRepository.createRolesOfConversation(payload);
     } catch (error) {
       console.log('error: ', error);
       throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);

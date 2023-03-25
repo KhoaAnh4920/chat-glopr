@@ -49,6 +49,7 @@ import {
 import { ParticipantsService } from 'src/participants/participants.service';
 import { ParticipantsDocument } from 'src/_schemas/participants.schema';
 import { LoggingInterceptor } from '../shared/common/logging.interceptor';
+import { Roles } from 'src/_schemas/roles.schema';
 
 @Controller('conversation')
 export class ConversationController {
@@ -428,7 +429,7 @@ export class ConversationController {
   @Post('/roles')
   @ApiOperation({ summary: 'Create new role of conversation' })
   @ApiBearerAuth()
-  @SetScopes('user.conversation.create')
+  @SetScopes('user.conversation.roles')
   // @ApiOkResponse({
   //   description: 'Successful operation',
   //   status: HttpStatus.OK,
@@ -440,20 +441,18 @@ export class ConversationController {
     @CurrentUser() currentUser: ICurrentUser,
   ) {
     console.log('payload: ', payload);
-    // const conversationId =
-    //   await this.conversationService.createGroupConversation(
-    //     currentUser.userId,
-    //     payload.name,
-    //     payload.userIds,
-    //   );
+    const newRoles = await this.conversationService.createRolesOfConversation(
+      currentUser.userId,
+      payload,
+    );
 
-    // const resBody: ISingleRes<{ conversationId: string }> = {
-    //   success: true,
-    //   statusCode: 200,
-    //   message: ResponseMessage.CREATE_SUCCESS,
-    //   data: { conversationId: conversationId },
-    // };
+    const resBody: ISingleRes<Roles> = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.CREATE_SUCCESS,
+      data: newRoles,
+    };
 
-    return res.status(HttpStatus.OK).send('OK');
+    return res.status(HttpStatus.OK).send(resBody);
   }
 }

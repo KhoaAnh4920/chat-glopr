@@ -19,7 +19,7 @@ export class Roles {
     required: false,
     default: [],
   })
-  userId: string[];
+  userIds: string[];
 
   @Prop({ default: 0 })
   isDeleted: boolean;

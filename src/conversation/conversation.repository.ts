@@ -5,10 +5,15 @@ import {
   Conversation,
   ConversationDocument,
 } from 'src/_schemas/conversation.schema';
-import { ConversationModel, IConversationModel } from './consersation.type';
+import {
+  ConversationModel,
+  IConversationModel,
+  IPayloadRole,
+  RolesModel,
+} from './consersation.type';
 const ObjectId = require('mongoose').Types.ObjectId;
 import { UpdateResult } from 'mongodb';
-import { RolesDocument } from 'src/_schemas/roles.schema';
+import { Roles, RolesDocument } from 'src/_schemas/roles.schema';
 import { ParticipantsDocument } from 'src/_schemas/participants.schema';
 
 export class ConversationRepository {
@@ -283,5 +288,17 @@ export class ConversationRepository {
       { userId: userId, conversationId: converId },
       { name: name },
     );
+  }
+
+  public async createRolesOfConversation(
+    payload: IPayloadRole,
+  ): Promise<Roles> {
+    const payloadRoles = new RolesModel(
+      payload.name,
+      ObjectId(payload.converId),
+      payload.userIds || [],
+    );
+    console.log('payloadRoles: ', payloadRoles);
+    return await this.rolesModel.create(payloadRoles);
   }
 }

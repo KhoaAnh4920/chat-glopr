@@ -114,3 +114,25 @@ export interface IUserNickNameRes {
   fullName: string;
   avatar: string;
 }
+
+export interface IRolesModel {
+  readonly _id?: string;
+  readonly name: string;
+  readonly conversationId: string;
+  readonly userIds?: string[];
+}
+
+export class RolesModel implements IRolesModel {
+  constructor(
+    // readonly _id: string,
+    readonly name: string,
+    readonly conversationId: string,
+    readonly userIds?: string[],
+  ) {}
+}
+
+export interface IPayloadRole {
+  name: string;
+  converId: string;
+  userIds?: string[];
+}
