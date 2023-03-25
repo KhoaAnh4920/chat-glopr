@@ -39,6 +39,7 @@ import {
   PayloadDeleteMemberGroupDto,
   PayloadGetMemberDto,
   PayloadGetOneDto,
+  ParamGetRolesDto,
 } from './conversation.dto';
 import { MessagingGateway } from 'src/gateway/gateway';
 import {
@@ -425,6 +426,7 @@ export class ConversationController {
 
     return res.status(HttpStatus.OK).send(resBody);
   }
+
   @ApiTags('Conversation')
   @Post('/roles')
   @ApiOperation({ summary: 'Create new role of conversation' })
@@ -440,7 +442,6 @@ export class ConversationController {
     @Res() res: Response,
     @CurrentUser() currentUser: ICurrentUser,
   ) {
-    console.log('payload: ', payload);
     const newRoles = await this.conversationService.createRolesOfConversation(
       currentUser.userId,
       payload,
@@ -451,6 +452,36 @@ export class ConversationController {
       statusCode: 200,
       message: ResponseMessage.CREATE_SUCCESS,
       data: newRoles,
+    };
+
+    return res.status(HttpStatus.OK).send(resBody);
+  }
+
+  @ApiTags('Conversation')
+  @Get(':converId/roles/')
+  @ApiOperation({ summary: 'Get all role of conversation' })
+  @ApiBearerAuth()
+  @SetScopes('user.conversation.roles')
+  // @ApiOkResponse({
+  //   description: 'Successful operation',
+  //   status: HttpStatus.OK,
+  //   type: CreateConversationResponeDto,
+  // })
+  public async getAllRolesOfConversation(
+    @Param() params: ParamGetRolesDto,
+    @Res() res: Response,
+    @CurrentUser() currentUser: ICurrentUser,
+  ) {
+    console.log('Check params: ', params);
+    const listRoles = await this.conversationService.getAllRolesOfConversation(
+      params.converId,
+    );
+
+    const resBody: ISingleRes<Roles> = {
+      success: true,
+      statusCode: 200,
+      message: ResponseMessage.CREATE_SUCCESS,
+      data: listRoles,
     };
 
     return res.status(HttpStatus.OK).send(resBody);

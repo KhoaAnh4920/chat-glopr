@@ -1,5 +1,5 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import {
   Conversation,
@@ -28,7 +28,10 @@ export class ConversationRepository {
     private participantsModel: Model<ParticipantsDocument>,
   ) {}
 
-  public async findOne(indentity): Promise<IConversationModel | undefined> {
+  public async findOne(
+    indentity: string,
+  ): Promise<IConversationModel | undefined> {
+    console.log('indentity: ', indentity);
     return this.conversationModel.findOne({
       _id: indentity,
     });
@@ -300,5 +303,14 @@ export class ConversationRepository {
     );
     console.log('payloadRoles: ', payloadRoles);
     return await this.rolesModel.create(payloadRoles);
+  }
+
+  public async getRoleByName(name: string): Promise<Roles> {
+    return await this.rolesModel.findOne({ name: name });
+  }
+
+  public async getAllRolesOfConversation(converId: string): Promise<Roles[]> {
+    console.log('converId: ', converId);
+    return await this.rolesModel.find({ conversationId: ObjectId(converId) });
   }
 }

@@ -13,7 +13,11 @@ async function bootstrap() {
   // app.useWebSocketAdapter(adapter);
   app.setGlobalPrefix('api');
   app.enableCors({ credentials: true, origin: true });
-  app.useGlobalPipes(new ValidationPipe({}));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: false,
+    }),
+  );
   // setup AuthGuard
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new AuthGuard(reflector));

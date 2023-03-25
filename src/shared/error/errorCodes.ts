@@ -35,6 +35,7 @@ enum ERROR_CODE {
   MAX_PIN_MESSAGE = 'MAX_PIN_MESSAGE',
   EMAIL_HAS_BEEN_REGISTERED = 'EMAIL_HAS_BEEN_REGISTERED',
   MESSAGE_WAS_DELETED = 'MESSAGE_WAS_DELETED',
+  ROLE_EXISTED_OF_CONVERSATION = 'ROLE_EXISTED_OF_CONVERSATION',
 }
 
 const ErrorList = {
@@ -150,6 +151,10 @@ const ErrorList = {
   [ERROR_CODE.MESSAGE_WAS_DELETED]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Message was deleted',
+  },
+  [ERROR_CODE.ROLE_EXISTED_OF_CONVERSATION]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'Role already exists of conversation',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

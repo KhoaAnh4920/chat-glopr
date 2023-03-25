@@ -44,9 +44,9 @@ export class ConversationService {
     private readonly cacheRepository: CacheRepository,
   ) {}
 
-  public async findOne(
-    indentity: Types.ObjectId | string,
-  ): Promise<IConversationModel> {
+  public async findOne(indentity: string): Promise<IConversationModel> {
+    const conversation = await this.conversationRepository.findOne(indentity);
+    if (!conversation) throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
     return this.conversationRepository.findOne(indentity);
   }
 
@@ -543,6 +543,8 @@ export class ConversationService {
       throw new AppError(ERROR_CODE.PERMISSION_DENIED);
 
     // Check roles already exists //
+    const role = await this.conversationRepository.getRoleByName(payload.name);
+    if (role) throw new AppError(ERROR_CODE.ROLE_EXISTED_OF_CONVERSATION);
 
     try {
       console.log('payload: ', payload);
@@ -551,5 +553,14 @@ export class ConversationService {
       console.log('error: ', error);
       throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
     }
+  }
+
+  public async getAllRolesOfConversation(converId: string): Promise<any> {
+    // Check conversation is valid //
+    const conver = await this.conversationRepository.findOne(converId);
+    if (!conver) {
+      throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
+    }
+    return this.conversationRepository.getAllRolesOfConversation(converId);
   }
 }

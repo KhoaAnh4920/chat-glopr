@@ -402,3 +402,14 @@ export class PayloadCreateNicknameDto {
   @IsDefined()
   readonly userId!: string;
 }
+
+export class ParamGetRolesDto {
+  @ApiProperty({
+    required: false,
+    example: '63be4eb7051727fa65feaaf4',
+    type: String,
+  })
+  @IsDefined()
+  @IsString()
+  readonly converId: any;
+}
