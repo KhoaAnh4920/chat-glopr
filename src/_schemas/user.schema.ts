@@ -26,6 +26,9 @@ export class User {
   @Prop({ default: null })
   dob: Date;
 
+  @Prop({ default: null })
+  lastLogin: Date;
+
   @Prop({
     default:
       'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',

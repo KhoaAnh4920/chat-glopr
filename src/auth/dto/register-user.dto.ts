@@ -27,6 +27,7 @@ export class RegisterUserDto {
     required: false,
   })
   @IsString()
+  @IsOptional()
   @Type(() => String)
   userName?: string;
 

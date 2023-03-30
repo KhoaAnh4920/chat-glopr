@@ -84,6 +84,10 @@ export class UsersService {
     return this.usersRepository.updateUser(id, updateUserDto);
   }
 
+  public async updateLastLogin(id: string): Promise<void> {
+    await this.usersRepository.updateLastLogin(id);
+  }
+
   public async sendOTP(payload: ISendOtpViewReq): Promise<string> {
     const { userIdentity, context, format, otpMethod } = payload;
 

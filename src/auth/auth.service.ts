@@ -105,6 +105,7 @@ export class AuthService {
     );
 
     if (user) {
+      console.log('Check last login: ', user.lastLogin);
       const payload = {
         id: user.id,
         email: user.email,
@@ -112,7 +113,11 @@ export class AuthService {
         userName: user.userName,
         phoneNumber: user.phoneNumber,
         avatar: user.avatar || '',
+        lastLogin: !user.lastLogin ? null : new Date(),
       };
+      // Update last login //
+      await this.usersService.updateLastLogin(user.id);
+      //
       const { accessToken, refreshToken } = await this.getTokens(
         payload.id,
         payload.email,

@@ -76,6 +76,12 @@ export class UsersRepository {
       .exec();
   }
 
+  async updateLastLogin(id: string): Promise<void> {
+    await this.userModel
+      .findByIdAndUpdate(id, { lastLogin: new Date() }, { new: true })
+      .exec();
+  }
+
   async updateSocialToken(
     id: string,
     accessToken: string,
