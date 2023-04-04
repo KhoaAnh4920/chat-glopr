@@ -113,6 +113,8 @@ export class AuthService {
         userName: user.userName,
         phoneNumber: user.phoneNumber,
         avatar: user.avatar || '',
+        dob: user.dob || null,
+        gender: user.gender,
         lastLogin: !user.lastLogin ? null : new Date(),
       };
       // Update last login //
