@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiExtraModels,
+  ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -39,6 +43,10 @@ import {
   TokenRefreshDto,
 } from './dto/auth.dto';
 import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
+import { UsersModule } from 'src/users/users.module';
+import { UserSchema } from 'src/_schemas/user.schema';
+import { User } from 'src/_schemas/user.schema';
+import { ApiException } from 'src/shared/common/api-exception.model';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -46,14 +54,16 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: ResponseRegisterUserDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid input',
-  })
+  // @ApiResponse({
+  //   status: HttpStatus.CREATED,
+  //   type: ResponseRegisterUserDto,
+  // })
+  // @ApiResponse({
+  //   status: HttpStatus.BAD_REQUEST,
+  //   description: 'Invalid input',
+  // })
+  @ApiCreatedResponse({ type: User })
+  @ApiBadRequestResponse({ type: ApiException })
   async register(
     @Body() registerUserDto: RegisterUserDto,
     @Res() res: Response,

@@ -69,7 +69,8 @@ const ErrorList = {
   },
   [ERROR_CODE.EMAIL_OR_PHONE_EXISTS]: {
     statusCode: HttpStatus.BAD_REQUEST,
-    message: 'Email or phone exists',
+    code: 'EMAIL_OR_PHONE_EXISTS',
+    message: 'Email or phone existsss',
   },
   [ERROR_CODE.REFERENCE_ERROR]: {
     statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
