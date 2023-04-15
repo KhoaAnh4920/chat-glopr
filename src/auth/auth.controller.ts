@@ -1,32 +1,29 @@
 import {
-  Controller,
-  Post,
   Body,
-  UseGuards,
-  Req,
+  Controller,
   Get,
   HttpStatus,
-  Res,
   Patch,
+  Post,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
 import {
-  ApiResponse,
-  ApiTags,
   ApiBearerAuth,
   ApiOperation,
-  getSchemaPath,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import {
   RegisterUserDto,
   ResponseRegisterUserDto,
 } from '../auth/dto/register-user.dto';
-import { LocalAuthGuard } from './common/guards/local-auth.guard';
-import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
-import { GoogleAuthGuard } from './common/guards/google-auth.guard';
-import { IEmptyRes, ISingleRes } from '../shared/response';
-import { Response } from 'express';
+import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
+import { ISingleRes } from '../shared/response';
+import { AuthService } from './auth.service';
 import {
   IAuthResponse,
   IChangePasswordViewReq,
@@ -34,13 +31,14 @@ import {
   IRefreshTokenReq,
   IUserCreated,
 } from './auth.type';
+import { GoogleAuthGuard } from './common/guards/google-auth.guard';
+import { LocalAuthGuard } from './common/guards/local-auth.guard';
 import {
   ChangePasswordDto,
   NewTokenResponseDto,
   TokenRefreshDto,
 } from './dto/auth.dto';
-import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
-import { AuthGuard } from '@nestjs/passport';
+import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -147,6 +145,7 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
+  @ApiBearerAuth()
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async googleAuth(@Req() req) {}
 

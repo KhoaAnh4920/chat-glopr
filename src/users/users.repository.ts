@@ -1,20 +1,19 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { AppError, ERROR_CODE } from 'src/shared/error';
+import { UpdateResult } from 'mongodb';
+import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import {
   UserSocialToken,
   UserSocialTokenDocument,
 } from 'src/_schemas/user_socialtoken';
+import { AppError, ERROR_CODE } from 'src/shared/error';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ICreateSocialTokenViewReq,
   ICreateUserFromSocialViewReq,
   ICreateUserViewReq,
-  IUser,
 } from './user.type';
 const ObjectId = require('mongoose').Types.ObjectId;
-import { UpdateResult } from 'mongodb';
 
 export class UsersRepository {
   constructor(

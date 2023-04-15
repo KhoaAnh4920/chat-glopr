@@ -1,22 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsBoolean,
   IsDefined,
   IsOptional,
-  IsString,
   IsPositive,
-  Min,
+  IsString,
   Max,
-  IsNumber,
+  Min,
 } from 'class-validator';
-import { Types } from 'mongoose';
 import { ResponseMessage } from 'src/shared/response';
-import {
-  TypeGetListAttachments,
-  typeMessage,
-  // TypeReactMessage,
-} from './messages.enum';
+import { TypeGetListAttachments, typeMessage } from './messages.enum';
 
 export class PayloadSendTextMessageDto {
   @ApiProperty({ required: true, example: 'Phu noi nhieu' })

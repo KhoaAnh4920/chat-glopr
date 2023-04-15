@@ -1,4 +1,4 @@
-import { ObjectId, Types } from 'mongoose';
+import { ObjectId } from 'mongoose';
 
 export interface IParticipantsModel {
   readonly conversationId: ObjectId;

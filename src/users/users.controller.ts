@@ -9,15 +9,18 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import {
-  ApiTags,
   ApiBearerAuth,
+  ApiOkResponse,
   ApiOperation,
   ApiResponse,
-  ApiOkResponse,
-  getSchemaPath,
+  ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
+import { UserDocument } from 'src/_schemas/user.schema';
+import { ISingleRes, ResponseMessage } from 'src/shared/response';
+import { OtpService } from '../otp/otp.service';
+import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
 import {
   GetInfoSummaryUserResponse,
   GetInfoUserResponse,
@@ -29,20 +32,9 @@ import {
   ResetPasswordOtpDto,
   SearchUserDto,
   UpdateUserDto,
-  ValidateOTPDto,
 } from './dto/user.dto';
-import { Response } from 'express';
-import { ValidateOTPViewReq } from 'src/otp/otp.type';
-import { OtpService } from '../otp/otp.service';
-import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
-import { ISingleRes, ResponseMessage } from 'src/shared/response';
-import {
-  IUserInfo,
-  UpdateUserViewReq,
-  ResetPasswordViewReq,
-  IUser,
-} from './user.type';
-import { User, UserDocument } from 'src/_schemas/user.schema';
+import { ResetPasswordViewReq, UpdateUserViewReq } from './user.type';
+import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(

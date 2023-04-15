@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsDefined,
-  IsOptional,
-  IsString,
-  IsEmail,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsDefined, IsString } from 'class-validator';
 import { ResponseMessage } from 'src/shared/response';
 
 export class PayloadSendRequestDto {

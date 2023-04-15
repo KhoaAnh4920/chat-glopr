@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { ICurrentUser } from '../shared/auth';
 export type IPayloadJWT = ICurrentUser;
 

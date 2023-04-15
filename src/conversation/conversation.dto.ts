@@ -1,17 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsBoolean,
   IsDefined,
-  IsOptional,
-  IsString,
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
   IsEnum,
+  IsOptional,
   IsPositive,
-  Min,
+  IsString,
   Max,
+  Min,
 } from 'class-validator';
 import { ResponseMessage } from 'src/shared/response';
 import { typeSearchConversation } from './conversation.enum';

@@ -5,30 +5,41 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Query,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
-  ApiTags,
   ApiBearerAuth,
+  ApiOkResponse,
   ApiOperation,
   ApiResponse,
-  ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger';
-import { ConversationService } from './conversation.service';
 import { Response } from 'express';
-import { IEmptyDataRes, ISingleRes } from 'src/shared/response';
+import { ParticipantsDocument } from 'src/_schemas/participants.schema';
+import { Roles } from 'src/_schemas/roles.schema';
+import { MessagingGateway } from 'src/gateway/gateway';
+import { ParticipantsService } from 'src/participants/participants.service';
+import { AppError, ERROR_CODE } from 'src/shared/error';
+import {
+  IEmptyDataRes,
+  ISingleRes,
+  ResponseMessage,
+} from 'src/shared/response';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
-import { ResponseMessage } from 'src/shared/response';
+import {
+  ICreateIndividual,
+  ISummaryConversation,
+  IUserNickNameRes,
+} from './consersation.type';
 import {
   CreateConversationResponeDto,
   GetLinkConversationResponeDto,
   GetListConversationDto,
   GetOneConversationResponeDto,
   ListConversationResponeDto,
+  ParamGetRolesDto,
   ParamsDeleteConversationGroupDto,
   ParamsLeaveGroupGroupDto,
   PayloadAddMemberGroupDto,
@@ -39,18 +50,8 @@ import {
   PayloadDeleteMemberGroupDto,
   PayloadGetMemberDto,
   PayloadGetOneDto,
-  ParamGetRolesDto,
 } from './conversation.dto';
-import { MessagingGateway } from 'src/gateway/gateway';
-import {
-  ICreateIndividual,
-  ISummaryConversation,
-  IUserNickNameRes,
-} from './consersation.type';
-import { ParticipantsService } from 'src/participants/participants.service';
-import { ParticipantsDocument } from 'src/_schemas/participants.schema';
-import { LoggingInterceptor } from '../shared/common/logging.interceptor';
-import { Roles } from 'src/_schemas/roles.schema';
+import { ConversationService } from './conversation.service';
 
 @Controller('conversation')
 export class ConversationController {
@@ -117,6 +118,8 @@ export class ConversationController {
     @CurrentUser() currentUser: ICurrentUser,
   ) {
     let data = null;
+    console.log('currentUser: ', currentUser);
+    console.log('currentUser.userId: ', currentUser.userId);
     if (+query.type === 0)
       data = await this.conversationService.getList(
         currentUser.userId,
@@ -165,6 +168,7 @@ export class ConversationController {
     const conversation = await this.conversationService.findOne(
       params.converId,
     );
+    if (!conversation) throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
     const dataRes = await this.conversationService.getSummaryByIdAndUserId(
       conversation,
       currentUser.userId,

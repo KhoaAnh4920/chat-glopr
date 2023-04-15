@@ -1,18 +1,15 @@
-import { Inject } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
 import {
-  WebSocketGateway,
-  WebSocketServer,
-  SubscribeMessage,
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
-  ConnectedSocket,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { AuthenticatedSocket, PayloadTyping } from './gateway.type';
 import { CacheRepository } from '../shared/cache/cache.repository';
-import { SchemaTypes, Types } from 'mongoose';
+import { AuthenticatedSocket, PayloadTyping } from './gateway.type';
 
 @WebSocketGateway({
   cors: {
@@ -83,10 +80,8 @@ export class MessagingGateway
     @ConnectedSocket() client: Socket,
   ) {
     //console.log('check data: ', data);
-    const { conversationId, userId, isTyping } = data;
-    client.broadcast
-      .to(conversationId)
-      .emit('typing', conversationId, userId, isTyping);
+    const { conversationId } = data;
+    client.broadcast.to(conversationId).emit('typing', data);
   }
 
   @SubscribeMessage('get-user-online')

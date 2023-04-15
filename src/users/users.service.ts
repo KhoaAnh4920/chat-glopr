@@ -1,5 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { UpdateResult } from 'mongodb';
 import { User, UserDocument } from 'src/_schemas/user.schema';
+import { UserSocialToken } from 'src/_schemas/user_socialtoken';
+import { ValidateOTPViewReq } from 'src/otp/otp.type';
+import { MailService } from '../mail/mail.service';
+import { OTP_EXPIRE_SECOND, OTP_LENGTH } from '../otp/otp.constant';
+import { ContentRequestOTP, TypeSender } from '../otp/otp.enum';
+import { OtpService } from '../otp/otp.service';
+import { StringUtils } from '../shared/common/stringUtils';
+import { AppError, ERROR_CODE } from '../shared/error';
+import { IUpdateUserViewReq } from '../users/user.type';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ICreateSocialTokenViewReq,
@@ -7,26 +17,10 @@ import {
   ICreateUserViewReq,
   IResetPasswordViewReq,
   ISendOtpViewReq,
-  IUser,
   UpdateUserModel,
-  UpdateUserViewReq,
 } from './user.type';
-import { UsersRepository } from './users.repository';
-import { ContentRequestOTP, TypeSender } from '../otp/otp.enum';
-import { AppError, ERROR_CODE } from '../shared/error';
-import { OtpService } from '../otp/otp.service';
-import { OTP_EXPIRE_SECOND, OTP_LENGTH } from '../otp/otp.constant';
-import { MailService } from '../mail/mail.service';
-import { StringUtils } from '../shared/common/stringUtils';
-import { IUpdateUserViewReq } from '../users/user.type';
 import { UserUtil } from './user.util';
-import { Types } from 'mongoose';
-import { ValidateOTPViewReq } from 'src/otp/otp.type';
-import {
-  UserSocialToken,
-  UserSocialTokenDocument,
-} from 'src/_schemas/user_socialtoken';
-import { UpdateResult } from 'mongodb';
+import { UsersRepository } from './users.repository';
 @Injectable()
 export class UsersService {
   constructor(

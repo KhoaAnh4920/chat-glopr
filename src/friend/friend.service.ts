@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
+import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { MessagingGateway } from 'src/gateway/gateway';
 import { CacheRepository } from 'src/shared/cache/cache.repository';
 import { AppError, ERROR_CODE } from 'src/shared/error';
 import { UsersService } from 'src/users/users.service';
-import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
 import { FRIEND_STATUS, typeRequest } from './friend.enum';
 import { FriendRepository } from './friend.repository';
 import { IDeleteFriendRequestViewReq, IFriendList } from './friend.type';

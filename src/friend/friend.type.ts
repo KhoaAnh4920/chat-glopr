@@ -1,5 +1,3 @@
-import { Types } from 'mongoose';
-
 export interface IFriendRequestModel {
   readonly senderId: string;
   readonly receiverId: string;

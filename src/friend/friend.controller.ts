@@ -5,25 +5,22 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
   Post,
-  Query,
   Res,
 } from '@nestjs/common';
-import { FriendService } from './friend.service';
 import {
-  ApiTags,
   ApiBearerAuth,
+  ApiOkResponse,
   ApiOperation,
   ApiResponse,
-  ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { IEmptyDataRes, ISingleRes } from 'src/shared/response';
-import { ListInviteResponeDto, PayloadSendRequestDto } from './friend.dto';
+import { IEmptyDataRes, ResponseMessage } from 'src/shared/response';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
+import { ListInviteResponeDto, PayloadSendRequestDto } from './friend.dto';
+import { FriendService } from './friend.service';
 import { IDeleteFriendRequestViewReq } from './friend.type';
-import { ResponseMessage } from 'src/shared/response';
 
 @Controller('friend')
 export class FriendController {

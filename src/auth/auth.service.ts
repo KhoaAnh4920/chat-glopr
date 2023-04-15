@@ -1,32 +1,26 @@
-import {
-  Injectable,
-  NotFoundException,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { StringUtils } from 'src/shared/common/stringUtils';
 import { UsersService } from 'src/users/users.service';
 import { RegisterUserDto } from '../auth/dto/register-user.dto';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { LoginUserDto } from './dto/login-user.dto';
-import { ConfigService } from '@nestjs/config';
-import { ValidateEmailOrPhoneOTPViewReq } from '../otp/otp.type';
 import { ContentRequestOTP } from '../otp/otp.enum';
 import { OtpService } from '../otp/otp.service';
+import { ValidateEmailOrPhoneOTPViewReq } from '../otp/otp.type';
 import { AppError, ERROR_CODE } from '../shared/error';
-import {
-  IChangePasswordViewReq,
-  INewTokenResponse,
-  IRefreshTokenReq,
-} from './auth.type';
 import {
   ICreateSocialTokenViewReq,
   ICreateUserFromSocialViewReq,
   IUpdateUserViewReq,
 } from '../users/user.type';
-import { Types } from 'mongoose';
+import {
+  IChangePasswordViewReq,
+  INewTokenResponse,
+  IRefreshTokenReq,
+} from './auth.type';
 import { SocialAuthType } from './constants';
-import { StringUtils } from 'src/shared/common/stringUtils';
+import { LoginUserDto } from './dto/login-user.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -105,7 +99,6 @@ export class AuthService {
     );
 
     if (user) {
-      console.log('Check last login: ', user.lastLogin);
       const payload = {
         id: user.id,
         email: user.email,
@@ -205,7 +198,6 @@ export class AuthService {
     const tokenDecoded = this.jwtService.decode(tokenRefresh.refToken) as {
       [key: string]: any;
     };
-    console.log('tokenDecoded: ', tokenDecoded);
     if (!tokenDecoded) throw new AppError(ERROR_CODE.INVALID_TOKEN);
     const user = await this.usersService.findOne(tokenDecoded.userId);
     if (!user) throw new AppError(ERROR_CODE.UNAUTHORIZED);
@@ -241,8 +233,10 @@ export class AuthService {
       `G-${req.user.id}`,
       SocialAuthType.GOOGLE,
     );
+    console.log('social_token: ', social_token);
     if (!social_token) {
       const user = await this.usersService.findOne(req.user.email);
+      console.log('user: ', user);
       if (user && user.password)
         throw new AppError(ERROR_CODE.EMAIL_HAS_BEEN_REGISTERED);
       const newUser: ICreateUserFromSocialViewReq = {
@@ -262,8 +256,6 @@ export class AuthService {
         );
         req.user.accessToken = accessToken;
         // Create new social token //
-        console.log('refreshToken: ', req.user.refreshToken);
-        console.log('req.user: ', req.user);
         const newSocialToken: ICreateSocialTokenViewReq = {
           socialId: `G-${req.user.id}`,
           type: SocialAuthType.GOOGLE,

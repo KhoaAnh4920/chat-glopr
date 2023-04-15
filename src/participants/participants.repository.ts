@@ -136,7 +136,6 @@ export class ParticipantsRepository {
         },
       },
     ]);
-    //console.log('Check data: ', data);
     return data;
   }
 

@@ -1,8 +1,8 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { AppError, ERROR_CODE } from 'src/shared/error';
+import { Model } from 'mongoose';
 import { Friend, FriendDocument } from 'src/_schemas/friend.schema';
 import { FriendRequestDocument } from 'src/_schemas/friendRequest.schema';
+import { AppError, ERROR_CODE } from 'src/shared/error';
 import { typeRequest } from './friend.enum';
 import {
   FriendModel,

@@ -5,41 +5,45 @@ import {
   Get,
   HttpStatus,
   Param,
-  ParseFilePipe,
-  Patch,
   Post,
   Query,
   Res,
-  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import {
-  ApiTags,
   ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiOkResponse,
   ApiConsumes,
-  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
-import { MessagingGateway } from 'src/gateway/gateway';
-import { MessagesService } from './messages.service';
 import { Response } from 'express';
-import { IEmptyDataRes, ISingleRes } from 'src/shared/response';
-import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
-import { ResponseMessage } from 'src/shared/response';
+import { Message } from 'src/_schemas/message.schema';
+import { ConversationService } from 'src/conversation/conversation.service';
+import { MessagingGateway } from 'src/gateway/gateway';
+import { AppError, ERROR_CODE } from 'src/shared/error';
 import {
-  ParamsGetConversationDto,
+  IEmptyDataRes,
+  ISingleRes,
+  ResponseMessage,
+} from 'src/shared/response';
+import { filesOptions } from 'src/upload/constants';
+import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
+import {
   GetListMessageDto,
-  PayloadSendTextMessageDto,
-  PayloadSendFileMessageDto,
+  ParamsGetConversationDto,
   ParamsGetListFileConversationDto,
   ParamsIdMessageDto,
-  SendTextMessageResponeDto,
   ParamsReactionMessageDto,
   PayloadSearchMessageDto,
+  PayloadSendFileMessageDto,
+  PayloadSendTextMessageDto,
+  SendTextMessageResponeDto,
 } from './messages.dto';
+import { TypeGetListAttachments, typeMessage } from './messages.enum';
+import { MessagesService } from './messages.service';
 import {
   CreateTextMessageViewReq,
   GetListMessageSlot,
@@ -47,16 +51,6 @@ import {
   IMessagesResponse,
   IResPinMessageSlot,
 } from './messages.type';
-import { ConversationService } from 'src/conversation/conversation.service';
-import { filesOptions } from 'src/upload/constants';
-import {
-  AnyFilesInterceptor,
-  FileInterceptor,
-  FilesInterceptor,
-} from '@nestjs/platform-express';
-import { TypeGetListAttachments, typeMessage } from './messages.enum';
-import { AppError, ERROR_CODE } from 'src/shared/error';
-import { Message } from 'src/_schemas/message.schema';
 const urlRegex = require('url-regex');
 
 @Controller('messages')

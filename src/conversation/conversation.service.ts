@@ -1,6 +1,18 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { ConversationRepository } from './conversation.repository';
-import { Document, ObjectId, SchemaTypes, Types } from 'mongoose';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConversationDocument } from 'src/_schemas/conversation.schema';
+import { Roles } from 'src/_schemas/roles.schema';
+import { FriendService } from 'src/friend/friend.service';
+import { MessagesRepository } from 'src/messages/message.repository';
+import { typeMessage } from 'src/messages/messages.enum';
+import { MessagesService } from 'src/messages/messages.service';
+import {
+  ICreateTextMessageViewReq,
+  IMessagesResponse,
+} from 'src/messages/messages.type';
+import { ParticipantsRepository } from 'src/participants/participants.repository';
+import { CacheRepository } from 'src/shared/cache/cache.repository';
+import { AppError, ERROR_CODE } from 'src/shared/error';
+import { UsersRepository } from 'src/users/users.repository';
 import { UsersService } from 'src/users/users.service';
 import {
   IConversationModel,
@@ -13,21 +25,7 @@ import {
   ResConverObjLayout,
   UpdateConversationModel,
 } from './consersation.type';
-import { ParticipantsRepository } from 'src/participants/participants.repository';
-import { AppError, ERROR_CODE } from 'src/shared/error';
-import { MessagesService } from 'src/messages/messages.service';
-import { MessagesRepository } from 'src/messages/message.repository';
-import { FriendService } from 'src/friend/friend.service';
-import { DateUtils } from 'src/shared/common/dateUtils';
-import { typeMessage } from 'src/messages/messages.enum';
-import {
-  ICreateTextMessageViewReq,
-  IMessagesResponse,
-} from 'src/messages/messages.type';
-import { UsersRepository } from 'src/users/users.repository';
-import { CacheRepository } from 'src/shared/cache/cache.repository';
-import { ConversationDocument } from 'src/_schemas/conversation.schema';
-import { Roles } from 'src/_schemas/roles.schema';
+import { ConversationRepository } from './conversation.repository';
 
 @Injectable()
 export class ConversationService {
@@ -45,8 +43,6 @@ export class ConversationService {
   ) {}
 
   public async findOne(indentity: string): Promise<IConversationModel> {
-    const conversation = await this.conversationRepository.findOne(indentity);
-    if (!conversation) throw new AppError(ERROR_CODE.NOT_FOUND_CONSERVATION);
     return this.conversationRepository.findOne(indentity);
   }
 
@@ -308,20 +304,21 @@ export class ConversationService {
 
       const { members } = conver;
       const index = members.findIndex((ele) => ele + '' != userId);
-      nameAndAvatarInfo.userId = members[index];
-      nameAndAvatarInfo.friendStatus = await this.friendService.getFriendStatus(
-        userId,
-        members[index],
-      );
-      const cachedUser = await this.cacheRepository.getUserInCache(
-        members[index],
-      );
-      if (cachedUser) {
-        nameAndAvatarInfo.isOnline = cachedUser.isOnline;
-        nameAndAvatarInfo.lastLogin = cachedUser.lastLogin;
-      } else {
-        nameAndAvatarInfo.isOnline = false;
-        nameAndAvatarInfo.lastLogin = null;
+      console.log('Check nameAndAvatarInfo: ', nameAndAvatarInfo);
+      if (nameAndAvatarInfo) {
+        nameAndAvatarInfo.userId = members[index];
+        nameAndAvatarInfo.friendStatus =
+          await this.friendService.getFriendStatus(userId, members[index]);
+        const cachedUser = await this.cacheRepository.getUserInCache(
+          members[index],
+        );
+        if (cachedUser) {
+          nameAndAvatarInfo.isOnline = cachedUser.isOnline;
+          nameAndAvatarInfo.lastLogin = cachedUser.lastLogin;
+        } else {
+          nameAndAvatarInfo.isOnline = false;
+          nameAndAvatarInfo.lastLogin = null;
+        }
       }
     }
 

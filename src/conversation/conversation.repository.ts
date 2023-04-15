@@ -1,10 +1,13 @@
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model, Types } from 'mongoose';
-import { AppError, ERROR_CODE } from 'src/shared/error';
+import { UpdateResult } from 'mongodb';
+import { Model } from 'mongoose';
 import {
   Conversation,
   ConversationDocument,
 } from 'src/_schemas/conversation.schema';
+import { ParticipantsDocument } from 'src/_schemas/participants.schema';
+import { Roles, RolesDocument } from 'src/_schemas/roles.schema';
+import { AppError, ERROR_CODE } from 'src/shared/error';
 import {
   ConversationModel,
   IConversationModel,
@@ -12,9 +15,6 @@ import {
   RolesModel,
 } from './consersation.type';
 const ObjectId = require('mongoose').Types.ObjectId;
-import { UpdateResult } from 'mongodb';
-import { Roles, RolesDocument } from 'src/_schemas/roles.schema';
-import { ParticipantsDocument } from 'src/_schemas/participants.schema';
 
 export class ConversationRepository {
   constructor(

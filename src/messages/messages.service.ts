@@ -349,8 +349,6 @@ export class MessagesService {
 
   public async addReaction(id: string, type: string, userId: string) {
     const message = await this.messagesRepository.getById(id);
-    // console.log('Check message: ', message);
-    //console.log('type: ', type);
     const { isDeleted, deletedUserIds, reacts, conversationId } = message;
     // Check user is member of conversation //
     await this.conversationRepository.getByIdAndUserId(conversationId, userId);
@@ -360,14 +358,12 @@ export class MessagesService {
       (reactEle) => reactEle.userId == userId,
     );
     const reactTempt = [...reacts];
-    // console.log('Check reactIndex: ', reactIndex);
     // không tìm thấy
     if (reactIndex === -1) {
       reactTempt.push({ userId, typeReaction: type });
     } else {
       reactTempt[reactIndex] = { userId, typeReaction: type };
     }
-    //console.log('Check reactTempt: ', reactTempt);
     await this.messagesRepository.updateReaction(id, reactTempt);
 
     const user = await this.usersService.findOne(userId);
