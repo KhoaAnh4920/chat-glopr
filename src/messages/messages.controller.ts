@@ -142,7 +142,8 @@ export class MessagesController {
       success: true,
       statusCode: 200,
       message: ResponseMessage.GET_DATA_SUCCEEDED,
-      data: result,
+      data: result.messages,
+      totalPages: result.total_pages,
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }

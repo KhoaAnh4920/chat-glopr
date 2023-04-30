@@ -1,10 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, SchemaTypes, Types } from 'mongoose';
-import { UserGender } from '../users/users.enum';
+import { Document, SchemaTypes } from 'mongoose';
 
 export type UserSocialTokenDocument = UserSocialToken & Document;
 
-@Schema({ versionKey: false, timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    versionKey: false,
+    virtuals: true,
+    transform: function (doc: unknown, ret: Record<string, unknown>) {
+      const transformed = { ...ret };
+      delete transformed._id;
+      return transformed;
+    },
+  },
+})
 export class UserSocialToken {
   _id: string;
 

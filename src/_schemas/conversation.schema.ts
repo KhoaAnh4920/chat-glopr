@@ -1,9 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId, SchemaTypes, Types } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 
 export type ConversationDocument = Conversation & Document;
 
-@Schema({ versionKey: false, timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    versionKey: false,
+    virtuals: true,
+    transform: function (doc: unknown, ret: Record<string, unknown>) {
+      const transformed = { ...ret };
+      delete transformed._id;
+      return transformed;
+    },
+  },
+})
 export class Conversation {
   _id: string;
 

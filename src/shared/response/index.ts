@@ -4,6 +4,7 @@ export interface ISingleRes<T> {
   message: string;
   data: T;
   metadata?: any;
+  totalPages?: number;
 }
 
 export interface IListRes<T> {
