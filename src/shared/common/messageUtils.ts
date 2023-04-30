@@ -68,10 +68,12 @@ export class messageUtils {
     }
 
     message.createdAt = DateUtils.formatAMPM(message.createdAt);
+    message.id = message._id;
 
     delete message.isDeleted;
     delete message.reactUsers;
     delete message.replyUser;
+    delete message._id;
 
     if (type === typeMessage.FILE) message.content = content.split(',,');
 
@@ -100,7 +102,7 @@ export class messageUtils {
     );
     if (isDeleted)
       return {
-        _id,
+        id: _id,
         isDeleted,
         user,
         createdAt: message.createdAt,
@@ -128,7 +130,7 @@ export class messageUtils {
         };
       else
         replyMessageResult = {
-          _id: messageId,
+          id: messageId,
           user,
           content: replyMessageData.content,
           type: replyMessageData.type,
@@ -150,11 +152,13 @@ export class messageUtils {
         };
       });
     }
+    message.id = message._id;
 
     delete message.isDeleted;
     delete message.members;
     delete message.userInfos;
     delete message.userId;
+    delete message._id;
 
     message.createdAt = DateUtils.formatAMPM(message.createdAt);
 
@@ -180,7 +184,7 @@ export class messageUtils {
     );
 
     return {
-      _id: userId,
+      id: userId,
       name: participantsSearch.name,
       avatar: userInfoSearch.avatar ? userInfoSearch.avatar : '',
     };

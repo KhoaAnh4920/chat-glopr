@@ -85,7 +85,7 @@ export class ParticipantsRepository {
   public async getListInfosByConversationId(
     conversationId: string,
   ): Promise<ParticipantsDocument[]> {
-    const data = await this.participantsModel.aggregate([
+    return this.participantsModel.aggregate([
       {
         $match: {
           conversationId: ObjectId(conversationId),
@@ -135,8 +135,15 @@ export class ParticipantsRepository {
           ],
         },
       },
+      {
+        $addFields: {
+          id: '$_id',
+        },
+      },
+      {
+        $unset: '_id',
+      },
     ]);
-    return data;
   }
 
   public async getMemberOfConversation(

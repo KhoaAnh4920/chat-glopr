@@ -112,7 +112,7 @@ export class GetListConversationDto {
 }
 
 export class PayloadGetOneDto {
-  @ApiProperty({ required: true, example: '63bbb7750f7ee98af3cc67f9' })
+  @ApiProperty({ required: true, example: '63be4eb7051727fa65feaaf4' })
   @IsDefined()
   @IsString()
   readonly converId!: string;
@@ -138,7 +138,7 @@ export class ListConversationResponeDto {
   @ApiProperty({
     example: [
       {
-        _id: 0,
+        id: 0,
         name: 'Ăn chơi lành mạnh',
         image: [
           {
@@ -265,7 +265,7 @@ export class GetOneConversationResponeDto {
       totalMembers: 3,
       numberUnread: 0,
       lastMessage: {
-        _id: 0,
+        id: 0,
         content: 'https://tinhte.vn/',
         type: 'LINK',
         conversationId: 0,
@@ -333,14 +333,14 @@ export class GetLinkConversationResponeDto {
   @ApiProperty({
     example: [
       {
-        _id: 0,
+        id: 0,
         fullName: 'Phan Chau Duc',
         userName: 'duckphan1811',
         avatar:
           'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
       },
       {
-        _id: 0,
+        id: 0,
         fullName: 'Nguyễn Anh Khoa',
         userName: 'khoaanh4920',
         avatar:
@@ -350,7 +350,7 @@ export class GetLinkConversationResponeDto {
   })
   data: [
     {
-      _id: string;
+      id: string;
       fullName: string;
       userName: string;
       avatar: string;

@@ -91,6 +91,8 @@ export class FriendService {
           obj.isOnline = cachedUser.isOnline;
           obj.lastLogin = cachedUser.lastLogin;
         }
+        obj.id = item._id;
+        delete obj._id;
         return obj;
       }),
     );

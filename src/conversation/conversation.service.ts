@@ -214,6 +214,7 @@ export class ConversationService {
       skip,
       pageSize,
     );
+    console.log('Check conversation: ', conversations);
     // const conversationIds = conversations.map(
     //   (conversationEle) => conversationEle._id,
     // );
@@ -336,7 +337,7 @@ export class ConversationService {
     }
 
     return {
-      _id: conver._id,
+      id: conver._id,
       ...nameAndAvatarInfo,
       type,
       totalMembers: members.length,

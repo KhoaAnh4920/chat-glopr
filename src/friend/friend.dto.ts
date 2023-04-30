@@ -22,12 +22,12 @@ export class ListInviteResponeDto {
   @ApiProperty({
     example: [
       {
-        _id: '63b27f12b7aa9e3ac3a71a7e',
+        id: '63b27f12b7aa9e3ac3a71a7e',
         userName: 'khoaanh4920',
         avatar:
           'https://res.cloudinary.com/dpo9d3otr/raw/upload/v1657627689/image/avatar/Phuongly.jpg',
       },
     ],
   })
-  data: [{ _id: string; userName: string; avatar: string }];
+  data: [{ id: string; userName: string; avatar: string }];
 }

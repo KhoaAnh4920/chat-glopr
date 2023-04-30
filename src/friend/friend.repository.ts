@@ -94,10 +94,11 @@ export class FriendRepository {
       { $replaceWith: '$user' },
       {
         $project: {
-          _id: 1,
+          id: '$_id',
           fullName: 1,
           userName: 1,
           avatar: 1,
+          _id: 0,
         },
       },
     ]);
@@ -119,8 +120,14 @@ export class FriendRepository {
       { $unwind: '$user' },
       { $replaceWith: '$user' },
       {
+        $addFields: {
+          id: '$_id',
+        },
+      },
+      {
         $project: {
-          _id: 1,
+          _id: 0,
+          id: 1,
           name: 1,
           userName: 1,
           avatar: 1,

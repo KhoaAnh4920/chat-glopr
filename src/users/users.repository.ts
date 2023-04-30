@@ -28,17 +28,19 @@ export class UsersRepository {
     const idParam = ObjectId.isValid(indentity);
     let user = null;
     if (idParam) {
-      user = await this.userModel.findOne({
-        _id: indentity,
-      });
+      user = await this.userModel
+        .findOne({ _id: indentity }, { _id: 0, id: '$_id' })
+        .lean();
     } else {
-      user = await this.userModel.findOne({
-        $or: [
-          { email: indentity },
-          { phoneNumber: indentity },
-          { userName: indentity },
-        ],
-      });
+      user = await this.userModel
+        .findOne({
+          $or: [
+            { email: indentity },
+            { phoneNumber: indentity },
+            { userName: indentity },
+          ],
+        })
+        .lean();
     }
     return user;
   }

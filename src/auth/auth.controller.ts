@@ -54,15 +54,15 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  // @ApiResponse({
-  //   status: HttpStatus.CREATED,
-  //   type: ResponseRegisterUserDto,
-  // })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: ResponseRegisterUserDto,
+  })
   // @ApiResponse({
   //   status: HttpStatus.BAD_REQUEST,
   //   description: 'Invalid input',
   // })
-  @ApiCreatedResponse({ type: User })
+  //@ApiCreatedResponse({ type: User })
   @ApiBadRequestResponse({ type: ApiException })
   async register(
     @Body() registerUserDto: RegisterUserDto,

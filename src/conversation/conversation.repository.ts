@@ -79,22 +79,24 @@ export class ConversationRepository {
     skip: number,
     limit: number,
   ): Promise<ConversationDocument[] | any> {
-    return this.conversationModel
-      .find(
-        {
-          members: { $in: [userId] },
-          deletedUserIds: {
-            $nin: [userId],
-          },
+    const conversations = await this.conversationModel
+      .find({
+        members: { $in: [userId] },
+        deletedUserIds: {
+          $nin: [userId],
         },
-        {
-          skip: +skip,
-        },
-        {
-          limit: +limit,
-        },
-      )
-      .sort({ updatedAt: -1 });
+      })
+      .skip(+skip)
+      .limit(+limit)
+      .sort({ updatedAt: -1 })
+      .lean();
+    return conversations;
+    // console.log('AAAA: ', conversations);
+    // return conversations.map((conversation) => ({
+    //   ...conversation,
+    //   id: conversation._id,
+    //   _id: undefined,
+    // }));
   }
 
   public async getListIndividualByNameContainAndUserId(

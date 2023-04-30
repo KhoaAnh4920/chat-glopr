@@ -74,7 +74,7 @@ export class ConversationController {
         statusCode: 201,
         message: ResponseMessage.CREATE_SUCCESS,
         data: {
-          _id: '63cccb485efe7d670dfa3c0f',
+          id: '63cccb485efe7d670dfa3c0f',
           isExists: false,
         },
       },
@@ -93,11 +93,14 @@ export class ConversationController {
       this.messagingGateway.server
         .to(payload.userId + '')
         .emit('create-individual-conversation', result._id);
+    const responseData: any = { ...result };
+    responseData.id = result._id;
+    delete responseData._id;
     const singleRes: ISingleRes<ICreateIndividual> = {
       success: true,
       statusCode: 201,
       message: ResponseMessage.CREATE_SUCCESS,
-      data: result,
+      data: responseData,
     };
     return res.status(HttpStatus.OK).send(singleRes);
   }
@@ -118,8 +121,6 @@ export class ConversationController {
     @CurrentUser() currentUser: ICurrentUser,
   ) {
     let data = null;
-    console.log('currentUser: ', currentUser);
-    console.log('currentUser.userId: ', currentUser.userId);
     if (+query.type === 0)
       data = await this.conversationService.getList(
         currentUser.userId,

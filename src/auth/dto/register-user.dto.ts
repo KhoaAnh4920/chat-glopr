@@ -84,7 +84,7 @@ export class ResponseRegisterUserDto {
 
   @ApiProperty({
     example: {
-      _id: '63b27f12b7aa9e3ac3a71a7e',
+      id: '63b27f12b7aa9e3ac3a71a7e',
       email: 'khoaanh4920@gmail.com',
       phoneNumber: '0968617132',
       fullName: 'Nguyễn Anh Khoa',
@@ -96,7 +96,7 @@ export class ResponseRegisterUserDto {
     },
   })
   data: {
-    _id: string;
+    id: string;
     email: string;
     phoneNumber: string;
     fullName: string;

@@ -13,7 +13,7 @@ export interface IChangePasswordViewReq {
 }
 
 export interface IUserCreated {
-  readonly _id: string;
+  readonly id: string;
   readonly email: string;
   readonly phoneNumber: string;
   readonly fullName: string;
