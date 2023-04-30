@@ -113,44 +113,37 @@ export class MessagesService {
   public async getList(
     payload: IGetListMessageSlot,
     userId: string,
-  ): Promise<IMessagesResponse[]> {
+  ): Promise<{ messages: IMessagesResponse[]; total_pages: number }> {
+    const { conversationId, pageSize, page } = payload;
     const conversation = await this.conversationRepository.getByIdAndUserId(
-      payload.conversationId,
+      conversationId,
       userId,
     );
-    const skip = (payload.page - 1) * payload.pageSize;
-    let messages: IMessagesResponse[] = null;
-    if (conversation.type) {
-      const messagesTempt =
-        await this.messagesRepository.getListByConversationIdAndUserIdOfGroup(
-          payload.conversationId,
+    const skip = (page - 1) * pageSize;
+    const messagesTempt = conversation.type
+      ? await this.messagesRepository.getListByConversationIdAndUserIdOfGroup(
+          conversationId,
           userId,
           skip,
-          payload.pageSize,
-        );
-
-      messages = messagesTempt.map((messageEle) =>
-        messageUtils.convertMessageOfGroup(messageEle),
-      );
-    } else {
-      const messagesTempt =
-        await this.messagesRepository.getListByConversationIdAndUserIdOfIndividual(
-          payload.conversationId,
+          pageSize,
+        )
+      : await this.messagesRepository.getListByConversationIdAndUserIdOfIndividual(
+          conversationId,
           userId,
           skip,
-          payload.pageSize,
+          pageSize,
         );
-      messages = messagesTempt.map((messageEle) =>
-        messageUtils.convertMessageOfIndividual(messageEle),
-      );
-      console.log('messages: ', messages);
-    }
+    const total_pages =
+      Math.floor((messagesTempt[0]?.total[0]?.count - 1) / pageSize) + 1;
+    const messages = conversation.type
+      ? messagesTempt[0]?.data?.map(messageUtils.convertMessageOfGroup) ?? []
+      : messagesTempt[0]?.data?.map(messageUtils.convertMessageOfIndividual) ??
+        [];
     await this.participantsService.updateLastViewOfConversation(
       payload.conversationId,
       userId,
     );
-
-    return messages;
+    return { messages, total_pages };
   }
 
   public async addText(

@@ -93,12 +93,11 @@ export class messageUtils {
       userInfos,
     } = message;
 
-    const user = this.getUserForIndividualConversation(
+    const user = messageUtils.getUserForIndividualConversation(
       userId,
       participants,
       userInfos,
     );
-
     if (isDeleted)
       return {
         _id,
@@ -114,7 +113,7 @@ export class messageUtils {
       const messageId = replyMessageData._id;
       const { userId } = replyMessageData;
 
-      const user = this.getUserForIndividualConversation(
+      const user = messageUtils.getUserForIndividualConversation(
         userId,
         participants,
         userInfos,
@@ -142,7 +141,7 @@ export class messageUtils {
     if (reacts && reacts.length > 0) {
       reactsResult = reacts.map((reactEle) => {
         return {
-          user: this.getUserForIndividualConversation(
+          user: messageUtils.getUserForIndividualConversation(
             reactEle.userId,
             participants,
             userInfos,

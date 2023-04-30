@@ -79,7 +79,6 @@ export class MessagingGateway
     data: PayloadTyping,
     @ConnectedSocket() client: Socket,
   ) {
-    //console.log('check data: ', data);
     const { conversationId } = data;
     client.broadcast.to(conversationId).emit('typing', data);
   }
