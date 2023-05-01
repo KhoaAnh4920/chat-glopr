@@ -36,6 +36,7 @@ enum ERROR_CODE {
   EMAIL_HAS_BEEN_REGISTERED = 'EMAIL_HAS_BEEN_REGISTERED',
   MESSAGE_WAS_DELETED = 'MESSAGE_WAS_DELETED',
   ROLE_EXISTED_OF_CONVERSATION = 'ROLE_EXISTED_OF_CONVERSATION',
+  USER_CREATION_FAILED = 'USER_CREATION_FAILED',
 }
 
 const ErrorList = {
@@ -156,6 +157,10 @@ const ErrorList = {
   [ERROR_CODE.ROLE_EXISTED_OF_CONVERSATION]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'Role already exists of conversation',
+  },
+  [ERROR_CODE.USER_CREATION_FAILED]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'User creation failed',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

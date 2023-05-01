@@ -58,11 +58,10 @@ export class AuthController {
     status: HttpStatus.CREATED,
     type: ResponseRegisterUserDto,
   })
-  // @ApiResponse({
-  //   status: HttpStatus.BAD_REQUEST,
-  //   description: 'Invalid input',
-  // })
-  //@ApiCreatedResponse({ type: User })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input',
+  })
   @ApiBadRequestResponse({ type: ApiException })
   async register(
     @Body() registerUserDto: RegisterUserDto,
@@ -76,14 +75,6 @@ export class AuthController {
       data: created,
     };
     return res.status(HttpStatus.OK).send(bodyResponse);
-
-    // console.log('registerUserDto: ', registerUserDto);
-    // console.log('created: ', created);
-
-    // const bodyResponse: IEmptyRes = {
-    //   success: true,
-    // };
-    // return res.status(HttpStatus.OK).send(bodyResponse);
   }
 
   @UseGuards(LocalAuthGuard) // Check user request is valid //

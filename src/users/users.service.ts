@@ -116,53 +116,43 @@ export class UsersService {
     if (!user) {
       throw new AppError(ERROR_CODE.USER_NOT_FOUND);
     }
-    const password = viewReq.password
-      ? await UserUtil.hashPassword(viewReq.password)
-      : user.password;
-    const payload = new UpdateUserModel(
-      user.id,
-      viewReq.email || user.email,
-      viewReq.phoneNumber || user.phoneNumber,
-      viewReq.fullName || user.fullName,
-      viewReq.dob || user.dob,
-      password,
-      viewReq.avatar || user.avatar,
-      viewReq.gender || user.gender,
-    );
-
-    const updatedUser = await this.usersRepository.updateUser(
-      payload.id,
-      payload,
-    );
+    const payload: Partial<UserDocument> = {
+      email: viewReq.email ?? user.email,
+      phoneNumber: viewReq.phoneNumber ?? user.phoneNumber,
+      fullName: viewReq.fullName ?? user.fullName,
+      dob: viewReq.dob ?? user.dob,
+      password: viewReq.password
+        ? await UserUtil.hashPassword(viewReq.password)
+        : user.password,
+      avatar: viewReq.avatar ?? user.avatar,
+      gender: viewReq.gender ?? user.gender,
+    };
+    const updatedUser = await this.usersRepository.updateUser(user.id, payload);
     updatedUser.password = undefined;
     updatedUser.refreshToken = undefined;
     return updatedUser;
   }
 
   public async resetPassword(viewReq: IResetPasswordViewReq): Promise<void> {
-    const payload = new ValidateOTPViewReq(
-      ContentRequestOTP.RESET_PASSWORD,
-      viewReq.userIdentity,
-      viewReq.otpToken,
-    );
-    await this.otpService.validateOTPVMobile(payload);
-
-    const user = await this.findOne(payload.userIdentity);
-
-    const newPassword = await UserUtil.hashPassword(viewReq.password);
-
-    const payloadUpdate = new UpdateUserModel(
-      user.id,
-      user.email,
-      user.phoneNumber,
-      user.fullName,
-      user.dob,
-      newPassword,
-      user.gender,
-    );
     try {
+      const payload = new ValidateOTPViewReq(
+        ContentRequestOTP.RESET_PASSWORD,
+        viewReq.userIdentity,
+        viewReq.otpToken,
+      );
+      await this.otpService.validateOTPVMobile(payload);
+      const user = await this.findOne(payload.userIdentity);
+      const newPassword = await UserUtil.hashPassword(viewReq.password);
+      const payloadUpdate = new UpdateUserModel(
+        user.id,
+        user.email,
+        user.phoneNumber,
+        user.fullName,
+        user.dob,
+        newPassword,
+        user.gender,
+      );
       await this.usersRepository.updateUser(payloadUpdate.id, payloadUpdate);
-      return;
     } catch (error) {
       throw new AppError(ERROR_CODE.UNEXPECTED_ERROR);
     }

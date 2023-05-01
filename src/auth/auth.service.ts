@@ -42,11 +42,11 @@ export class AuthService {
   }
 
   public async register(registerUserDto: RegisterUserDto) {
-    const user = await this.usersService.checkUserExist(
+    const userExists = await this.usersService.checkUserExist(
       registerUserDto.identity,
     );
+    if (userExists) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
 
-    if (user) throw new AppError(ERROR_CODE.EMAIL_OR_PHONE_EXISTS);
     const payload = new ValidateEmailOrPhoneOTPViewReq(
       ContentRequestOTP.CREATE_USERS,
       registerUserDto.identity,
@@ -73,23 +73,23 @@ export class AuthService {
       });
     }
 
-    if (newUser) {
-      const tokens = await this.getTokens(
-        newUser._id,
-        newUser.email,
-        SocialAuthType.REGISTER,
-      );
-      await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-      return {
-        id: newUser._id,
-        email: newUser.email,
-        phoneNumber: newUser.phoneNumber,
-        fullName: newUser.fullName,
-        userName: newUser.userName,
-        gender: newUser.gender,
-      };
-    }
-    // return user;
+    if (!newUser) throw new AppError(ERROR_CODE.USER_CREATION_FAILED);
+
+    const tokens = await this.getTokens(
+      newUser._id,
+      newUser.email,
+      SocialAuthType.REGISTER,
+    );
+    await this.updateRefreshToken(newUser._id, tokens.refreshToken);
+
+    return {
+      id: newUser._id,
+      email: newUser.email,
+      phoneNumber: newUser.phoneNumber,
+      fullName: newUser.fullName,
+      userName: newUser.userName,
+      gender: newUser.gender,
+    };
   }
 
   public async login(loginUserDto: LoginUserDto) {

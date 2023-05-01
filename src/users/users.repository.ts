@@ -28,9 +28,7 @@ export class UsersRepository {
     const idParam = ObjectId.isValid(indentity);
     let user = null;
     if (idParam) {
-      user = await this.userModel
-        .findOne({ _id: indentity }, { _id: 0, id: '$_id' })
-        .lean();
+      user = await this.userModel.findOne({ _id: indentity }).lean();
     } else {
       user = await this.userModel
         .findOne({
@@ -42,6 +40,12 @@ export class UsersRepository {
         })
         .lean();
     }
+
+    if (user) {
+      user.id = user._id.toString();
+      delete user._id;
+    }
+
     return user;
   }
 
@@ -111,7 +115,7 @@ export class UsersRepository {
   ): Promise<UserDocument | undefined> {
     return this.userModel.findOne(
       { userName },
-      '-_id userName fullName avatar isActived',
+      'id userName fullName avatar isActived',
     );
   }
 
@@ -125,7 +129,7 @@ export class UsersRepository {
           // ...
         ],
       },
-      '-_id email userName fullName avatar dob gender isActived',
+      'id email userName fullName avatar dob gender isActived',
     );
   }
 
