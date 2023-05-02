@@ -255,6 +255,7 @@ export class MessagesRepository {
     skip: number,
     limit: number,
   ): Promise<any> {
+    console.log('limit: ', limit);
     return await this.messageModel.aggregate([
       {
         $match: {

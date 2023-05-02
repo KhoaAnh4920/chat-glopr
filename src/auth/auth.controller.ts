@@ -13,20 +13,18 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiExtraModels,
-  ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import { ApiException } from 'src/shared/common/api-exception.model';
 import {
   RegisterUserDto,
   ResponseRegisterUserDto,
 } from '../auth/dto/register-user.dto';
 import { CurrentUser, ICurrentUser, SetScopes } from '../shared/auth';
-import { ISingleRes } from '../shared/response';
+import { IEmptyDataRes, ISingleRes } from '../shared/response';
 import { AuthService } from './auth.service';
 import {
   IAuthResponse,
@@ -43,10 +41,6 @@ import {
   TokenRefreshDto,
 } from './dto/auth.dto';
 import { LoginUserDto, ResponseLoginUserDto } from './dto/login-user.dto';
-import { UsersModule } from 'src/users/users.module';
-import { UserSchema } from 'src/_schemas/user.schema';
-import { User } from 'src/_schemas/user.schema';
-import { ApiException } from 'src/shared/common/api-exception.model';
 
 @ApiTags('auth')
 @Controller('auth')

@@ -37,6 +37,7 @@ enum ERROR_CODE {
   MESSAGE_WAS_DELETED = 'MESSAGE_WAS_DELETED',
   ROLE_EXISTED_OF_CONVERSATION = 'ROLE_EXISTED_OF_CONVERSATION',
   USER_CREATION_FAILED = 'USER_CREATION_FAILED',
+  FCM_EXISTS = 'FCM_EXISTS',
 }
 
 const ErrorList = {
@@ -71,7 +72,7 @@ const ErrorList = {
   [ERROR_CODE.EMAIL_OR_PHONE_EXISTS]: {
     statusCode: HttpStatus.BAD_REQUEST,
     code: 'EMAIL_OR_PHONE_EXISTS',
-    message: 'Email or phone existsss',
+    message: 'Email or phone existed',
   },
   [ERROR_CODE.REFERENCE_ERROR]: {
     statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -161,6 +162,10 @@ const ErrorList = {
   [ERROR_CODE.USER_CREATION_FAILED]: {
     statusCode: HttpStatus.BAD_REQUEST,
     message: 'User creation failed',
+  },
+  [ERROR_CODE.FCM_EXISTS]: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    message: 'FCM token already exists',
   },
 };
 export { ErrorDetails, ERROR_CODE, ErrorList };

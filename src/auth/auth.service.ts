@@ -21,6 +21,7 @@ import {
 } from './auth.type';
 import { SocialAuthType } from './constants';
 import { LoginUserDto } from './dto/login-user.dto';
+import * as admin from 'firebase-admin';
 @Injectable()
 export class AuthService {
   constructor(

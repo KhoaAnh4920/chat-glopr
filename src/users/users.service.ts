@@ -21,12 +21,14 @@ import {
 } from './user.type';
 import { UserUtil } from './user.util';
 import { UsersRepository } from './users.repository';
+import { NotificationService } from 'src/notification/notification.service';
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly otpService: OtpService,
     private readonly mailService: MailService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   public async findOne(indentity: string): Promise<UserDocument> {
@@ -75,6 +77,7 @@ export class UsersService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserDocument> {
+    //this.notificationService.sendTestNotification();
     return this.usersRepository.updateUser(id, updateUserDto);
   }
 
@@ -112,6 +115,7 @@ export class UsersService {
   }
 
   public async updateUser(viewReq: IUpdateUserViewReq): Promise<UserDocument> {
+    //await this.notificationService.sendTestNotification();
     const user = await this.findOne(viewReq.id);
     if (!user) {
       throw new AppError(ERROR_CODE.USER_NOT_FOUND);
