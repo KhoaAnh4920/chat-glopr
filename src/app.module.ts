@@ -17,6 +17,7 @@ import { ConversationModule } from './conversation/conversation.module';
 import { MessagesModule } from './messages/messages.module';
 import { ParticipantsModule } from './participants/participants.module';
 import { PeerjsModule } from './peerjs/peerjs.module';
+import { NotificationModule } from './notification/notification.module';
 @Module({
   imports: [
     MorganModule,
@@ -43,6 +44,7 @@ import { PeerjsModule } from './peerjs/peerjs.module';
     MessagesModule,
     ParticipantsModule,
     PeerjsModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [

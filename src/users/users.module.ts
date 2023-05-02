@@ -10,6 +10,7 @@ import {
   UserSocialToken,
   UserSocialTokenSchema,
 } from 'src/_schemas/user_socialtoken';
+import { NotificationModule } from 'src/notification/notification.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -18,6 +19,7 @@ import {
     ]),
     OtpModule,
     MailModule,
+    NotificationModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],

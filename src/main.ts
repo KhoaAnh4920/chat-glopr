@@ -3,9 +3,25 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from './shared/auth';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { WebsocketAdapter } from './gateway/gateway.adapter';
 // import { PeerServer } from 'peer';
+// Import firebase-admin
+import * as admin from 'firebase-admin';
+const serviceAccount = {
+  type: 'service_account',
+  project_id: 'glopr-chat',
+  private_key_id: process.env.FIREBASE_ADMIN_PRIVATE_KEY_ID,
+  private_key: (process.env.FIREBASE_ADMIN_PRIVATE_KEY as string).replace(
+    /\\n/g,
+    '\n',
+  ),
+  client_email: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_ADMIN_CLIENT_ID,
+  auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+  token_uri: 'https://oauth2.googleapis.com/token',
+  auth_provider_x509_cert_url:
+    process.env.FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_ADMIN_CLIENT_X509_CERT_URL,
+} as admin.ServiceAccount;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,6 +46,11 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // Initialize the firebase admin app
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
 
   // const peerServer = PeerServer({ port: 9000, path: '/peer' });
   // peerServer.on('connection', (client) => {
