@@ -11,13 +11,8 @@ export class NotificationService {
   ) {}
 
   // public async sendTestNotification() {
-  //   console.log('Run !!!');
-  //   // Giả lập một token
-  //   const deviceUuid = 'OSR1.180418.028.A1';
   //   const fcmToken =
   //     'eVZp0NSBTaqMvYzXqncYa2:APA91bF1KOkHwxjmrLiyTBtcKEUivSChT4P3mzwjQox2U7QJ7pAvl6_-bI1CHBeGHNWYpvLJcTtb9O2tQynbbwTCXGEeiXvz-qbC-KGFJUfBCspU1iJwzXCuAOFIYmdjjwRqbBy6OLof';
-
-  //   //admin.messaging().subscribeToTopic(deviceUuid, fcmToken);
 
   //   // Thông tin nội dung thông báo
   //   const payload = {
@@ -30,8 +25,6 @@ export class NotificationService {
   //   try {
   //     // Gửi thông báo tới thiết bị giả lập
   //     const response = await admin.messaging().sendToDevice(fcmToken, payload);
-
-  //     console.log('response: ', response);
   //     console.log('response: ', response.results);
 
   //     console.log(

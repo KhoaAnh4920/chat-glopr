@@ -105,6 +105,12 @@ export class MessagesController {
       .to(conversationId + '')
       .emit('new-message', conversationId, dataMess);
 
+    this.messagingGateway.server.emit(
+      'update-conversation-list',
+      conversationId,
+      dataMess,
+    );
+
     const singleRes: ISingleRes<IMessagesResponse> = {
       success: true,
       statusCode: 201,
