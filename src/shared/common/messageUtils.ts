@@ -32,21 +32,21 @@ export class messageUtils {
       const replyUserData = replyUser[0];
 
       const user = {
-        _id: replyUserData._id,
+        id: replyUserData._id,
         name: replyUserData.name,
         avatar: replyUserData.avatar,
       };
 
       if (replyMessageData.isDeleted)
         replyMessageResult = {
-          _id: messagesId,
+          id: messagesId,
           user,
           isDeleted: true,
           createdAt: message.createdAt,
         };
       else
         replyMessageResult = {
-          _id: messagesId,
+          id: messagesId,
           user,
           content: replyMessageData.content,
           type: replyMessageData.type,
@@ -74,6 +74,9 @@ export class messageUtils {
     delete message.reactUsers;
     delete message.replyUser;
     delete message._id;
+
+    message.user.id = message.user._id;
+    delete message.user._id;
 
     if (type === typeMessage.FILE) message.content = content.split(',,');
 
@@ -123,7 +126,7 @@ export class messageUtils {
 
       if (replyMessageData.isDeleted)
         replyMessageResult = {
-          _id: messageId,
+          id: messageId,
           user,
           isDeleted: true,
           createdAt: message.createdAt,
