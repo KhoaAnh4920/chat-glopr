@@ -65,7 +65,7 @@ export class MessagesRepository {
           userId: 1,
           participants: {
             userId: 1,
-            fullName: 1,
+            name: 1,
           },
           userInfos: {
             _id: 1,
@@ -460,7 +460,7 @@ export class MessagesRepository {
                 userId: 1,
                 participants: {
                   userId: 1,
-                  fullName: 1,
+                  name: 1,
                 },
                 userInfos: {
                   _id: 1,

@@ -97,10 +97,19 @@ export class messageUtils {
       participants,
       userInfos,
     } = message;
+    const newParticipants = participants.map((p) => {
+      const participantsSearch = userInfos.find(
+        (participantEle) => participantEle._id + '' == p.userId + '',
+      );
+      p.avatar = participantsSearch.avatar;
+      p.fullName = p.name;
+      delete p.name;
+      return p;
+    });
 
     const user = messageUtils.getUserForIndividualConversation(
       userId,
-      participants,
+      newParticipants,
       userInfos,
     );
     if (isDeleted)
@@ -164,6 +173,7 @@ export class messageUtils {
     delete message._id;
 
     message.createdAt = DateUtils.formatAMPM(message.createdAt);
+    message.participants = newParticipants;
 
     return {
       ...message,
@@ -188,7 +198,7 @@ export class messageUtils {
 
     return {
       id: userId,
-      name: participantsSearch.name,
+      fullName: participantsSearch.fullName,
       avatar: userInfoSearch.avatar ? userInfoSearch.avatar : '',
     };
   }
