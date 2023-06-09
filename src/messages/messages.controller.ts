@@ -78,8 +78,6 @@ export class MessagesController {
   ) {
     const isExistsUrl = urlRegex().test(payload.content);
     const typeMess = isExistsUrl ? typeMessage.LINK : typeMessage.TEXT;
-    // const url = payload.content.match(urlRegex());
-    // console.log('Test 2: ', url);
     // Check is exists conversation //
     let conversationId = payload.desId;
     const isExists = await this.conversationService.findOne(conversationId);
@@ -101,7 +99,7 @@ export class MessagesController {
       payloadSendMess,
       currentUser.userId,
     );
-    this.messagingGateway.server
+    this.messagingGateway.server.broadcast
       .to(conversationId + '')
       .emit('new-message', conversationId, dataMess);
 

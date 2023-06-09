@@ -23,7 +23,7 @@ export class MessagingGateway
   constructor(private readonly cacheRepository: CacheRepository) {}
 
   @WebSocketServer()
-  server: Server;
+  server: any;
 
   afterInit(server: Server) {
     console.log('Init socket server');
@@ -97,4 +97,16 @@ export class MessagingGateway
       client.emit('userOnlineStatus', { isOnline, lastLogin });
     }
   }
+
+  // async handleSendMessage(
+  //   @MessageBody()
+  //   conversationId: string,
+  //   @MessageBody() dataMess: any,
+  //   @ConnectedSocket() client: Socket,
+  // ) {
+  //   ConnectedSocket test
+  //   client.broadcast
+  //     .to(conversationId + '')
+  //     .emit('new-message', conversationId, dataMess);
+  // }
 }
