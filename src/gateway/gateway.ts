@@ -23,7 +23,7 @@ export class MessagingGateway
   constructor(private readonly cacheRepository: CacheRepository) {}
 
   @WebSocketServer()
-  server: any;
+  server: Socket;
 
   afterInit(server: Server) {
     console.log('Init socket server');
