@@ -99,9 +99,9 @@ export class MessagesController {
       payloadSendMess,
       currentUser.userId,
     );
-    this.messagingGateway.server.broadcast
-      .to(conversationId + '')
-      .emit('new-message', conversationId, dataMess);
+    // this.messagingGateway.server
+    //   .to(conversationId + '')
+    //   .emit('new-message', conversationId, dataMess);
 
     this.messagingGateway.server.emit(
       'update-conversation-list',
